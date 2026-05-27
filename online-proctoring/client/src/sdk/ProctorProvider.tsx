@@ -8,6 +8,7 @@ interface ProctorContextValue extends ProctorState {
   supabase: typeof supabase;
   user: User | null;
   session: Session | null;
+  authLoading: boolean;
   signOut: () => Promise<void>;
   startSession: (examId: string, userId: string) => void;
   endSession: () => void;
@@ -25,6 +26,7 @@ function genId() {
 export function ProctorProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
   const [state, setState] = useState<ProctorState>({
     sessionId: null,
@@ -46,6 +48,7 @@ export function ProctorProvider({ children }: { children: ReactNode }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      setAuthLoading(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -177,6 +180,7 @@ export function ProctorProvider({ children }: { children: ReactNode }) {
         supabase,
         user,
         session,
+        authLoading,
         signOut,
         startSession,
         endSession,

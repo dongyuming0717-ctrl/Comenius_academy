@@ -14,7 +14,7 @@ let cachedRoleUserId: string | null = null;
 
 /** Wraps routes that require authentication (and optionally, a specific role). */
 export function ProtectedRoute({ children, allowedRoles }: Props) {
-  const { user } = useProctor();
+  const { user, authLoading } = useProctor();
   const [role, setRole] = useState<string | null>(
     cachedRoleUserId === user?.id ? cachedRole : null,
   );
@@ -41,6 +41,17 @@ export function ProtectedRoute({ children, allowedRoles }: Props) {
         setChecking(false);
       });
   }, [user, allowedRoles]);
+
+  if (authLoading) {
+    return (
+      <div style={{
+        minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontFamily: "'Inter', system-ui, -apple-system, sans-serif", color: '#9ca3af', fontSize: 14,
+      }}>
+        Loading...
+      </div>
+    );
+  }
 
   if (!user) {
     return <Navigate to="/login" replace />;

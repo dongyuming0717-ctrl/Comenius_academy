@@ -35,10 +35,10 @@ export default function App() {
           {/* Landing page — public */}
           <Route path="/" element={<HomePage />} />
           {/* Student-only routes */}
-          <Route path="/exam" element={<ProtectedRoute allowedRoles={['student']}><ExamPage /></ProtectedRoute>} />
-          <Route path="/topics" element={<ProtectedRoute allowedRoles={['student']}><TopicsPage /></ProtectedRoute>} />
-          <Route path="/random" element={<ProtectedRoute allowedRoles={['student']}><RandomPage /></ProtectedRoute>} />
-          <Route path="/class-mode" element={<ProtectedRoute allowedRoles={['student']}><ClassModePage /></ProtectedRoute>} />
+          <Route path="/exam" element={<ProtectedRoute allowedRoles={['student', 'teacher']}><ExamPage /></ProtectedRoute>} />
+          <Route path="/topics" element={<ProtectedRoute allowedRoles={['student', 'teacher']}><TopicsPage /></ProtectedRoute>} />
+          <Route path="/random" element={<ProtectedRoute allowedRoles={['student', 'teacher']}><RandomPage /></ProtectedRoute>} />
+          <Route path="/class-mode" element={<ProtectedRoute allowedRoles={['student', 'teacher']}><ClassModePage /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
           {/* Past Paper Library — accessible to all */}
           <Route path="/past-papers" element={<ProtectedRoute><PastPaperLibraryPage /></ProtectedRoute>} />
