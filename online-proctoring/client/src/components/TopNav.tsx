@@ -159,11 +159,11 @@ export function TopNav({ currentPage, minimal = false, scrolled = false }: Props
       .select('role')
       .eq('auth_id', user.id)
       .single()
-      .then(({ data }) => {
-        const r = data?.role || 'student';
-        navCachedRole = r;
+      .then(({ data, error }) => {
+        if (error || !data) return;
+        navCachedRole = data.role;
         navCachedUserId = user.id;
-        setRole(r);
+        setRole(data.role);
       });
   }, [user]);
 

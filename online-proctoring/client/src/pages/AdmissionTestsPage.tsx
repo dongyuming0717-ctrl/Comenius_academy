@@ -341,8 +341,10 @@ function TestDetail() {
     supabase.from('users').select('id').eq('auth_id', user.id).single()
       .then(async ({ data, error }) => {
         if (!error && data) { setUserProfileId(data.id); return; }
+        // Only auto-create if row is genuinely missing, not for other errors (e.g. RLS recursion)
+        if (error && error.code !== 'PGRST116') return;
         const { data: created } = await supabase
-          .from('users').insert({ auth_id: user.id, email: user.email, full_name: user.email || user.email, role: 'student' })
+          .from('users').upsert({ auth_id: user.id, email: user.email, full_name: user.email || user.email }, { onConflict: 'auth_id', ignoreDuplicates: true })
           .select('id').single();
         setUserProfileId(created?.id || user.id);
       });

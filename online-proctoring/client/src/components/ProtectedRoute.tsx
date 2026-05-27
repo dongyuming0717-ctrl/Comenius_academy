@@ -33,11 +33,11 @@ export function ProtectedRoute({ children, allowedRoles }: Props) {
       .select('role')
       .eq('auth_id', user.id)
       .single()
-      .then(({ data }) => {
-        const r = data?.role || 'student';
-        cachedRole = r;
+      .then(({ data, error }) => {
+        if (error || !data) { setChecking(false); return; }
+        cachedRole = data.role;
         cachedRoleUserId = user.id;
-        setRole(r);
+        setRole(data.role);
         setChecking(false);
       });
   }, [user, allowedRoles]);

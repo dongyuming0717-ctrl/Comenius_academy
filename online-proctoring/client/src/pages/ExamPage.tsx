@@ -173,15 +173,14 @@ export function ExamPage() {
     if (!user) { setUserProfileId(null); return; }
     supabase.from('users').select('id').eq('auth_id', user.id).single()
       .then(async ({ data, error }) => {
-        if (error) { console.error('Failed to fetch user profile:', error); }
+        if (error && error.code !== 'PGRST116') { console.error('Failed to fetch user profile:', error); }
         if (data) { setUserProfileId(data.id); return; }
         // Try to auto-create user record (trigger may not have fired)
         const { data: created, error: insertErr } = await supabase
           .from('users')
-          .insert({ auth_id: user.id, email: user.email, full_name: user.email || user.email, role: 'student' })
+          .upsert({ auth_id: user.id, email: user.email, full_name: user.email || user.email }, { onConflict: 'auth_id', ignoreDuplicates: true })
           .select('id').single();
         if (insertErr) { console.error('Failed to create user profile:', insertErr); }
-        // Fallback: use auth user ID so exam can still start
         setUserProfileId(created?.id || user.id);
       });
   }, [user, supabase]);
