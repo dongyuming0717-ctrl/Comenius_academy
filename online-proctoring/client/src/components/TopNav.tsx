@@ -313,6 +313,11 @@ export function TopNav({ currentPage, minimal = false, scrolled = false }: Props
                   <ClassIcon />Class Mode
                 </Link>
               )}
+              {!isTeacher && (
+                <Link to="/analytics" style={link(currentPage === 'analytics')}>
+                  <AnalyticsIcon />Analytics
+                </Link>
+              )}
               {isTeacher && (
                 <Link to="/teacher" style={link(currentPage === 'teacher')}>
                   <DashboardIcon />Dashboard
@@ -402,6 +407,11 @@ export function TopNav({ currentPage, minimal = false, scrolled = false }: Props
           {!isTeacher && (
             <Link to="/class-mode" style={link(currentPage === 'class-mode')} onClick={() => setMenuOpen(false)}>
               <ClassIcon />Class Mode
+            </Link>
+          )}
+          {!isTeacher && (
+            <Link to="/analytics" style={link(currentPage === 'analytics')} onClick={() => setMenuOpen(false)}>
+              <AnalyticsIcon />Analytics
             </Link>
           )}
           {isTeacher && (

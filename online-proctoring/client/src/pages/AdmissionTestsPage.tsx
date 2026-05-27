@@ -52,6 +52,50 @@ const TESTS: AdmissionTest[] = [
   },
 ];
 
+// ── TMUA actual PDF data ──────────────────────────────────────────
+interface TMUAPDFPaper {
+  label: string;
+  filename: string;
+}
+
+interface TMUAPDFYear {
+  yearLabel: string;
+  folder: string;
+  papers: TMUAPDFPaper[];
+}
+
+function buildTMUAPDFs(): TMUAPDFYear[] {
+  const years = ['2023', '2022', '2021', '2020', '2019', '2018', '2017', '2016'];
+  const result: TMUAPDFYear[] = [];
+  for (const y of years) {
+    result.push({
+      yearLabel: y,
+      folder: y,
+      papers: [
+        { label: 'Paper 1', filename: `TMUA-${y}-paper-1.pdf` },
+        { label: 'Paper 2', filename: `TMUA-${y}-paper-2.pdf` },
+        { label: 'Answer Keys', filename: `TMUA-${y}-answer-keys.pdf` },
+        { label: 'Paper 1 — Worked Answers', filename: `TMUA-${y}-paper-1-worked-answers.pdf` },
+        { label: 'Paper 2 — Worked Answers', filename: `TMUA-${y}-paper-2-worked-answers.pdf` },
+      ],
+    });
+  }
+  result.push({
+    yearLabel: 'Specimen',
+    folder: 'Specimen',
+    papers: [
+      { label: 'Paper 1', filename: 'TMUA-early-specimen-paper-1.pdf' },
+      { label: 'Paper 2', filename: 'TMUA-early-specimen-paper-2.pdf' },
+      { label: 'Answer Keys', filename: 'TMUA-early-specimen-answer-keys.pdf' },
+      { label: 'Paper 1 — Worked Answers', filename: 'TMUA-early-specimen-paper-1-worked-answers.pdf' },
+      { label: 'Paper 2 — Worked Answers', filename: 'TMUA-early-specimen-paper-2-worked-answers.pdf' },
+    ],
+  });
+  return result;
+}
+
+const TMUA_PDFS = buildTMUAPDFs();
+
 // ── Mock paper data ───────────────────────────────────────────────
 interface Paper {
   id: number;
@@ -703,7 +747,7 @@ function TestDetail() {
         </div>
       </div>
 
-      {/* Past Paper List Modal */}
+      {/* Past Paper PDF Modal */}
       {showPDFModal && (
         <div
           style={{
@@ -727,7 +771,7 @@ function TestDetail() {
               padding: '16px 24px', borderBottom: '1px solid #e0e0e0',
               fontFamily: font,
             }}>
-              <span style={{ fontWeight: 600, fontSize: 18, color: '#333' }}>TMUA Past Papers</span>
+              <span style={{ fontWeight: 600, fontSize: 18, color: '#333' }}>TMUA Past Papers (PDF)</span>
               <button
                 onClick={() => setShowPDFModal(false)}
                 style={{
@@ -739,63 +783,50 @@ function TestDetail() {
               </button>
             </div>
             <div style={{ flex: 1, overflow: 'auto', padding: '24px' }}>
-              {(() => {
-                const grouped = sortedPapers.reduce((acc: Record<number, SupabasePaper[]>, p) => {
-                  (acc[p.year] = acc[p.year] || []).push(p);
-                  return acc;
-                }, {} as Record<number, SupabasePaper[]>);
-                return Object.keys(grouped).map(Number).sort((a, b) => b - a).map((year) => (
-                  <div key={year} style={{ marginBottom: 28 }}>
-                    <h3 style={{
-                      margin: '0 0 12px 0', fontSize: 20, fontWeight: 600,
-                      color: colors.foreground, fontFamily: font,
-                      borderBottom: `2px solid ${colors.primary}`, paddingBottom: 8,
-                    }}>
-                      {year}
-                    </h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                      {(grouped[year] || []).map((p) => {
-                        const qCount = (p.questions as Question[]).length;
-                        return (
-                          <div key={p.id} style={{
-                            background: '#fafafa', borderRadius: 8,
-                            border: '1px solid #e0e0e0', padding: '14px 18px',
-                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                            fontFamily: font,
-                          }}>
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                              <div style={{ fontSize: 15, fontWeight: 600, color: '#333', marginBottom: 4 }}>
-                                {p.title}
-                              </div>
-                              <div style={{ fontSize: 13, color: '#888', display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-                                <span>{p.sitting}</span>
-                                <span>Paper {p.paper_number}</span>
-                                <span>{p.duration_minutes} min</span>
-                                <span>{qCount} questions</span>
-                              </div>
+              {TMUA_PDFS.map((yr) => (
+                <div key={yr.yearLabel} style={{ marginBottom: 28 }}>
+                  <h3 style={{
+                    margin: '0 0 12px 0', fontSize: 20, fontWeight: 600,
+                    color: colors.foreground, fontFamily: font,
+                    borderBottom: `2px solid ${colors.primary}`, paddingBottom: 8,
+                  }}>
+                    {yr.yearLabel}
+                  </h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {yr.papers.map((paper) => {
+                      const pdfUrl = `/tmua-papers/${yr.folder}/${paper.filename}`;
+                      return (
+                        <div key={paper.filename} style={{
+                          background: '#fafafa', borderRadius: 8,
+                          border: '1px solid #e0e0e0', padding: '14px 18px',
+                          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                          fontFamily: font,
+                        }}>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: 15, fontWeight: 600, color: '#333', marginBottom: 4 }}>
+                              {paper.label}
                             </div>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setShowPDFModal(false);
-                                navigate('/exam', { state: { paperId: p.id } });
-                              }}
-                              style={{
-                                padding: '8px 16px', fontSize: 13, fontWeight: 600,
-                                color: '#fff', background: colors.primary, border: 'none',
-                                borderRadius: 6, cursor: 'pointer', whiteSpace: 'nowrap',
-                                fontFamily: font, marginLeft: 16,
-                              }}
-                            >
-                              Start Mock Exam
-                            </button>
+                            <div style={{ fontSize: 13, color: '#888' }}>
+                              {paper.filename}
+                            </div>
                           </div>
-                        );
-                      })}
-                    </div>
+                          <button
+                            onClick={() => window.open(pdfUrl, '_blank')}
+                            style={{
+                              padding: '8px 16px', fontSize: 13, fontWeight: 600,
+                              color: '#fff', background: colors.primary, border: 'none',
+                              borderRadius: 6, cursor: 'pointer', whiteSpace: 'nowrap',
+                              fontFamily: font, marginLeft: 16,
+                            }}
+                          >
+                            View PDF
+                          </button>
+                        </div>
+                      );
+                    })}
                   </div>
-                ));
-              })()}
+                </div>
+              ))}
             </div>
           </div>
         </div>

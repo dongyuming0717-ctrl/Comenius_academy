@@ -34,7 +34,7 @@ async function fetchPapers() {
 
   if (subject) params.set("subject", subject);
   if (year) params.set("year", year);
-  if (session) params.set("session", session);
+  if (session) params.set("season", session);
 
   const resp = await fetch(`api/papers?${params.toString()}`);
   return resp.json();
@@ -93,9 +93,6 @@ function renderGroupCard(g) {
     : `${g.subject_code}/${g.year}/${g.season}`;
   const hasQP = !!g.qp;
   const hasMS = !!g.ms;
-  const hasER = !!g.er;
-  const hasIR = !!g.ir;
-  const hasIN = !!g.in;
 
   const viewSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
   const dlSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
@@ -104,10 +101,10 @@ function renderGroupCard(g) {
   if (hasQP) {
     buttons += `
       <button class="btn btn-outline btn-sm preview-btn" data-path="${g.qp.relative_path}" data-title="${code} — Question Paper">
-        ${viewSvg} View Paper
+        ${viewSvg} View QP
       </button>
       <a class="btn btn-primary btn-sm" href="api/download/${encodeURI(g.qp.relative_path)}">
-        ${dlSvg} Download Paper
+        ${dlSvg} Download QP
       </a>`;
   }
   if (hasMS) {
@@ -119,40 +116,9 @@ function renderGroupCard(g) {
         ${dlSvg} Download MS
       </a>`;
   }
-  if (hasER) {
-    buttons += `
-      <button class="btn btn-outline btn-sm preview-btn" data-path="${g.er.relative_path}" data-title="${code} — Examiner Report">
-        ${viewSvg} View ER
-      </button>
-      <a class="btn btn-primary btn-sm" href="api/download/${encodeURI(g.er.relative_path)}">
-        ${dlSvg} Download ER
-      </a>`;
-  }
-  if (hasIR) {
-    buttons += `
-      <button class="btn btn-outline btn-sm preview-btn" data-path="${g.ir.relative_path}" data-title="${code} — Investigator Report">
-        ${viewSvg} View IR
-      </button>
-      <a class="btn btn-primary btn-sm" href="api/download/${encodeURI(g.ir.relative_path)}">
-        ${dlSvg} Download IR
-      </a>`;
-  }
-  if (hasIN) {
-    buttons += `
-      <button class="btn btn-outline btn-sm preview-btn" data-path="${g.in.relative_path}" data-title="${code} — Insert">
-        ${viewSvg} View Insert
-      </button>
-      <a class="btn btn-primary btn-sm" href="api/download/${encodeURI(g.in.relative_path)}">
-        ${dlSvg} Download Insert
-      </a>`;
-  }
 
-  let badges = '';
-  if (hasQP) badges += '<span class="type-badge type-qp">QP</span>';
-  if (hasMS) badges += '<span class="type-badge type-ms">MS</span>';
-  if (hasER) badges += '<span class="type-badge type-er">ER</span>';
-  if (hasIR) badges += '<span class="type-badge type-ir">IR</span>';
-  if (hasIN) badges += '<span class="type-badge type-in">IN</span>';
+  const qpBadge = hasQP ? '<span class="type-badge type-qp">QP</span>' : '';
+  const msBadge = hasMS ? '<span class="type-badge type-ms">MS</span>' : '';
 
   return `
     <div class="paper-card">
@@ -161,7 +127,7 @@ function renderGroupCard(g) {
           <span class="paper-code">${code}</span>
           <span class="paper-subject">${g.subject_name}</span>
           <span class="paper-level">${g.subject_code.startsWith("97") || g.subject_code.startsWith("96") ? "A-Level" : "IGCSE"}</span>
-          ${badges}
+          ${qpBadge}${msBadge}
         </div>
         <div class="paper-actions">
           ${buttons}

@@ -27,17 +27,17 @@ function renderMath(text: string, displayMode: boolean): string {
     }
 
     if (start === -1) {
-      parts.push(remaining);
+      parts.push(remaining.replace(/\\\\/g, ''));
       break;
     }
 
     if (start > 0) {
-      parts.push(remaining.substring(0, start));
+      parts.push(remaining.substring(0, start).replace(/\\\\/g, ''));
     }
 
     const end = remaining.indexOf(delim, start + delim.length);
     if (end === -1) {
-      parts.push(remaining.substring(start));
+      parts.push(remaining.substring(start).replace(/\\\\/g, ''));
       break;
     }
 
@@ -46,7 +46,7 @@ function renderMath(text: string, displayMode: boolean): string {
       const isDisplay = delim === '$$';
       parts.push(katex.renderToString(tex, { throwOnError: false, displayMode: isDisplay }));
     } catch {
-      parts.push(remaining.substring(start, end + delim.length));
+      parts.push(remaining.substring(start, end + delim.length).replace(/\\\\/g, ''));
     }
     remaining = remaining.substring(end + delim.length);
   }
