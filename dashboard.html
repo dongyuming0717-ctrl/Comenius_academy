@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - Comenius</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    :root {
+      --background: #ffffff; --foreground: #0f172a; --card: #ffffff; --card-foreground: #0f172a;
+      --primary: #1e40af; --primary-foreground: #ffffff; --secondary: #f1f5f9; --secondary-foreground: #0f172a;
+      --muted: #f8fafc; --muted-foreground: #64748b; --accent: #dbeafe; --accent-foreground: #1e40af;
+      --destructive: #dc2626; --border: #e2e8f0; --ring: #3b82f6;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: var(--background); color: var(--foreground); font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+    .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; white-space: nowrap; }
+    .btn-primary { background: var(--primary); color: var(--primary-foreground); }
+    .btn-primary:hover { background: #1e3a8a; }
+    .btn-sm { padding: 6px 12px; font-size: 13px; height: 32px; }
+    .card { background: var(--card); border: 1px solid rgba(226,232,240,0.5); border-radius: 8px; overflow: hidden; }
+    .card-header { padding: 24px 24px 16px; }
+    .card-content { padding: 0 24px 24px; }
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; border: 1px solid var(--border); }
+    .badge-green { background: #dcfce7; color: #166534; border-color: #bbf7d0; }
+    .badge-blue { background: #dbeafe; color: #1e40af; border-color: #bfdbfe; }
+    .badge-yellow { background: #fef9c3; color: #854d0e; border-color: #fef08a; }
+    .nav { position: sticky; top: 0; z-index: 50; border-bottom: 1px solid rgba(226,232,240,0.5); background: rgba(255,255,255,0.8); backdrop-filter: blur(12px); }
+    .nav-inner { max-width: 1280px; margin: 0 auto; padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; }
+    .nav-link { display: inline-flex; align-items: center; gap: 8px; padding: 0 12px; height: 32px; border-radius: 6px; font-size: 14px; font-weight: 500; text-decoration: none; color: var(--foreground); transition: all 0.15s; }
+    .nav-link:hover { background: rgba(30,64,175,0.05); }
+    .nav-link.active { background: var(--secondary); }
+    .flex { display: flex; } .flex-col { flex-direction: column; } .items-center { align-items: center; } .items-start { align-items: flex-start; } .justify-center { justify-content: center; } .justify-between { justify-content: space-between; } .flex-1 { flex: 1; } .flex-wrap { flex-wrap: wrap; } .inline-flex { display: inline-flex; } .grid { display: grid; } .text-xs { font-size: 12px; } .text-sm { font-size: 14px; } .text-lg { font-size: 18px; } .text-2xl { font-size: 24px; } .text-3xl { font-size: 30px; } .font-semibold { font-weight: 600; } .font-medium { font-weight: 500; } .text-muted { color: var(--muted-foreground); } .text-red { color: #dc2626; } .text-green { color: #16a34a; } .gap-1 { gap: 4px; } .gap-2 { gap: 8px; } .gap-3 { gap: 12px; } .gap-4 { gap: 16px; } .gap-6 { gap: 24px; } .mb-1 { margin-bottom: 4px; } .mb-2 { margin-bottom: 8px; } .mb-3 { margin-bottom: 12px; } .mb-4 { margin-bottom: 16px; } .mb-8 { margin-bottom: 32px; } .mt-1 { margin-top: 4px; } .p-3 { padding: 12px; } .p-4 { padding: 16px; } .px-4 { padding-left: 16px; padding-right: 16px; } .px-6 { padding-left: 24px; padding-right: 24px; } .py-3 { padding-top: 12px; padding-bottom: 12px; } .py-8 { padding-top: 32px; padding-bottom: 32px; } .rounded { border-radius: 4px; } .rounded-lg { border-radius: 8px; } .border { border: 1px solid var(--border); } .w-full { width: 100%; } .space-y-2 > * + * { margin-top: 8px; } .space-y-3 > * + * { margin-top: 12px; } .space-y-4 > * + * { margin-top: 16px; } .space-y-6 > * + * { margin-top: 24px; }
+    .progress-bar { width: 100%; height: 8px; border-radius: 4px; background: var(--secondary); overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 4px; background: var(--primary); transition: width 0.3s; }
+    .chart-line { stroke: var(--primary); fill: none; stroke-width: 3; }
+    .chart-bar { fill: var(--primary); border-radius: 4px 4px 0 0; }
+  </style>
+  <style>
+    .nav-links { display: none; flex-direction: column; position: absolute; top: 56px; left: 0; right: 0; background: var(--card); border-bottom: 1px solid var(--border); padding: 12px 24px; gap: 4px; z-index: 49; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+    .nav-links.open { display: flex; }
+    @media (min-width: 768px) { .nav-links { display: flex; flex-direction: row; position: static; background: none; border: none; padding: 0; box-shadow: none; z-index: auto; } }
+    .hamburger { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: none; border: none; cursor: pointer; border-radius: 6px; color: var(--foreground); }
+    .hamburger:hover { background: var(--secondary); }
+    @media (min-width: 768px) { .hamburger { display: none; } }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="flex items-center gap-8">
+        <a href="homepage.html" class="flex items-center gap-2" style="text-decoration:none;">
+          <div style="width:32px;height:32px;border-radius:8px;background:var(--primary);display:flex;align-items:center;justify-content:center;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          </div>
+          <span style="font-weight:600;font-size:18px;color:var(--foreground);">Comenius</span>
+        </a>
+        <button class="hamburger" id="hamburgerBtn" aria-label="Toggle navigation menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+        </button>
+        <div class="nav-links" id="navLinks">
+          <a href="past-papers.html" class="nav-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>Past Papers
+          </a>
+          <a href="admission-tests.html" class="nav-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.1 2.7 2 6 2s6-.9 6-2v-5"/></svg>Admission Tests
+          </a>
+          <a href="dashboard.html" class="nav-link active">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard
+          </a>
+          <a href="class-mode.html" class="nav-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Class Mode
+          </a>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="homepage.html" class="btn btn-primary btn-sm">Login</a>
+        <a href="homepage.html" class="btn btn-sm" style="background:var(--secondary);color:var(--secondary-foreground);">Sign Up</a>
+      </div>
+    </div>
+  </nav>
+
+  <div style="min-height:100vh;">
+    <div class="container py-8">
+      <div class="mb-8">
+        <h1 class="text-3xl font-semibold mb-2">Your Dashboard</h1>
+        <p class="text-muted">Track your progress and performance insights</p>
+      </div>
+
+      <!-- Key Metrics -->
+      <div class="grid mb-8" style="grid-template-columns:repeat(3,1fr);gap:16px;" id="metricsGrid">
+        <div class="card">
+          <div class="card-header" style="padding-bottom:12px;">
+            <div class="text-sm text-muted">Overall Accuracy</div>
+            <div class="text-3xl font-semibold">87%</div>
+          </div>
+          <div class="card-content"><div class="flex items-center gap-2 text-sm text-green"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg><span>+5% from last month</span></div></div>
+        </div>
+        <div class="card">
+          <div class="card-header" style="padding-bottom:12px;">
+            <div class="text-sm text-muted">Study Streak</div>
+            <div class="text-3xl font-semibold flex items-center gap-2">23 <span style="font-size:24px;">&#x1f525;</span></div>
+          </div>
+          <div class="card-content"><div class="text-sm text-muted">days in a row</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header" style="padding-bottom:12px;">
+            <div class="text-sm text-muted">Study Time (This Week)</div>
+            <div class="text-3xl font-semibold">31.8h</div>
+          </div>
+          <div class="card-content"><div class="flex items-center gap-2 text-sm text-green"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg><span>4.5h avg/day</span></div></div>
+        </div>
+      </div>
+
+      <!-- Practice Papers by Subject -->
+      <div class="card mb-8">
+        <div class="card-header"><h3 class="font-semibold text-lg">Practice Papers Completed</h3><p class="text-sm text-muted">Number of full papers completed per subject</p></div>
+        <div class="card-content">
+          <div class="grid" style="grid-template-columns:repeat(5,1fr);gap:16px;" id="practiceCounts"></div>
+        </div>
+      </div>
+
+      <div class="grid" style="grid-template-columns:2fr 1fr;gap:24px;" id="mainGrid">
+        <!-- Left -->
+        <div class="space-y-6">
+          <!-- Accuracy Trend -->
+          <div class="card">
+            <div class="card-header"><h3 class="font-semibold text-lg">Accuracy Trend</h3><p class="text-sm text-muted">Your performance over the last 5 months</p></div>
+            <div class="card-content"><svg width="100%" height="250" id="accuracyChart"></svg></div>
+          </div>
+
+          <!-- Subject Performance -->
+          <div class="card">
+            <div class="card-header"><h3 class="font-semibold text-lg">Subject Performance</h3><p class="text-sm text-muted">Current scores and grades</p></div>
+            <div class="card-content space-y-4" id="subjectPerf"></div>
+          </div>
+
+          <!-- Study Time -->
+          <div class="card">
+            <div class="card-header"><h3 class="font-semibold text-lg">Weekly Study Time</h3><p class="text-sm text-muted">Hours spent studying this week</p></div>
+            <div class="card-content"><svg width="100%" height="250" id="studyChart"></svg></div>
+          </div>
+
+          <!-- Recent Mocks -->
+          <div class="card">
+            <div class="card-header"><h3 class="font-semibold text-lg">Recent Mock Examinations</h3><p class="text-sm text-muted">Your latest mock exam results</p></div>
+            <div class="card-content space-y-4" id="mockExams"></div>
+          </div>
+        </div>
+
+        <!-- Right -->
+        <div class="space-y-6">
+          <div class="card" style="border-color:rgba(30,64,175,0.5);background:rgba(219,234,254,0.5);">
+            <div class="card-header">
+              <div class="flex items-center gap-2 mb-2">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10h-10V2z"/></svg>
+                <h3 class="font-semibold">AI Insights</h3>
+              </div>
+            </div>
+            <div class="card-content space-y-4">
+              <div class="flex items-start gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" style="margin-top:2px;flex-shrink:0;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                <div class="text-sm"><span class="font-medium">Focus on Complex Numbers</span><p class="text-muted mt-1">Your accuracy in this topic is 30% below your average. Spend 2-3 hours this week reviewing.</p></div>
+              </div>
+              <div class="flex items-start gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" style="margin-top:2px;flex-shrink:0;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <div class="text-sm"><span class="font-medium">Strong Progress in Economics</span><p class="text-muted mt-1">You've improved by 15% in the last month. On track for an A* grade.</p></div>
+              </div>
+              <div class="flex items-start gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" style="margin-top:2px;flex-shrink:0;"><line x1="4" y1="15" x2="20" y2="15"/><line x1="4" y1="4" x2="10" y2="4"/><line x1="4" y1="9" x2="14" y2="9"/><line x1="4" y1="20" x2="20" y2="20"/></svg>
+                <div class="text-sm"><span class="font-medium">Time Management</span><p class="text-muted mt-1">You're spending 40% more time on Physics questions. Consider reviewing foundational concepts.</p></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card"><div class="card-header"><h3 class="font-semibold">Topics to Improve</h3><p class="text-sm text-muted">Focus areas based on your performance</p></div><div class="card-content space-y-4" id="weakTopics"></div></div>
+
+          <div class="card"><div class="card-header"><h3 class="font-semibold">Current Grades</h3><p class="text-sm text-muted">Based on your performance</p></div><div class="card-content space-y-3" id="currentGrades"></div></div>
+
+          <div class="card"><div class="card-header"><h3 class="font-semibold">This Week's Goals</h3></div><div class="card-content space-y-3" id="goals"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Practice counts
+    const practices = [{s:'Mathematics',c:12},{s:'Physics',c:8},{s:'Chemistry',c:10},{s:'Further Maths',c:5},{s:'Economics',c:7}];
+    document.getElementById('practiceCounts').innerHTML = practices.map(p => `<div class="flex flex-col items-center justify-center p-4 rounded-lg border" style="background:var(--muted);"><div class="text-3xl font-bold" style="color:var(--primary);margin-bottom:4px;">${p.c}</div><div class="text-sm text-muted text-center">${p.s}</div><div class="text-xs text-muted mt-1">${p.c===1?'practice':'practices'}</div></div>`).join('');
+
+    // Subject performance
+    const subjects = [{s:'Mathematics',score:92,grade:'A*',trend:'up'},{s:'Physics',score:88,grade:'A',trend:'up'},{s:'Chemistry',score:85,grade:'A',trend:'stable'},{s:'Further Maths',score:79,grade:'B',trend:'down'},{s:'Economics',score:91,grade:'A*',trend:'up'}];
+    function gradeColor(g) { if(g==='A*') return 'badge-green'; if(g==='A') return 'badge-blue'; return 'badge-yellow'; }
+    document.getElementById('subjectPerf').innerHTML = subjects.map(s => `
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3"><span class="font-medium">${s.s}</span>${s.trend==='up'?'<span class="text-green">&#8593;</span>':s.trend==='down'?'<span class="text-red">&#8595;</span>':'<span>&#8594;</span>'}</div>
+          <div class="flex items-center gap-3"><span class="badge ${gradeColor(s.grade)}">${s.grade}</span><span class="text-sm font-medium" style="min-width:48px;text-align:right;">${s.score}%</span></div>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${s.score}%;"></div></div>
+      </div>
+    `).join('');
+
+    // Mock exams
+    const mocks = [{name:'Mathematics Paper 3',date:'2026-05-15',score:92,grade:'A*'},{name:'Physics Paper 4',date:'2026-05-12',score:88,grade:'A*'},{name:'Chemistry Paper 2',date:'2026-05-08',score:85,grade:'A'}];
+    document.getElementById('mockExams').innerHTML = mocks.map(m => `
+      <div class="flex items-center justify-between p-4 border rounded-lg">
+        <div class="flex-1"><div class="font-medium mb-1">${m.name}</div><div class="text-sm text-muted flex items-center gap-2"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${new Date(m.date).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</div></div>
+        <div class="flex items-center gap-4"><div style="text-align:right;"><div class="font-semibold">${m.score}/100</div><div class="text-sm text-muted">${m.score}%</div></div><span class="badge ${gradeColor(m.grade)}">${m.grade}</span></div>
+      </div>
+    `).join('');
+
+    // Weak topics
+    const weaks = [{t:'Complex Numbers',s:'Mathematics',a:62,q:45},{t:'Electromagnetism',s:'Physics',a:68,q:32},{t:'Organic Mechanisms',s:'Chemistry',a:71,q:28},{t:'Differential Equations',s:'Further Maths',a:58,q:38}];
+    document.getElementById('weakTopics').innerHTML = weaks.map(w => `
+      <div class="space-y-2">
+        <div class="flex items-center justify-between"><div class="flex-1"><div class="text-sm font-medium">${w.t}</div><div class="text-xs text-muted">${w.s}</div></div><div style="text-align:right;"><div class="text-sm font-medium text-red">${w.a}%</div><div class="text-xs text-muted">${w.q} Qs</div></div></div>
+        <div class="progress-bar" style="height:6px;"><div class="progress-fill" style="width:${w.a}%;background:#dc2626;"></div></div>
+      </div>
+    `).join('');
+
+    // Grades
+    document.getElementById('currentGrades').innerHTML = subjects.map(s => `<div class="flex items-center justify-between"><span class="text-sm">${s.s}</span><span class="badge ${gradeColor(s.grade)}">${s.grade}</span></div>`).join('');
+
+    // Goals
+    const goals = [{t:'Complete 50 questions',cur:38,goal:50},{t:'Study 35 hours',cur:31.8,goal:35},{t:'2 mock exams',cur:1,goal:2}];
+    document.getElementById('goals').innerHTML = goals.map(g => {
+      const pct = Math.round(g.cur/g.goal*100);
+      return `<div class="space-y-2"><div class="flex items-center justify-between text-sm"><span>${g.t}</span><span class="text-muted">${g.cur}/${g.goal}</span></div><div class="progress-bar" style="height:6px;"><div class="progress-fill" style="width:${pct}%;"></div></div></div>`;
+    }).join('');
+
+    // Accuracy line chart (SVG)
+    const data = [{m:'Jan',a:65},{m:'Feb',a:72},{m:'Mar',a:78},{m:'Apr',a:82},{m:'May',a:87}];
+    const svgW = 700, svgH = 250, padL = 40, padR = 20, padT = 20, padB = 30;
+    const chartW = svgW - padL - padR, chartH = svgH - padT - padB;
+    const maxVal = 100, minVal = 0;
+    const xStep = chartW / (data.length - 1);
+    let points = '';
+    data.forEach((d,i) => {
+      const x = padL + i * xStep;
+      const y = padT + chartH - ((d.a - minVal) / (maxVal - minVal)) * chartH;
+      points += `${x},${y} `;
+    });
+    // Grid lines
+    let gridLines = '';
+    for (let v = 0; v <= 100; v += 25) {
+      const gy = padT + chartH - ((v - minVal) / (maxVal - minVal)) * chartH;
+      gridLines += `<line x1="${padL}" y1="${gy}" x2="${svgW-padR}" y2="${gy}" stroke="#e2e8f0" stroke-dasharray="3,3"/><text x="${padL-5}" y="${gy+4}" text-anchor="end" fill="#64748b" font-size="11">${v}</text>`;
+    }
+    // X labels
+    let xLabels = '';
+    data.forEach((d,i) => {
+      xLabels += `<text x="${padL + i*xStep}" y="${svgH-padB+15}" text-anchor="middle" fill="#64748b" font-size="11">${d.m}</text>`;
+    });
+    document.getElementById('accuracyChart').innerHTML = `${gridLines}${xLabels}<polyline points="${points.trim()}" fill="none" stroke="#1e40af" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>${data.map((d,i)=>{const cx=padL+i*xStep;const cy=padT+chartH-((d.a-minVal)/(maxVal-minVal))*chartH;return`<circle cx="${cx}" cy="${cy}" r="4" fill="#1e40af"/>`;}).join('')}`;
+
+    // Study time bar chart
+    const bars = [{d:'Mon',h:3.5},{d:'Tue',h:4.2},{d:'Wed',h:2.8},{d:'Thu',h:5.1},{d:'Fri',h:3.9},{d:'Sat',h:6.5},{d:'Sun',h:5.8}];
+    const bw = (chartW / bars.length) * 0.6;
+    const bStep = chartW / bars.length;
+    let barGrid = '';
+    for (let v = 0; v <= 7; v += 1) {
+      const gy = padT + chartH - (v / 7) * chartH;
+      barGrid += `<line x1="${padL}" y1="${gy}" x2="${svgW-padR}" y2="${gy}" stroke="#e2e8f0" stroke-dasharray="3,3"/><text x="${padL-5}" y="${gy+4}" text-anchor="end" fill="#64748b" font-size="11">${v}h</text>`;
+    }
+    let barLabels = '';
+    bars.forEach((b,i) => { barLabels += `<text x="${padL + i*bStep + bStep/2}" y="${svgH-padB+15}" text-anchor="middle" fill="#64748b" font-size="11">${b.d}</text>`; });
+    document.getElementById('studyChart').innerHTML = `${barGrid}${barLabels}${bars.map((b,i)=>{const bx=padL+i*bStep+(bStep-bw)/2;const bh=(b.h/7)*chartH;const by=padT+chartH-bh;return`<rect x="${bx}" y="${by}" width="${bw}" height="${bh}" fill="#1e40af" rx="4"/>`;}).join('')}`;
+
+    // Responsive nav & hamburger
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const navLinks = document.getElementById('navLinks');
+    hamburgerBtn.addEventListener('click', () => { navLinks.classList.toggle('open'); });
+    navLinks.querySelectorAll('.nav-link').forEach(l => l.addEventListener('click', () => navLinks.classList.remove('open')));
+    document.addEventListener('click', (e) => { if (!navLinks.contains(e.target) && !hamburgerBtn.contains(e.target)) navLinks.classList.remove('open'); });
+
+    // Responsive grid
+    function handleResize() {
+      const mg = document.getElementById('metricsGrid');
+      const maing = document.getElementById('mainGrid');
+      if (window.innerWidth < 768) {
+        mg.style.gridTemplateColumns = '1fr';
+        maing.style.gridTemplateColumns = '1fr';
+      } else if (window.innerWidth < 1024) {
+        mg.style.gridTemplateColumns = 'repeat(3,1fr)';
+        maing.style.gridTemplateColumns = '1fr';
+      } else {
+        mg.style.gridTemplateColumns = 'repeat(3,1fr)';
+        maing.style.gridTemplateColumns = '2fr 1fr';
+      }
+    }
+    window.addEventListener('resize', handleResize);
+    handleResize();
+  </script>
+</body>
+</html>

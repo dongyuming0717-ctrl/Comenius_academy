@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Past Paper Library - Comenius</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container">
+    <div class="page-header">
+      <h1 class="page-title">Past Paper Library</h1>
+      <p class="page-desc">Browse and download past papers with marking schemes — 5,480 CIE papers</p>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label>Subject</label>
+        <select id="filterSubject">
+          <option value="">All Subjects</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Year</label>
+        <select id="filterYear">
+          <option value="">All Years</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Session</label>
+        <select id="filterSession">
+          <option value="">All Sessions</option>
+          <option value="Spring">Spring</option>
+          <option value="Summer">Summer</option>
+          <option value="Winter">Winter</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:flex-end;">
+        <button id="searchBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Search
+        </button>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="results-info">
+      <span class="results-count" id="resultCount">Loading...</span>
+      <select id="sortOrder">
+        <option value="relevance">Most Relevant</option>
+        <option value="newest">Newest First</option>
+        <option value="oldest">Oldest First</option>
+      </select>
+    </div>
+
+    <div class="paper-list" id="paperList"></div>
+  </div>
+
+  <!-- Preview modal -->
+  <div class="modal-overlay" id="previewModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span id="modalTitle"></span>
+        <button class="modal-close" id="modalClose">&times;</button>
+      </div>
+      <iframe id="modalFrame" src=""></iframe>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
