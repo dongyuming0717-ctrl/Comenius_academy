@@ -7,10 +7,10 @@ import tarfile
 import io
 import time
 
-ECS_IP = "47.100.86.4"
-ECS_USER = "root"
-PASSWORD = "Spboyy760921!"
-PROJECT_DIR = "/Users/yumingdong/online-proctoring"
+ECS_IP = os.environ.get("ECS_IP", "47.100.86.4")
+ECS_USER = os.environ.get("ECS_USER", "root")
+PASSWORD = os.environ.get("ECS_PASSWORD", "")
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 REMOTE_DIR = "/opt/online-proctoring"
 
 def connect():

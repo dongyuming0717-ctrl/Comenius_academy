@@ -2,10 +2,10 @@
 # Automated deploy to ECS with password via expect
 set -e
 
-ECS_IP="47.100.86.4"
-ECS_USER="root"
-PASS='Spboyy760921!'
-PROJECT_DIR="/Users/yumingdong/online-proctoring"
+ECS_IP="${ECS_IP:-47.100.86.4}"
+ECS_USER="${ECS_USER:-root}"
+PASS="${ECS_PASSWORD:-}"
+PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REMOTE_DIR="/opt/online-proctoring"
 
 # Write commands to a temp script, scp it, then execute it on remote
