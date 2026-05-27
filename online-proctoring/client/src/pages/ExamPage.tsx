@@ -100,6 +100,10 @@ export function ExamPage() {
   // Accept paperId from navigation state (e.g. from ClassModePage)
   const location = useLocation();
   const incomingPaperId = (location.state as any)?.paperId as string | undefined;
+  const incomingOrigin = (location.state as any)?.origin as string | undefined;
+  const incomingClassId = (location.state as any)?.classId as string | undefined;
+  const originRef = useRef<string | undefined>(incomingOrigin);
+  const classIdRef = useRef<string | undefined>(incomingClassId);
   useEffect(() => {
     if (!incomingPaperId || papers.length === 0) return;
     const paper = papers.find(p => p.id === incomingPaperId);
@@ -334,7 +338,7 @@ export function ExamPage() {
     activeQStartRef.current = Date.now();
     isTabHiddenRef.current = false;
 
-    startSession(selectedPaper.id, userProfileId);
+    startSession(selectedPaper.id, userProfileId, originRef.current, classIdRef.current);
   }, [selectedPaper, userProfileId, startSession, examMode]);
 
   const accumulateCurrentQTime = useCallback(() => {

@@ -10,7 +10,7 @@ interface ProctorContextValue extends ProctorState {
   session: Session | null;
   authLoading: boolean;
   signOut: () => Promise<void>;
-  startSession: (examId: string, userId: string) => void;
+  startSession: (examId: string, userId: string, origin?: string, classId?: string) => void;
   endSession: () => void;
   resetSession: () => void;
   reportViolation: (type: ViolationType, detail?: string) => void;
@@ -92,7 +92,7 @@ export function ProctorProvider({ children }: { children: ReactNode }) {
   }, [state.status, flushViolations]);
 
   // Start session: immediately set active, Supabase is best-effort
-  const startSession = useCallback((examId: string, userId: string) => {
+  const startSession = useCallback((examId: string, userId: string, origin?: string, classId?: string) => {
     const localId = genId();
     currentSessionId.current = localId;
 
@@ -104,9 +104,12 @@ export function ProctorProvider({ children }: { children: ReactNode }) {
     }));
 
     // Async: try to persist to Supabase
+    const row: Record<string, any> = { id: localId, user_id: userId, paper_id: examId, status: 'active', answers: {} };
+    if (origin) row.origin = origin;
+    if (classId) row.class_id = classId;
     supabase
       .from('exam_sessions')
-      .insert({ id: localId, user_id: userId, paper_id: examId, status: 'active', answers: {} })
+      .insert(row)
       .select('id')
       .single()
       .then(({ data, error }) => {

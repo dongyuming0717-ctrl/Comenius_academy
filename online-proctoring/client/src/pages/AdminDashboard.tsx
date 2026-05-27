@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TopNav } from '../components/TopNav';
+import { useProctor } from '../sdk/useProctor';
 import { supabase } from '../supabase';
 import type { Paper, Question } from '../sdk/types';
 import { useLocale } from '../i18n/LocaleContext';
@@ -38,6 +39,7 @@ interface QuestionStat {
 
 export function AdminDashboard() {
   const { t } = useLocale();
+  const { user } = useProctor();
   const navigate = useNavigate();
   const [sessions, setSessions] = useState<SessionRow[]>([]);
   const [papers, setPapers] = useState<Paper[]>([]);
@@ -63,11 +65,38 @@ export function AdminDashboard() {
     setLoading(true);
     setError('');
 
-    // Fetch all sessions with user + paper info (include answers, question_times for stats)
-    const { data: sessionData, error: sessionError } = await supabase
+    // Get current teacher's profile ID
+    let profileId: string | null = null;
+    if (user) {
+      const { data: profile } = await supabase
+        .from('users').select('id, role').eq('auth_id', user.id).single();
+      profileId = profile?.id || null;
+    }
+
+    // Get teacher's own classes
+    let classIds: string[] = [];
+    if (profileId) {
+      const { data: classes } = await supabase
+        .from('classes').select('id').eq('teacher_id', profileId);
+      classIds = (classes || []).map(c => c.id);
+    }
+
+    // Fetch only class assignment sessions for teacher's own classes
+    let sessionQuery = supabase
       .from('exam_sessions')
       .select('id, user_id, paper_id, status, score, answers, question_times, started_at, ended_at, users(full_name, email), papers(title, paper_number, questions)')
       .order('started_at', { ascending: false });
+
+    if (classIds.length > 0) {
+      sessionQuery = sessionQuery
+        .eq('origin', 'class_assignment')
+        .in('class_id', classIds);
+    } else {
+      // No classes → return empty (but still need a valid query)
+      sessionQuery = sessionQuery.eq('origin', '__none__');
+    }
+
+    const { data: sessionData, error: sessionError } = await sessionQuery;
 
     if (sessionError) {
       setError(sessionError.message);
@@ -78,20 +107,7 @@ export function AdminDashboard() {
     // Fetch papers to get question counts
     const { data: paperData } = await supabase.from('papers').select('*');
 
-    // Fetch violation counts for all sessions
-    const { data: logCounts } = await supabase
-      .from('exam_logs')
-      .select('session_id');
-
-    // Count violations per session
-    const violationMap: Record<string, number> = {};
-    if (logCounts) {
-      for (const log of logCounts) {
-        violationMap[log.session_id] = (violationMap[log.session_id] || 0) + 1;
-      }
-    }
-
-    // Attach violation counts + question counts
+    // Attach question counts
     const papersMap = new Map<string, Paper>();
     if (paperData) {
       for (const p of paperData) {
@@ -107,7 +123,7 @@ export function AdminDashboard() {
         ...s,
         users: s.users as { full_name: string; email: string },
         papers: s.papers as { title: string; paper_number: number; questions: Question[] },
-        violation_count: violationMap[s.id] || 0,
+        violation_count: 0,
         total_questions: paper ? (paper.questions as Question[]).length : 0,
         answered_count: s.answers ? Object.keys(s.answers).length : 0,
       };
@@ -115,7 +131,7 @@ export function AdminDashboard() {
 
     setSessions(enriched);
     setLoading(false);
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     fetchData();
@@ -466,8 +482,6 @@ export function AdminDashboard() {
                   <th style={{ padding: '10px 12px', color: '#6b7280', fontWeight: 600 }}>{t('admin.tableHeaderStatus')}</th>
                   <th style={{ padding: '10px 12px', color: '#6b7280', fontWeight: 600 }}>{t('admin.tableHeaderProgress')}</th>
                   <th style={{ padding: '10px 12px', color: '#6b7280', fontWeight: 600 }}>{t('admin.tableHeaderScore')}</th>
-                  <th style={{ padding: '10px 12px', color: '#6b7280', fontWeight: 600 }}>{t('admin.tableHeaderViolations')}</th>
-                  <th style={{ padding: '10px 12px', color: '#6b7280', fontWeight: 600 }}>{t('admin.tableHeaderStarted')}</th>
                   <th style={{ padding: '10px 12px', color: '#6b7280', fontWeight: 600 }}>{t('admin.tableHeaderAction')}</th>
                 </tr>
               </thead>
@@ -517,17 +531,6 @@ export function AdminDashboard() {
                       ) : (
                         <span style={{ color: '#9ca3af' }}>—</span>
                       )}
-                    </td>
-                    <td style={{ padding: '10px 12px' }}>
-                      <span style={{
-                        color: s.violation_count > 5 ? '#ef4444' : s.violation_count > 0 ? '#f59e0b' : '#9ca3af',
-                        fontWeight: s.violation_count > 0 ? 600 : 400,
-                      }}>
-                        {s.violation_count}
-                      </span>
-                    </td>
-                    <td style={{ padding: '10px 12px', color: '#6b7280', fontSize: 12 }}>
-                      {new Date(s.started_at).toLocaleString()}
                     </td>
                     <td style={{ padding: '10px 12px', whiteSpace: 'nowrap' }}>
                       <button

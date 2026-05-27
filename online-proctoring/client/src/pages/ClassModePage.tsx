@@ -238,7 +238,7 @@ export function ClassModePage() {
                                 </div>
                               </div>
                               <button
-                                onClick={() => navigate('/exam', { state: { paperId: p.id } })}
+                                onClick={() => navigate('/exam', { state: { paperId: p.id, origin: 'class_assignment', classId: c.id } })}
                                 style={{
                                   padding: '6px 16px', fontSize: 12, fontWeight: 500,
                                   color: '#fff', background: '#1e40af',
