@@ -25,6 +25,8 @@ import { PrivacyPage } from './pages/PrivacyPage';
 import { PastPaperLibraryPage } from './pages/PastPaperLibraryPage';
 import { HomePage } from './pages/HomePage';
 import { AdmissionTestsPage } from './pages/AdmissionTestsPage';
+import { AdminUsersPage } from './pages/AdminUsersPage';
+
 
 export default function App() {
   return (
@@ -34,17 +36,17 @@ export default function App() {
         <Routes>
           {/* Landing page — public */}
           <Route path="/" element={<HomePage />} />
-          {/* Student-only routes */}
-          <Route path="/exam" element={<ProtectedRoute allowedRoles={['student', 'teacher']}><ExamPage /></ProtectedRoute>} />
-          <Route path="/topics" element={<ProtectedRoute allowedRoles={['student', 'teacher']}><TopicsPage /></ProtectedRoute>} />
-          <Route path="/random" element={<ProtectedRoute allowedRoles={['student', 'teacher']}><RandomPage /></ProtectedRoute>} />
-          <Route path="/class-mode" element={<ProtectedRoute allowedRoles={['student', 'teacher']}><ClassModePage /></ProtectedRoute>} />
+          {/* Student / Admin routes */}
+          <Route path="/exam" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}><ExamPage /></ProtectedRoute>} />
+          <Route path="/topics" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}><TopicsPage /></ProtectedRoute>} />
+          <Route path="/random" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}><RandomPage /></ProtectedRoute>} />
+          <Route path="/class-mode" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}><ClassModePage /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
           {/* Past Paper Library — accessible to all */}
           <Route path="/past-papers" element={<ProtectedRoute><PastPaperLibraryPage /></ProtectedRoute>} />
           <Route path="/admission-tests" element={<ProtectedRoute><AdmissionTestsPage /></ProtectedRoute>} />
           <Route path="/admission-tests/:testId" element={<ProtectedRoute><AdmissionTestsPage /></ProtectedRoute>} />
-          <Route path="/analytics" element={<ProtectedRoute allowedRoles={['student']}><StudentAnalyticsPage /></ProtectedRoute>} />
+          <Route path="/analytics" element={<ProtectedRoute allowedRoles={['student', 'admin']}><StudentAnalyticsPage /></ProtectedRoute>} />
           {/* Role selection — any authenticated user */}
           <Route path="/select-role" element={<ProtectedRoute><RoleSelectionPage /></ProtectedRoute>} />
           {/* Teacher/admin-only routes */}
@@ -56,6 +58,9 @@ export default function App() {
           <Route path="/teacher/papers/:paperId/edit" element={<ProtectedRoute allowedRoles={['teacher', 'admin']}><TeacherPaperEdit /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute allowedRoles={['teacher', 'admin']}><AdminDashboard /></ProtectedRoute>} />
           <Route path="/admin/student/:sessionId" element={<ProtectedRoute allowedRoles={['teacher', 'admin']}><StudentDetail /></ProtectedRoute>} />
+          <Route path="/admin/users" element={<ProtectedRoute allowedRoles={['teacher', 'admin']}><AdminUsersPage /></ProtectedRoute>} />
+          <Route path="/my-session/:sessionId" element={<ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}><StudentDetail /></ProtectedRoute>} />
+
           {/* Public routes */}
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />

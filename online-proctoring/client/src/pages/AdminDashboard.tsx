@@ -1,10 +1,11 @@
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TopNav } from '../components/TopNav';
 import { useProctor } from '../sdk/useProctor';
 import { supabase } from '../supabase';
 import type { Paper, Question } from '../sdk/types';
 import { useLocale } from '../i18n/LocaleContext';
+import { playNotificationSound } from '../utils/playNotification';
 
 interface SessionRow {
   id: string;
@@ -49,6 +50,10 @@ export function AdminDashboard() {
   const [filterPaper, setFilterPaper] = useState<string>('all');
   const [showStats, setShowStats] = useState(false);
   const [terminating, setTerminating] = useState<string | null>(null);
+  const [expandedMonths, setExpandedMonths] = useState<Set<string>>(new Set());
+  const [selectMode, setSelectMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const prevStatusRef = useRef<Record<string, string>>({});
 
   const handleTerminate = async (sessionId: string) => {
     if (!window.confirm(t('admin.terminateConfirm'))) return;
@@ -65,34 +70,39 @@ export function AdminDashboard() {
     setLoading(true);
     setError('');
 
-    // Get current teacher's profile ID
+    // Get current user's profile
     let profileId: string | null = null;
+    let role: string | null = null;
     if (user) {
       const { data: profile } = await supabase
         .from('users').select('id, role').eq('auth_id', user.id).single();
       profileId = profile?.id || null;
+      role = profile?.role || null;
     }
 
-    // Get teacher's own classes
-    let classIds: string[] = [];
-    if (profileId) {
-      const { data: classes } = await supabase
-        .from('classes').select('id').eq('teacher_id', profileId);
-      classIds = (classes || []).map(c => c.id);
-    }
-
-    // Fetch only class assignment sessions for teacher's own classes
+    // Fetch sessions: admin sees all, teacher sees only own class assignments
     let sessionQuery = supabase
       .from('exam_sessions')
       .select('id, user_id, paper_id, status, score, answers, question_times, started_at, ended_at, users(full_name, email), papers(title, paper_number, questions)')
       .order('started_at', { ascending: false });
 
-    if (classIds.length > 0) {
-      sessionQuery = sessionQuery
-        .eq('origin', 'class_assignment')
-        .in('class_id', classIds);
+    if (role === 'admin') {
+      // Admin: no filtering — see all sessions
+    } else if (profileId) {
+      // Teacher: only see class_assignment sessions for own classes
+      const { data: classes } = await supabase
+        .from('classes').select('id').eq('teacher_id', profileId);
+      const classIds = (classes || []).map(c => c.id);
+
+      if (classIds.length > 0) {
+        sessionQuery = sessionQuery
+          .eq('origin', 'class_assignment')
+          .in('class_id', classIds);
+      } else {
+        sessionQuery = sessionQuery.eq('origin', '__none__');
+      }
     } else {
-      // No classes → return empty (but still need a valid query)
+      // No profile → return empty
       sessionQuery = sessionQuery.eq('origin', '__none__');
     }
 
@@ -130,6 +140,21 @@ export function AdminDashboard() {
     });
 
     setSessions(enriched);
+
+    // Detect newly completed sessions and play notification
+    const prev = prevStatusRef.current;
+    for (const s of enriched) {
+      const prevStatus = prev[s.id];
+      if (s.status === 'completed' && prevStatus && prevStatus !== 'completed') {
+        playNotificationSound();
+      }
+    }
+    // Update ref with current statuses
+    prevStatusRef.current = {};
+    for (const s of enriched) {
+      prevStatusRef.current[s.id] = s.status;
+    }
+
     setLoading(false);
   }, [user]);
 
@@ -148,6 +173,54 @@ export function AdminDashboard() {
     if (filterPaper !== 'all' && s.paper_id !== filterPaper) return false;
     return true;
   });
+
+  const groupedByMonth = useMemo(() => {
+    const groups: Record<string, { label: string; sessions: SessionRow[] }> = {};
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    for (const s of filtered) {
+      const d = new Date(s.started_at);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      if (!groups[key]) {
+        groups[key] = { label: `${months[d.getMonth()]} ${d.getFullYear()}`, sessions: [] };
+      }
+      groups[key].sessions.push(s);
+    }
+    return Object.entries(groups).sort((a, b) => b[0].localeCompare(a[0]));
+  }, [filtered]);
+
+  const handleDeleteSelected = async () => {
+    if (selectedIds.size === 0) return;
+    if (!window.confirm(`Delete ${selectedIds.size} selected record(s)? This cannot be undone.`)) return;
+    const ids = Array.from(selectedIds);
+    // Delete exam_logs first (foreign key constraint)
+    await supabase.from('exam_logs').delete().in('session_id', ids);
+    const { error } = await supabase.from('exam_sessions').delete().in('id', ids);
+    if (error) {
+      alert(`Delete failed: ${error.message}`);
+      return;
+    }
+    setSelectMode(false);
+    setSelectedIds(new Set());
+    fetchData();
+  };
+
+  const toggleMonth = (monthKey: string) => {
+    setExpandedMonths((prev) => {
+      const next = new Set(prev);
+      if (next.has(monthKey)) next.delete(monthKey);
+      else next.add(monthKey);
+      return next;
+    });
+  };
+
+  const toggleSelectId = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -250,6 +323,44 @@ export function AdminDashboard() {
           >
             {t('admin.refresh')}
           </button>
+          {!selectMode ? (
+            <button
+              onClick={() => { setSelectMode(true); setSelectedIds(new Set()); }}
+              style={{
+                padding: '6px 14px', border: '1px solid #fecaca', borderRadius: 4,
+                background: '#fff', cursor: 'pointer', fontSize: 12, color: '#dc2626',
+                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+              }}
+            >
+              Delete
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={() => { setSelectMode(false); setSelectedIds(new Set()); }}
+                style={{
+                  padding: '6px 14px', border: '1px solid #d1d5db', borderRadius: 4,
+                  background: '#fff', cursor: 'pointer', fontSize: 12, color: '#374151',
+                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteSelected}
+                disabled={selectedIds.size === 0}
+                style={{
+                  padding: '6px 14px', border: 'none', borderRadius: 4,
+                  background: selectedIds.size > 0 ? '#dc2626' : '#fecaca',
+                  cursor: selectedIds.size > 0 ? 'pointer' : 'default',
+                  fontSize: 12, color: selectedIds.size > 0 ? '#fff' : '#f87171',
+                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                }}
+              >
+                Delete Selected ({selectedIds.size})
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -473,96 +584,153 @@ export function AdminDashboard() {
         ) : filtered.length === 0 ? (
           <p style={{ textAlign: 'center', color: '#9ca3af', padding: 40 }}>{t('admin.noSessionsFound')}</p>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-              <thead>
-                <tr style={{ borderBottom: '2px solid #e5e7eb', textAlign: 'left' }}>
-                  <th style={{ padding: '10px 12px', color: '#6b7280', fontWeight: 600 }}>{t('admin.tableHeaderStudent')}</th>
-                  <th style={{ padding: '10px 12px', color: '#6b7280', fontWeight: 600 }}>{t('admin.tableHeaderPaper')}</th>
-                  <th style={{ padding: '10px 12px', color: '#6b7280', fontWeight: 600 }}>{t('admin.tableHeaderStatus')}</th>
-                  <th style={{ padding: '10px 12px', color: '#6b7280', fontWeight: 600 }}>{t('admin.tableHeaderProgress')}</th>
-                  <th style={{ padding: '10px 12px', color: '#6b7280', fontWeight: 600 }}>{t('admin.tableHeaderScore')}</th>
-                  <th style={{ padding: '10px 12px', color: '#6b7280', fontWeight: 600 }}>{t('admin.tableHeaderAction')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((s) => (
-                  <tr
-                    key={s.id}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {groupedByMonth.map(([monthKey, group]) => {
+              const isExpanded = expandedMonths.has(monthKey);
+              return (
+                <div key={monthKey} style={{
+                  background: '#fff', borderRadius: 8,
+                  border: '1px solid #e5e7eb', overflow: 'hidden',
+                }}>
+                  {/* Month Header */}
+                  <div
+                    onClick={() => toggleMonth(monthKey)}
                     style={{
-                      borderBottom: '1px solid #f3f4f6',
-                      background: s.status === 'active' ? '#fffbeb' : '#fff',
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      padding: '12px 18px', cursor: 'pointer',
+                      background: isExpanded ? '#f8fafc' : '#fff',
+                      borderBottom: isExpanded ? '1px solid #e5e7eb' : 'none',
+                      userSelect: 'none',
                     }}
                   >
-                    <td style={{ padding: '10px 12px' }}>
-                      <div style={{ fontWeight: 600 }}>{s.users?.full_name || t('admin.unknownName')}</div>
-                      <div style={{ fontSize: 11, color: '#9ca3af' }}>{s.users?.email}</div>
-                    </td>
-                    <td style={{ padding: '10px 12px', color: '#4b5563' }}>
-                      {s.papers?.title || t('admin.unknownName')}
-                    </td>
-                    <td style={{ padding: '10px 12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       <span style={{
-                        display: 'inline-block', padding: '2px 10px', borderRadius: 99,
-                        fontSize: 12, fontWeight: 600,
-                        background:
-                          s.status === 'active' ? '#fef3c7' :
-                          s.status === 'completed' ? '#d1fae5' :
-                          s.status === 'terminated' ? '#fee2e2' : '#f3f4f6',
-                        color:
-                          s.status === 'active' ? '#92400e' :
-                          s.status === 'completed' ? '#065f46' :
-                          s.status === 'terminated' ? '#991b1b' : '#6b7280',
+                        fontSize: 12, color: '#9ca3af',
+                        transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+                        transition: 'transform 0.2s',
                       }}>
-                        {s.status}
+                        ▶
                       </span>
-                      {s.status === 'active' && (
-                        <span style={{ marginLeft: 8, fontSize: 11, color: '#f59e0b' }}>{t('admin.liveBadge')}</span>
-                      )}
-                    </td>
-                    <td style={{ padding: '10px 12px', color: '#4b5563' }}>
-                      {s.answered_count ?? 0}/{s.total_questions ?? '?'}
-                    </td>
-                    <td style={{ padding: '10px 12px', fontWeight: 600 }}>
-                      {s.score !== null ? (
-                        <span style={{ color: s.score >= (s.total_questions || 10) * 0.7 ? '#16a34a' : '#ef4444' }}>
-                          {s.score}/{s.total_questions}
-                        </span>
-                      ) : (
-                        <span style={{ color: '#9ca3af' }}>—</span>
-                      )}
-                    </td>
-                    <td style={{ padding: '10px 12px', whiteSpace: 'nowrap' }}>
-                      <button
-                        onClick={() => navigate(`/admin/student/${s.id}`)}
-                        style={{
-                          padding: '4px 12px', background: '#1e40af', color: '#fff',
-                          border: 'none', borderRadius: 5, cursor: 'pointer', fontSize: 12,
-                          fontWeight: 500,
-                          fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
-                        }}
-                      >
-                        {t('admin.view')}
-                      </button>
-                      {s.status === 'active' && (
-                        <button
-                          onClick={() => handleTerminate(s.id)}
-                          disabled={terminating === s.id}
-                          style={{
-                            padding: '4px 12px', background: '#ef4444', color: '#fff',
-                            border: 'none', borderRadius: 5, cursor: 'pointer', fontSize: 12,
-                            fontWeight: 500, marginLeft: 6,
-                            fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
-                          }}
-                        >
-                          {terminating === s.id ? '...' : t('admin.terminate')}
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      <span style={{ fontSize: 14, fontWeight: 600, color: '#1f2937' }}>
+                        {group.label}
+                      </span>
+                      <span style={{
+                        fontSize: 12, color: '#6b7280',
+                        background: '#f3f4f6', padding: '1px 8px', borderRadius: 99,
+                      }}>
+                        {group.sessions.length}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Sessions Table */}
+                  {isExpanded && (
+                    <div style={{ overflowX: 'auto' }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                        <thead>
+                          <tr style={{ borderBottom: '2px solid #e5e7eb', textAlign: 'left' }}>
+                            {selectMode && <th style={{ padding: '10px 12px', width: 40 }} />}
+                            <th style={{ padding: '10px 12px', color: '#6b7280', fontWeight: 600 }}>{t('admin.tableHeaderStudent')}</th>
+                            <th style={{ padding: '10px 12px', color: '#6b7280', fontWeight: 600 }}>{t('admin.tableHeaderPaper')}</th>
+                            <th style={{ padding: '10px 12px', color: '#6b7280', fontWeight: 600 }}>{t('admin.tableHeaderStatus')}</th>
+                            <th style={{ padding: '10px 12px', color: '#6b7280', fontWeight: 600 }}>{t('admin.tableHeaderProgress')}</th>
+                            <th style={{ padding: '10px 12px', color: '#6b7280', fontWeight: 600 }}>{t('admin.tableHeaderScore')}</th>
+                            <th style={{ padding: '10px 12px', color: '#6b7280', fontWeight: 600 }}>{t('admin.tableHeaderAction')}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {group.sessions.map((s) => (
+                            <tr
+                              key={s.id}
+                              style={{
+                                borderBottom: '1px solid #f3f4f6',
+                                background: s.status === 'active' ? '#fffbeb' : '#fff',
+                              }}
+                            >
+                              {selectMode && (
+                                <td style={{ padding: '10px 12px', textAlign: 'center' }}>
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedIds.has(s.id)}
+                                    onChange={() => toggleSelectId(s.id)}
+                                    style={{ width: 16, height: 16, cursor: 'pointer' }}
+                                  />
+                                </td>
+                              )}
+                              <td style={{ padding: '10px 12px' }}>
+                                <div style={{ fontWeight: 600 }}>{s.users?.full_name || t('admin.unknownName')}</div>
+                                <div style={{ fontSize: 11, color: '#9ca3af' }}>{s.users?.email}</div>
+                              </td>
+                              <td style={{ padding: '10px 12px', color: '#4b5563' }}>
+                                {s.papers?.title || t('admin.unknownName')}
+                              </td>
+                              <td style={{ padding: '10px 12px' }}>
+                                <span style={{
+                                  display: 'inline-block', padding: '2px 10px', borderRadius: 99,
+                                  fontSize: 12, fontWeight: 600,
+                                  background:
+                                    s.status === 'active' ? '#fef3c7' :
+                                    s.status === 'completed' ? '#d1fae5' :
+                                    s.status === 'terminated' ? '#fee2e2' : '#f3f4f6',
+                                  color:
+                                    s.status === 'active' ? '#92400e' :
+                                    s.status === 'completed' ? '#065f46' :
+                                    s.status === 'terminated' ? '#991b1b' : '#6b7280',
+                                }}>
+                                  {s.status}
+                                </span>
+                                {s.status === 'active' && (
+                                  <span style={{ marginLeft: 8, fontSize: 11, color: '#f59e0b' }}>{t('admin.liveBadge')}</span>
+                                )}
+                              </td>
+                              <td style={{ padding: '10px 12px', color: '#4b5563' }}>
+                                {s.answered_count ?? 0}/{s.total_questions ?? '?'}
+                              </td>
+                              <td style={{ padding: '10px 12px', fontWeight: 600 }}>
+                                {s.score !== null ? (
+                                  <span style={{ color: s.score >= (s.total_questions || 10) * 0.7 ? '#16a34a' : '#ef4444' }}>
+                                    {s.score}/{s.total_questions}
+                                  </span>
+                                ) : (
+                                  <span style={{ color: '#9ca3af' }}>—</span>
+                                )}
+                              </td>
+                              <td style={{ padding: '10px 12px', whiteSpace: 'nowrap' }}>
+                                <button
+                                  onClick={() => navigate(`/admin/student/${s.id}`)}
+                                  style={{
+                                    padding: '4px 12px', background: '#1e40af', color: '#fff',
+                                    border: 'none', borderRadius: 5, cursor: 'pointer', fontSize: 12,
+                                    fontWeight: 500,
+                                    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                                  }}
+                                >
+                                  {t('admin.view')}
+                                </button>
+                                {s.status === 'active' && (
+                                  <button
+                                    onClick={() => handleTerminate(s.id)}
+                                    disabled={terminating === s.id}
+                                    style={{
+                                      padding: '4px 12px', background: '#ef4444', color: '#fff',
+                                      border: 'none', borderRadius: 5, cursor: 'pointer', fontSize: 12,
+                                      fontWeight: 500, marginLeft: 6,
+                                      fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                                    }}
+                                  >
+                                    {terminating === s.id ? '...' : t('admin.terminate')}
+                                  </button>
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

@@ -3,9 +3,10 @@ import { Link } from 'react-router-dom';
 import { useProctor } from '../sdk/useProctor';
 import { useLocale } from '../i18n/LocaleContext';
 import { supabase } from '../supabase';
+import { StreakFlame } from './StreakFlame';
 import { colors, typography, radii, nav as navTokens } from '../theme/tokens';
 
-type PageKey = 'home' | 'topics' | 'random' | 'class-mode' | 'teacher' | 'profile' | 'analytics' | 'papers' | 'past-papers' | 'admission-tests' | 'exam';
+type PageKey = 'home' | 'topics' | 'random' | 'class-mode' | 'teacher' | 'profile' | 'analytics' | 'papers' | 'past-papers' | 'admission-tests' | 'exam' | 'checkin' | 'leaderboard' | 'users';
 
 interface Props {
   currentPage?: PageKey;
@@ -117,6 +118,12 @@ const AnalyticsIcon = () => (
   </svg>
 );
 
+const UsersIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+  </svg>
+);
+
 const HamburgerIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/>
@@ -144,9 +151,32 @@ export function TopNav({ currentPage, minimal = false, scrolled = false }: Props
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [isDark, setIsDark] = useState(() => localStorage.getItem('theme') === 'dark');
+  const [streakCount, setStreakCount] = useState(0);
 
   const isTeacher = role === 'teacher' || role === 'admin';
+  const isStudent = role === 'student' || (!role && !isTeacher);
   const userInitial = user?.email?.charAt(0).toUpperCase() || '?';
+
+  // Fetch streak for students
+  useEffect(() => {
+    if (!user || isTeacher) return;
+    supabase
+      .from('users')
+      .select('id')
+      .eq('auth_id', user.id)
+      .single()
+      .then(({ data: profile }) => {
+        if (!profile) return;
+        supabase
+          .from('streaks')
+          .select('current_streak')
+          .eq('user_id', profile.id)
+          .maybeSingle()
+          .then(({ data: streakData }) => {
+            if (streakData) setStreakCount(streakData.current_streak ?? 0);
+          });
+      });
+  }, [user, isTeacher]);
 
   useEffect(() => {
     if (!user) return;
@@ -313,15 +343,25 @@ export function TopNav({ currentPage, minimal = false, scrolled = false }: Props
                   <ClassIcon />Class Mode
                 </Link>
               )}
-              {!isTeacher && (
-                <Link to="/analytics" style={link(currentPage === 'analytics')}>
-                  <AnalyticsIcon />Analytics
-                </Link>
+              {(!isTeacher || role === 'admin') && (
+                <>
+                  <Link to="/analytics" style={link(currentPage === 'analytics')}>
+                    <AnalyticsIcon />Student Dashboard
+                  </Link>
+                  <Link to="/profile" style={link(currentPage === 'profile')}>
+                    <span style={{ fontSize: 14 }}>🔥</span> My Progress
+                  </Link>
+                </>
               )}
               {isTeacher && (
-                <Link to="/teacher" style={link(currentPage === 'teacher')}>
-                  <DashboardIcon />Dashboard
-                </Link>
+                <>
+                  <Link to="/teacher" style={link(currentPage === 'teacher')}>
+                    <DashboardIcon />Teacher Dashboard
+                  </Link>
+                  <Link to="/admin/users" style={link(currentPage === 'users')}>
+                    <UsersIcon /> Users
+                  </Link>
+                </>
               )}
             </div>
           )}
@@ -329,6 +369,29 @@ export function TopNav({ currentPage, minimal = false, scrolled = false }: Props
 
         {/* Right side */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {/* Streak indicator */}
+          {user && !isTeacher && streakCount > 0 && (
+            <Link
+              to="/profile"
+              style={{
+                display: 'flex', alignItems: 'center', gap: 4,
+                padding: '2px 8px', borderRadius: 16,
+                background: streakCount >= 7 ? '#fff7ed' : '#f8fafc',
+                border: streakCount >= 7 ? '1px solid #fed7aa' : '1px solid #e2e8f0',
+                textDecoration: 'none',
+                transition: 'all 0.2s',
+              }}
+            >
+              <StreakFlame streak={streakCount} size="sm" />
+              <span style={{
+                fontSize: 12, fontWeight: 600,
+                color: streakCount >= 7 ? '#ea580c' : '#64748b',
+              }}>
+                {streakCount}
+              </span>
+            </Link>
+          )}
+
           {/* Theme toggle */}
           <button style={btnGhostStyle} onClick={toggleTheme} aria-label="Toggle theme">
             {isDark ? <SunIcon /> : <MoonIcon />}
@@ -362,10 +425,6 @@ export function TopNav({ currentPage, minimal = false, scrolled = false }: Props
                   <Link to="/profile" style={{ ...dropdownItemStyle, textDecoration: 'none' }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     Profile
-                  </Link>
-                  <Link to="/analytics" style={{ ...dropdownItemStyle, textDecoration: 'none' }}>
-                    <AnalyticsIcon />
-                    Analytics
                   </Link>
                   <div style={{ height: 1, background: colors.border, margin: '4px 0' }} />
                   <button
@@ -409,15 +468,25 @@ export function TopNav({ currentPage, minimal = false, scrolled = false }: Props
               <ClassIcon />Class Mode
             </Link>
           )}
-          {!isTeacher && (
-            <Link to="/analytics" style={link(currentPage === 'analytics')} onClick={() => setMenuOpen(false)}>
-              <AnalyticsIcon />Analytics
-            </Link>
+          {(!isTeacher || role === 'admin') && (
+            <>
+              <Link to="/analytics" style={link(currentPage === 'analytics')} onClick={() => setMenuOpen(false)}>
+                <AnalyticsIcon />Student Dashboard
+              </Link>
+              <Link to="/profile" style={link(currentPage === 'profile')} onClick={() => setMenuOpen(false)}>
+                <span style={{ fontSize: 14 }}>🔥</span> My Progress
+              </Link>
+            </>
           )}
           {isTeacher && (
-            <Link to="/teacher" style={link(currentPage === 'teacher')} onClick={() => setMenuOpen(false)}>
-              <DashboardIcon />Dashboard
-            </Link>
+            <>
+              <Link to="/teacher" style={link(currentPage === 'teacher')} onClick={() => setMenuOpen(false)}>
+                <DashboardIcon />Teacher Dashboard
+              </Link>
+              <Link to="/admin/users" style={link(currentPage === 'users')} onClick={() => setMenuOpen(false)}>
+                <UsersIcon /> Users
+              </Link>
+            </>
           )}
         </div>
       )}

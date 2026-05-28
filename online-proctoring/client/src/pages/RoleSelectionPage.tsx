@@ -29,14 +29,20 @@ export function RoleSelectionPage() {
         .select('role')
         .eq('auth_id', user!.id)
         .single();
-      setRole(data?.role || 'student');
+      const r = data?.role || 'student';
+      setRole(r);
       setLoading(false);
+
+      if (localStorage.getItem('comenius_role_selected') === 'true' && data?.role) {
+        navigate(r === 'teacher' || r === 'admin' ? '/teacher' : '/');
+      }
     }
     fetchRole();
   }, [user, navigate]);
 
   const handleTeacherClick = () => {
     if (role === 'teacher' || role === 'admin') {
+      localStorage.setItem('comenius_role_selected', 'true');
       navigate('/teacher');
     } else {
       setShowCodeModal(true);
@@ -62,6 +68,7 @@ export function RoleSelectionPage() {
       return;
     }
     setShowCodeModal(false);
+    localStorage.setItem('comenius_role_selected', 'true');
     navigate('/teacher');
   };
 
@@ -88,7 +95,10 @@ export function RoleSelectionPage() {
       }}>
         {/* Student Card */}
         <div
-          onClick={() => navigate('/')}
+          onClick={() => {
+            localStorage.setItem('comenius_role_selected', 'true');
+            navigate('/');
+          }}
           style={{
             flex: 1, maxWidth: 320, background: '#fff', borderRadius: 12,
             border: '2px solid #e5e7eb', padding: '40px 28px',

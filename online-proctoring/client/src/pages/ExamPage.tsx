@@ -7,8 +7,10 @@ import { ViolationLog } from './ViolationLog';
 import { PreExamCheck } from './PreExamCheck';
 import { MathText } from '../components/MathText';
 import { TopNav } from '../components/TopNav';
+import { CheckInCelebration } from '../components/CheckInCelebration';
 import { generateExamReport } from '../utils/generateReport';
 import { rawToScale, scaleScoreLabel } from '../data/tmuaConversion';
+import { checkInToday, type CheckInResult } from '../services/gamification';
 import type { Paper, Question } from '../sdk/types';
 
 const PAPERS_CACHE_KEY = 'tmua_papers_cache_v2';
@@ -76,6 +78,8 @@ export function ExamPage() {
   const finishExamRef = useRef<() => void>();
   const [finalQuestionTimes, setFinalQuestionTimes] = useState<Record<string, number>>({});
   const [reviewQuestionIndex, setReviewQuestionIndex] = useState<number | null>(null);
+  const [checkInResult, setCheckInResult] = useState<CheckInResult | null>(null);
+  const [showCheckInCelebration, setShowCheckInCelebration] = useState(false);
   const [showEndTestDialog, setShowEndTestDialog] = useState(false);
   const [flaggedQuestions, setFlaggedQuestions] = useState<Set<string>>(new Set());
   const [showExamConfirm, setShowExamConfirm] = useState(false);
@@ -87,6 +91,8 @@ export function ExamPage() {
   const [showModeDialog, setShowModeDialog] = useState(false);
   const [isOvertime, setIsOvertime] = useState(false);
   const [practiceElapsed, setPracticeElapsed] = useState(0);
+  const [viewingPastRecord, setViewingPastRecord] = useState(false);
+  const [viewLatestError, setViewLatestError] = useState<string | null>(null);
 
   const toggleFlag = useCallback((qId: string) => {
     setFlaggedQuestions(prev => {
@@ -102,19 +108,69 @@ export function ExamPage() {
   const incomingPaperId = (location.state as any)?.paperId as string | undefined;
   const incomingOrigin = (location.state as any)?.origin as string | undefined;
   const incomingClassId = (location.state as any)?.classId as string | undefined;
+  const incomingViewLatestRecord = (location.state as any)?.viewLatestRecord as boolean | undefined;
   const originRef = useRef<string | undefined>(incomingOrigin);
   const classIdRef = useRef<string | undefined>(incomingClassId);
   useEffect(() => {
     if (!incomingPaperId || papers.length === 0) return;
     const paper = papers.find(p => p.id === incomingPaperId);
-    if (paper) {
-      setSelectedPaper(paper);
-      setExamMode('timed');
-      setShowPreCheck(true);
-      // Clear the state so it doesn't re-trigger on re-renders
-      window.history.replaceState({}, '');
+    if (!paper) return;
+
+    // View Latest Record: need userProfileId to fetch session — wait for it
+    if (incomingViewLatestRecord) {
+      if (!userProfileId) return;
+      setViewLatestError(null);
+      (async () => {
+        try {
+          const { data: sessions, error: fetchErr } = await supabase
+            .from('exam_sessions')
+            .select('id, answers, score, question_times')
+            .eq('user_id', userProfileId)
+            .eq('paper_id', incomingPaperId)
+            .eq('status', 'completed')
+            .order('ended_at', { ascending: false })
+            .limit(1);
+
+          if (fetchErr) {
+            setViewLatestError('Failed to load your record. Please try again.');
+            return;
+          }
+
+          if (sessions && sessions.length > 0) {
+            const sess = sessions[0];
+            const qs = (paper.questions as Question[]) || [];
+            const ans = (sess.answers || {}) as Record<string, number>;
+            let score = 0;
+            const details = qs.map((q) => {
+              const isCorrect = ans[q.id] === q.answer;
+              if (isCorrect) score++;
+              return { qid: q.id, text: q.text, topic: (q as any).topic || 'general', correct: q.answer, yours: ans[q.id] ?? null };
+            });
+
+            setSelectedPaper(paper);
+            setAnswers(ans);
+            setFinalScore(score);
+            setFinalTotal(qs.length);
+            setScoreDetails(details);
+            setFinalQuestionTimes((sess.question_times || {}) as Record<string, number>);
+            setResultsView('score');
+            setViewingPastRecord(true);
+            navigate('/exam', { replace: true, state: {} });
+          } else {
+            setViewLatestError('No completed record found for this paper. Take the exam first!');
+          }
+        } catch {
+          setViewLatestError('Something went wrong. Please try again.');
+        }
+      })();
+      return;
     }
-  }, [incomingPaperId, papers]);
+
+    setSelectedPaper(paper);
+    setExamMode('timed');
+    setShowPreCheck(true);
+    window.history.replaceState({}, '');
+  }, [incomingPaperId, incomingViewLatestRecord, papers, userProfileId, supabase]);
 
   // Fetch papers from Supabase (with cache + timeout)
   useEffect(() => {
@@ -185,7 +241,11 @@ export function ExamPage() {
           .upsert({ auth_id: user.id, email: user.email, full_name: user.email || user.email }, { onConflict: 'auth_id', ignoreDuplicates: true })
           .select('id').single();
         if (insertErr) { console.error('Failed to create user profile:', insertErr); }
-        setUserProfileId(created?.id || user.id);
+        if (created?.id) { setUserProfileId(created.id); return; }
+        // Retry query once more before giving up
+        const { data: retried } = await supabase
+          .from('users').select('id').eq('auth_id', user.id).single();
+        setUserProfileId(retried?.id || null);
       });
   }, [user, supabase]);
 
@@ -467,7 +527,19 @@ export function ExamPage() {
     if (document.fullscreenElement) {
       document.exitFullscreen().catch(() => {});
     }
-  }, [selectedPaper, sessionId, answers, supabase, endSession, accumulateCurrentQTime]);
+
+    // Auto check-in on exam completion
+    if (userProfileId) {
+      checkInToday(userProfileId, 'exam_complete', sessionId ?? undefined)
+        .then((result) => {
+          if (!result.alreadyCheckedIn) {
+            setCheckInResult(result);
+            setShowCheckInCelebration(true);
+          }
+        })
+        .catch((err) => console.error('Auto check-in failed:', err));
+    }
+  }, [selectedPaper, sessionId, answers, supabase, endSession, accumulateCurrentQTime, userProfileId]);
   finishExamRef.current = finishExam;
 
   // ---- Auth Gate: require login before anything ----
@@ -617,6 +689,46 @@ export function ExamPage() {
             </button>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  // ---- Loading View Latest Record ----
+  if (incomingViewLatestRecord && !viewingPastRecord) {
+    const hasError = !!viewLatestError;
+    return (
+      <div style={{ minHeight: '100vh', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
+        <TopNav currentPage="home" />
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
+          <div style={{ textAlign: 'center' }}>
+            {hasError ? (
+              <>
+                <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#fef2f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                  </svg>
+                </div>
+                <div style={{ fontSize: 14, color: '#dc2626', fontWeight: 500, marginBottom: 4 }}>{viewLatestError}</div>
+                <button
+                  onClick={() => { setViewLatestError(null); navigate('/exam', { replace: true, state: {} }); }}
+                  style={{
+                    marginTop: 16, padding: '8px 20px', background: '#1e40af', color: '#fff',
+                    border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 13, fontWeight: 500,
+                    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  }}
+                >
+                  Back to Papers
+                </button>
+              </>
+            ) : (
+              <>
+                <div style={{ width: 36, height: 36, borderRadius: '50%', border: '3px solid #e5e7eb', borderTopColor: '#1e40af', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
+                <div style={{ fontSize: 14, color: '#9ca3af' }}>Loading your record...</div>
+              </>
+            )}
+          </div>
+        </div>
+        {!hasError && <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>}
       </div>
     );
   }
@@ -912,7 +1024,7 @@ export function ExamPage() {
                             Start Mock Exam
                           </button>
                           <button
-                            onClick={() => { if (hasRecord) navigate('/topics', { state: { paperId: paper.id } }); }}
+                            onClick={() => { if (hasRecord) navigate('/exam', { state: { paperId: paper.id, viewLatestRecord: true } }); }}
                             disabled={!hasRecord}
                             style={{
                               flex: 1, padding: '10px 16px', fontSize: 13, fontWeight: 500,
@@ -939,7 +1051,7 @@ export function ExamPage() {
   }
 
   // ---- Exam Ended Screen ----
-  if (status === 'ended') {
+  if (status === 'ended' || viewingPastRecord) {
     // Review mode: show a specific question read-only
     if (reviewQuestionIndex !== null && selectedPaper) {
       const qs = selectedPaper.questions as Question[];
@@ -1303,7 +1415,7 @@ export function ExamPage() {
 
           <div style={{
             flex: 1, overflowY: 'auto', display: 'flex',
-            justifyContent: 'flex-start',
+            justifyContent: 'center',
             padding: '32px 20px 40px 20px', background: '#f5f5f5',
           }}>
             <div style={{ width: '100%', maxWidth: 800 }}>
@@ -1462,7 +1574,7 @@ export function ExamPage() {
                     Back to Results
                   </button>
                   <button
-                    onClick={() => { setExamStarted(false); resetSession(); setSelectedPaper(null); setReviewQuestionIndex(null); setResultsView('table'); }}
+                    onClick={() => { setExamStarted(false); resetSession(); setSelectedPaper(null); setReviewQuestionIndex(null); setResultsView('table'); setViewingPastRecord(false); navigate('/exam', { replace: true, state: {} }); }}
                     style={{
                       flex: 1, padding: '12px',
                       background: '#fff', color: '#333',
@@ -2114,6 +2226,16 @@ export function ExamPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Check-in celebration overlay */}
+      {showCheckInCelebration && checkInResult && (
+        <CheckInCelebration
+          streak={checkInResult.streak}
+          xpEarned={checkInResult.xpEarned}
+          newAchievements={checkInResult.newAchievements}
+          onDismiss={() => setShowCheckInCelebration(false)}
+        />
       )}
     </div>
   );

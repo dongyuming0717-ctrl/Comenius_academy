@@ -1,7 +1,8 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { TopNav } from '../components/TopNav';
 import { useProctor } from '../sdk/useProctor';
+import { supabase } from '../supabase';
+import { TopNav } from '../components/TopNav';
 import { useInView } from '../hooks/useInView';
 import { colors, typography, radii, spacing } from '../theme/tokens';
 
@@ -432,6 +433,8 @@ function AnimatedSection({ children, style, className }: { children: React.React
 }
 
 export function HomePage() {
+  const [liveStreak, setLiveStreak] = useState(0);
+  const [liveXP, setLiveXP] = useState(0);
   const { user } = useProctor();
   const [heroVisible, setHeroVisible] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -455,6 +458,24 @@ export function HomePage() {
     const t1 = setTimeout(() => setHeroVisible(true), 200);
     return () => { clearTimeout(t1); };
   }, []);
+
+  // Fetch gamification data for logged-in users
+  useEffect(() => {
+    if (!user) return;
+    supabase.from('users').select('id').eq('auth_id', user.id).single().then(({ data: profile }) => {
+      if (!profile) return;
+      Promise.all([
+        supabase.from('streaks').select('current_streak').eq('user_id', profile.id).maybeSingle(),
+        supabase.from('xp_transactions').select('amount').eq('user_id', profile.id),
+      ]).then(([streakRes, xpRes]) => {
+        if (streakRes.data) setLiveStreak(streakRes.data.current_streak ?? 0);
+        if (xpRes.data) {
+          const total = xpRes.data.reduce((s: number, r: { amount: number }) => s + r.amount, 0);
+          setLiveXP(total);
+        }
+      });
+    });
+  }, [user]);
 
   useEffect(() => {
     const onScroll = () => {
@@ -627,9 +648,9 @@ export function HomePage() {
                 <div style={grid4}>
                   {[
                     { label: 'Overall Accuracy', value: '87%' },
-                    { label: 'Study Streak', value: '23 days' },
+                    { label: 'Study Streak', value: user ? `${liveStreak} day${liveStreak !== 1 ? 's' : ''}` : '23 days' },
                     { label: 'Questions', value: '2,847' },
-                    { label: 'This Week', value: '31.8h' },
+                    { label: 'XP Earned', value: user ? liveXP.toLocaleString() : '31.8h' },
                   ].map((stat) => (
                     <div key={stat.label} style={{ ...cardStyle, background: 'rgba(255,255,255,0.8)', border: `1px solid ${colors.borderAlpha}` }}>
                       <div style={{ padding: '16px 16px 8px' }}>
@@ -641,6 +662,16 @@ export function HomePage() {
                 </div>
               </div>
               <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {user && (
+                  <Link to="/checkin" style={{
+                    display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px',
+                    borderRadius: 8, background: '#eff6ff', textDecoration: 'none',
+                    fontSize: 13, fontWeight: 500, color: '#1e40af',
+                    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  }}>
+                    🔥 View Your Study Streak & Earn XP →
+                  </Link>
+                )}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 12, borderRadius: 8, background: 'rgba(248,250,252,0.5)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     <div style={{ width: 40, height: 40, borderRadius: radii.lg, background: 'rgba(30,64,175,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
