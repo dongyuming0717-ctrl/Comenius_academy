@@ -13,6 +13,9 @@ DANGEROUS_PATTERNS=(
   "git restore \."
   "push --force"
   "reset --hard"
+  "sed.*-i.*src/"
+  "sed.*-i.*'[a-z]"
+  "rm -rf.*src/"
 )
 
 for pattern in "${DANGEROUS_PATTERNS[@]}"; do
