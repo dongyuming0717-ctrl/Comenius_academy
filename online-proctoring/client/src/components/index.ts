@@ -9,4 +9,3 @@ export { AchievementToast } from './AchievementToast';
 export { CheckInCelebration } from './CheckInCelebration';
 export { LeaderboardCard } from './LeaderboardCard';
 export { FloatingAstronaut } from './FloatingAstronaut';
-export { MascotLynx } from './MascotLynx';
