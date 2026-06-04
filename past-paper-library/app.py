@@ -12,8 +12,6 @@ from flask import Flask, Response, jsonify, request, send_file, send_from_direct
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
-from agent.agent import execute_task
-
 app = Flask(__name__, static_folder="static", static_url_path="")
 
 # ── Conversation memory ────────────────────────────────────────────
@@ -181,6 +179,7 @@ def api_chat():
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
+            from agent.agent import execute_task
             agen = execute_task(q, history=history, image_b64=image_b64)
             while True:
                 try:
