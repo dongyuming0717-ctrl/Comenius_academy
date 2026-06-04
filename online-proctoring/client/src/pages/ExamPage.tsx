@@ -12,6 +12,7 @@ import { generateExamReport } from '../utils/generateReport';
 import { rawToScale, scaleScoreLabel } from '../data/tmuaConversion';
 import { checkInToday, type CheckInResult } from '../services/gamification';
 import type { Paper, Question } from '../sdk/types';
+import { filterTMUA } from '../utils/papers';
 
 const PAPERS_CACHE_KEY = 'tmua_papers_cache_v2';
 const GENERATED_PAPER_KEY = 'tmua_generated_paper';
@@ -176,7 +177,7 @@ export function ExamPage() {
   useEffect(() => {
     const cached = loadCachedPapers();
     if (cached) {
-      setPapers(mergeGeneratedPaper(cached));
+      setPapers(mergeGeneratedPaper(filterTMUA(cached)));
       setFetchState('done');
     }
 
@@ -193,9 +194,10 @@ export function ExamPage() {
           .abortSignal(ctrl.signal);
 
         if (!error && data) {
-          const merged = mergeGeneratedPaper(data as Paper[]);
+          const tmuaOnly = filterTMUA(data as Paper[]);
+          const merged = mergeGeneratedPaper(tmuaOnly);
           setPapers(merged);
-          saveCachedPapers(data as Paper[]);
+          saveCachedPapers(tmuaOnly);
           setFetchState('done');
         } else if (!cached) {
           setFetchState('error');
@@ -217,8 +219,9 @@ export function ExamPage() {
         .order('year', { ascending: false })
         .order('paper_number');
       if (!error && data) {
-        setPapers(mergeGeneratedPaper(data as Paper[]));
-        saveCachedPapers(data as Paper[]);
+        const tmuaOnly = filterTMUA(data as Paper[]);
+        setPapers(mergeGeneratedPaper(tmuaOnly));
+        saveCachedPapers(tmuaOnly);
         setFetchState('done');
       } else {
         setFetchState('error');
@@ -368,7 +371,7 @@ export function ExamPage() {
 
     setPaperStats(pStats);
     delete (window as any).__rawSessionStats;
-  }, [papers]);
+  }, [papers, userProfileId]);
 
   function answeredCheck(sessions: any[], questions: Question[]): number {
     if (sessions.length === 0) return 0;

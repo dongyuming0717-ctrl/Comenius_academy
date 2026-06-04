@@ -42,6 +42,7 @@
     @media (min-width: 768px) { .hamburger { display: none; } }
     .hover\:border-primary\/50:hover { border-color: rgba(30,64,175,0.5); }
   </style>
+  <link rel="stylesheet" href="past-paper-library/static/chat-widget.css">
 </head>
 <body>
   <nav class="nav">
@@ -200,5 +201,6 @@
     navLinks.querySelectorAll('.nav-link').forEach(l => l.addEventListener('click', () => navLinks.classList.remove('open')));
     document.addEventListener('click', (e) => { if (!navLinks.contains(e.target) && !hamburgerBtn.contains(e.target)) navLinks.classList.remove('open'); });
   </script>
+  <script src="past-paper-library/static/chat-widget.js"></script>
 </body>
 </html>

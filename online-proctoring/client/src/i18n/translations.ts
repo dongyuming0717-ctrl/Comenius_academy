@@ -592,4 +592,26 @@ export const translations: Record<string, { en: string; zh: string }> = {
   'adminUsers.statusCompleted': { en: 'completed', zh: '已完成' },
   'adminUsers.statusActive': { en: 'active', zh: '进行中' },
   'adminUsers.statusTerminated': { en: 'terminated', zh: '已终止' },
+
+  // ============== Shop / Redemption ==============
+  'shop.bb8Title': { en: 'BB-8 Theme Toggle', zh: 'BB-8 主题开关' },
+  'shop.bb8Unlocked': { en: 'Unlocked! Enjoy your droid-powered dark mode.', zh: '已解锁！享受你的机器人主题暗色模式。' },
+  'shop.bb8Locked': { en: 'Unlock a special BB-8 droid theme toggle for 100 XP', zh: '花费 100 经验值解锁特殊 BB-8 机器人主题开关' },
+  'shop.unlocked': { en: 'Unlocked', zh: '已解锁' },
+  'shop.redeemBB8Title': { en: 'BB-8 Droid Theme', zh: 'BB-8 机器人主题' },
+  'shop.redeemBB8Description': { en: 'Replace your standard theme toggle with an animated BB-8 droid on a Tatooine-style landscape. Stars rise when you switch to dark mode!', zh: '将你的标准主题开关替换为塔图因风格景观上的动画 BB-8 机器人。切换到暗色模式时星星会升起！' },
+  'shop.cost': { en: 'Cost', zh: '花费' },
+  'shop.redeem': { en: 'Redeem', zh: '兑换' },
+  'shop.redeeming': { en: 'Redeeming...', zh: '兑换中...' },
+  'shop.cancel': { en: 'Cancel', zh: '取消' },
+  'shop.insufficientXP': { en: 'Not enough XP. You need 100 XP to unlock.', zh: '经验值不足，需要 100 经验值才能解锁。' },
+  'shop.alreadyUnlocked': { en: 'You already unlocked this item.', zh: '你已经解锁了此物品。' },
+  'shop.redeemError': { en: 'Something went wrong. Please try again.', zh: '出了点问题，请重试。' },
+
+  // ============== Shop: Astronaut ==============
+  'shop.astronautTitle': { en: 'Astronaut Homepage Effect', zh: '主页宇航员特效' },
+  'shop.astronautLocked': { en: 'Unlock a floating astronaut animation on the homepage for 50 XP', zh: '花费 50 经验值解锁主页飘浮宇航员动画' },
+  'shop.astronautUnlocked': { en: 'Astronaut is floating on your homepage!', zh: '宇航员正在你的主页飘浮！' },
+  'shop.redeemAstronautTitle': { en: 'Floating Astronaut', zh: '飘浮宇航员' },
+  'shop.redeemAstronautDescription': { en: 'A cute astronaut floats randomly across your homepage hero section with twinkling stars. Pure space vibes!', zh: '一个可爱的宇航员在主页顶部随机飘飞，伴随闪烁的星星，满满的太空感！' },
 };

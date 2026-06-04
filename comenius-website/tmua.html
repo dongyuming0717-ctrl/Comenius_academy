@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TMUA Past Papers - Comenius</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    :root {
+      --background: #ffffff; --foreground: #0f172a; --card: #ffffff; --card-foreground: #0f172a;
+      --primary: #1e40af; --primary-foreground: #ffffff; --secondary: #f1f5f9; --secondary-foreground: #0f172a;
+      --muted: #f8fafc; --muted-foreground: #64748b; --accent: #dbeafe; --accent-foreground: #1e40af;
+      --destructive: #dc2626; --border: #e2e8f0; --ring: #3b82f6; --radius: 0.5rem;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: var(--background); color: var(--foreground); font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+    .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; white-space: nowrap; }
+    .btn-primary { background: var(--primary); color: var(--primary-foreground); }
+    .btn-primary:hover { background: #1e3a8a; }
+    .btn-outline { background: transparent; color: var(--foreground); border: 1px solid var(--border); }
+    .btn-outline:hover { background: var(--secondary); }
+    .btn-sm { padding: 6px 12px; font-size: 13px; height: 32px; }
+    .card { background: var(--card); border: 1px solid rgba(226,232,240,0.5); border-radius: 8px; overflow: hidden; }
+    .card-header { padding: 24px 24px 16px; }
+    .card-content { padding: 0 24px 24px; }
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; border: 1px solid var(--border); }
+    .badge-orange { background: #fff7ed; color: #9a3412; border-color: #fed7aa; }
+    .nav { position: sticky; top: 0; z-index: 50; border-bottom: 1px solid rgba(226,232,240,0.5); background: rgba(255,255,255,0.8); backdrop-filter: blur(12px); }
+    .nav-inner { max-width: 1280px; margin: 0 auto; padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; }
+    .nav-link { display: inline-flex; align-items: center; gap: 8px; padding: 0 12px; height: 32px; border-radius: 6px; font-size: 14px; font-weight: 500; text-decoration: none; color: var(--foreground); transition: all 0.15s; }
+    .nav-link:hover { background: rgba(30,64,175,0.05); }
+    .nav-link.active { background: var(--secondary); }
+    .flex { display: flex; } .flex-col { flex-direction: column; } .items-center { align-items: center; } .items-start { align-items: flex-start; } .justify-center { justify-content: center; } .justify-between { justify-content: space-between; } .flex-1 { flex: 1; } .flex-wrap { flex-wrap: wrap; } .inline-flex { display: inline-flex; } .grid { display: grid; } .text-sm { font-size: 14px; } .text-base { font-size: 16px; } .text-lg { font-size: 18px; } .text-2xl { font-size: 24px; } .text-3xl { font-size: 30px; } .font-semibold { font-weight: 600; } .font-medium { font-weight: 500; } .text-muted { color: var(--muted-foreground); } .gap-1 { gap: 4px; } .gap-2 { gap: 8px; } .gap-3 { gap: 12px; } .gap-4 { gap: 16px; } .gap-6 { gap: 24px; } .mb-1 { margin-bottom: 4px; } .mb-2 { margin-bottom: 8px; } .mb-3 { margin-bottom: 12px; } .mb-4 { margin-bottom: 16px; } .mb-6 { margin-bottom: 24px; } .mb-8 { margin-bottom: 32px; } .mt-6 { margin-top: 24px; } .px-6 { padding-left: 24px; padding-right: 24px; } .py-8 { padding-top: 32px; padding-bottom: 32px; } .w-full { width: 100%; } .space-y-4 > * + * { margin-top: 16px; } .transition-colors { transition: color 0.15s, background-color 0.15s; }
+    select { padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); font-size: 14px; background: var(--background); color: var(--foreground); font-family: inherit; cursor: pointer; width: 100%; }
+    input:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(30,64,175,0.2); }
+    .nav-links { display: none; flex-direction: column; position: absolute; top: 56px; left: 0; right: 0; background: var(--card); border-bottom: 1px solid var(--border); padding: 12px 24px; gap: 4px; z-index: 49; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+    .nav-links.open { display: flex; }
+    @media (min-width: 768px) { .nav-links { display: flex; flex-direction: row; position: static; background: none; border: none; padding: 0; box-shadow: none; z-index: auto; } }
+    .hamburger { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: none; border: none; cursor: pointer; border-radius: 6px; color: var(--foreground); }
+    .hamburger:hover { background: var(--secondary); }
+    @media (min-width: 768px) { .hamburger { display: none; } }
+    .hover\:border-primary\/50:hover { border-color: rgba(30,64,175,0.5); }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="flex items-center gap-8">
+        <a href="homepage.html" class="flex items-center gap-2" style="text-decoration:none;">
+          <div style="width:32px;height:32px;border-radius:8px;background:var(--primary);display:flex;align-items:center;justify-content:center;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          </div>
+          <span style="font-weight:600;font-size:18px;color:var(--foreground);">Comenius</span>
+        </a>
+        <button class="hamburger" id="hamburgerBtn" aria-label="Toggle navigation menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+        </button>
+        <div class="nav-links" id="navLinks">
+          <a href="past-papers.html" class="nav-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>Past Papers
+          </a>
+          <a href="admission-tests.html" class="nav-link active">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.1 2.7 2 6 2s6-.9 6-2v-5"/></svg>Admission Tests
+          </a>
+          <a href="dashboard.html" class="nav-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard
+          </a>
+          <a href="class-mode.html" class="nav-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Class Mode
+          </a>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="homepage.html" class="btn btn-primary btn-sm">Login</a>
+        <a href="homepage.html" class="btn btn-sm" style="background:var(--secondary);color:var(--secondary-foreground);">Sign Up</a>
+      </div>
+    </div>
+  </nav>
+
+  <div style="min-height:100vh;">
+    <div class="container py-8">
+      <div class="mb-6">
+        <div class="flex items-center gap-3 mb-3">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.1 2.7 2 6 2s6-.9 6-2v-5"/></svg>
+          <h1 class="text-3xl font-semibold">TMUA Past Papers</h1>
+          <span class="badge badge-orange">Hard</span>
+        </div>
+        <p class="text-muted text-lg mb-4">Test of Mathematics for University Admission — 42 past papers available</p>
+
+        <!-- Filters -->
+        <div class="card">
+          <div class="card-content" style="padding:16px 24px;">
+            <div class="flex items-center gap-3" style="flex-wrap:wrap;">
+              <div style="min-width:140px;flex:1;">
+                <label class="text-sm mb-1 block">Year</label>
+                <select id="filterYear"><option value="all">All Years</option><option value="2025">2025</option><option value="2024">2024</option><option value="2023">2023</option><option value="2022">2022</option><option value="2021">2021</option><option value="2020">2020</option></select>
+              </div>
+              <div style="min-width:160px;flex:1;">
+                <label class="text-sm mb-1 block">Session</label>
+                <select id="filterSession"><option value="all">All Sessions</option><option value="Summer">Summer</option><option value="Winter">Winter</option><option value="Spring">Spring</option></select>
+              </div>
+              <div style="min-width:160px;flex:1;">
+                <label class="text-sm mb-1 block">Paper</label>
+                <select id="filterPaper"><option value="all">All Papers</option><option value="1">Paper 1</option><option value="2">Paper 2</option></select>
+              </div>
+              <div style="display:flex;align-items:flex-end;">
+                <button class="btn btn-primary" id="searchBtn" style="height:38px;gap:6px;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  Search
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div class="flex items-center justify-between mb-4">
+        <div class="text-sm text-muted" id="resultCount">Showing 10 of 42 past papers</div>
+        <select id="sortOrder" style="width:auto;"><option value="relevance">Most Relevant</option><option value="newest">Newest First</option><option value="oldest">Oldest First</option></select>
+      </div>
+
+      <div class="space-y-4" id="paperList"></div>
+    </div>
+  </div>
+
+  <script>
+    const allPapers = [
+      { id:1, subject:'Mathematics', level:'AS', year:2024, session:'Winter', subjectCode:'TMUA', paperNumber:'1', pages:20 },
+      { id:2, subject:'Mathematics', level:'AS', year:2024, session:'Winter', subjectCode:'TMUA', paperNumber:'2', pages:20 },
+      { id:3, subject:'Mathematics', level:'AS', year:2024, session:'Summer', subjectCode:'TMUA', paperNumber:'1', pages:20 },
+      { id:4, subject:'Mathematics', level:'AS', year:2024, session:'Summer', subjectCode:'TMUA', paperNumber:'2', pages:20 },
+      { id:5, subject:'Mathematics', level:'A2', year:2023, session:'Winter', subjectCode:'TMUA', paperNumber:'1', pages:20 },
+      { id:6, subject:'Mathematics', level:'A2', year:2023, session:'Winter', subjectCode:'TMUA', paperNumber:'2', pages:20 },
+      { id:7, subject:'Mathematics', level:'A2', year:2023, session:'Summer', subjectCode:'TMUA', paperNumber:'1', pages:18 },
+      { id:8, subject:'Mathematics', level:'A2', year:2023, session:'Summer', subjectCode:'TMUA', paperNumber:'2', pages:18 },
+      { id:9, subject:'Mathematics', level:'A2', year:2022, session:'Winter', subjectCode:'TMUA', paperNumber:'1', pages:20 },
+      { id:10, subject:'Mathematics', level:'A2', year:2022, session:'Winter', subjectCode:'TMUA', paperNumber:'2', pages:20 },
+    ];
+
+    function renderPapers(papers) {
+      document.getElementById('resultCount').textContent = `Showing ${papers.length} of ${allPapers.length} past papers`;
+      document.getElementById('paperList').innerHTML = papers.map(p => `
+        <div class="card hover:border-primary/50 transition-colors">
+          <div class="card-content" style="padding:16px 24px;">
+            <div class="flex items-center justify-between gap-4" style="flex-wrap:wrap;">
+              <div class="flex items-center gap-3" style="flex-wrap:wrap;">
+                <span style="font-weight:600;font-size:15px;white-space:nowrap;">${p.subjectCode}/${p.year}/${p.session}/${p.paperNumber}</span>
+                <span class="text-sm text-muted">${p.subject}/${p.level}</span>
+              </div>
+              <div class="flex items-center gap-2" style="flex-wrap:wrap;">
+                <button class="btn btn-outline btn-sm">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>View Paper
+                </button>
+                <button class="btn btn-outline btn-sm">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>View Marking Scheme
+                </button>
+                <button class="btn btn-primary btn-sm">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download Paper
+                </button>
+                <button class="btn btn-primary btn-sm">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download Marking Scheme
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function applyFilters() {
+      const year = document.getElementById('filterYear').value;
+      const session = document.getElementById('filterSession').value;
+      const paper = document.getElementById('filterPaper').value;
+      const sort = document.getElementById('sortOrder').value;
+
+      let filtered = allPapers.filter(p => {
+        if (year !== 'all' && p.year !== parseInt(year)) return false;
+        if (session !== 'all' && p.session !== session) return false;
+        if (paper !== 'all' && p.paperNumber !== paper) return false;
+        return true;
+      });
+
+      if (sort === 'newest') filtered.sort((a,b) => b.year - a.year);
+      else if (sort === 'oldest') filtered.sort((a,b) => a.year - b.year);
+
+      renderPapers(filtered);
+    }
+
+    document.getElementById('searchBtn').addEventListener('click', applyFilters);
+    document.getElementById('sortOrder').addEventListener('change', applyFilters);
+
+    renderPapers(allPapers);
+
+    // Responsive nav & hamburger
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const navLinks = document.getElementById('navLinks');
+    hamburgerBtn.addEventListener('click', () => { navLinks.classList.toggle('open'); });
+    navLinks.querySelectorAll('.nav-link').forEach(l => l.addEventListener('click', () => navLinks.classList.remove('open')));
+    document.addEventListener('click', (e) => { if (!navLinks.contains(e.target) && !hamburgerBtn.contains(e.target)) navLinks.classList.remove('open'); });
+  </script>
+</body>
+</html>

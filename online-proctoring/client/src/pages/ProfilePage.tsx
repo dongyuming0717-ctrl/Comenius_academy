@@ -9,9 +9,14 @@ import { AchievementCard } from '../components/AchievementCard';
 import { AchievementToast } from '../components/AchievementToast';
 import { CheckInCelebration } from '../components/CheckInCelebration';
 import { LeaderboardCard } from '../components/LeaderboardCard';
+import { ShopItemCard } from '../components/ShopItemCard';
+import { RedeemModal } from '../components/RedeemModal';
 import {
   checkInToday,
   getUserGamificationData,
+  redeemBB8Theme,
+  getUserUnlocks,
+  redeemAstronaut,
   type CheckInResult,
   type GamificationData,
   type Achievement,
@@ -47,6 +52,18 @@ export function ProfilePage() {
   const [checkingIn, setCheckingIn] = useState(false);
   const [celebration, setCelebration] = useState<CheckInResult | null>(null);
   const [toastAchievement, setToastAchievement] = useState<Achievement | null>(null);
+
+  // BB-8 unlock
+  const [bb8Unlocked, setBb8Unlocked] = useState(() => localStorage.getItem('bb8_unlocked') === 'true');
+  const [bb8Enabled, setBb8Enabled] = useState(() => localStorage.getItem('bb8_enabled') !== 'false');
+  const [showRedeemModal, setShowRedeemModal] = useState(false);
+  const [redeeming, setRedeeming] = useState(false);
+
+  // Astronaut unlock
+  const [astronautUnlocked, setAstronautUnlocked] = useState(() => localStorage.getItem('astronaut_unlocked') === 'true');
+  const [astronautEnabled, setAstronautEnabled] = useState(() => localStorage.getItem('astronaut_enabled') !== 'false');
+  const [showAstronautRedeemModal, setShowAstronautRedeemModal] = useState(false);
+  const [astronautRedeeming, setAstronautRedeeming] = useState(false);
 
   const loadData = useCallback(async () => {
     if (!profileId) return;
@@ -100,6 +117,61 @@ export function ProfilePage() {
   useEffect(() => {
     if (profileId) loadData();
   }, [profileId, loadData]);
+
+  // Sync BB-8 unlock from database
+  useEffect(() => {
+    if (!profileId) return;
+    getUserUnlocks(profileId).then((unlocks) => {
+      const hasBB8 = unlocks.some((u) => u.unlock_key === 'bb8_theme');
+      const hasAstronaut = unlocks.some((u) => u.unlock_key === 'astronaut_home');
+      setBb8Unlocked(hasBB8);
+      setAstronautUnlocked(hasAstronaut);
+      localStorage.setItem('bb8_unlocked', hasBB8 ? 'true' : 'false');
+      localStorage.setItem('astronaut_unlocked', hasAstronaut ? 'true' : 'false');
+    });
+  }, [profileId]);
+
+  const handleRedeem = async () => {
+    if (!profileId || redeeming) return;
+    setRedeeming(true);
+    setError('');
+    try {
+      const result = await redeemBB8Theme();
+      if (result.success) {
+        setBb8Unlocked(true);
+        localStorage.setItem('bb8_unlocked', 'true');
+        setShowRedeemModal(false);
+        await loadData();
+      } else {
+        setError(result.error === 'insufficient_xp' ? t('shop.insufficientXP') : t('shop.alreadyUnlocked'));
+      }
+    } catch {
+      setError(t('shop.redeemError'));
+    }
+    setRedeeming(false);
+  };
+
+  const handleAstronautRedeem = async () => {
+    if (!profileId || astronautRedeeming) return;
+    setAstronautRedeeming(true);
+    setError('');
+    try {
+      const result = await redeemAstronaut();
+      if (result.success) {
+        setAstronautUnlocked(true);
+        setAstronautEnabled(true);
+        localStorage.setItem('astronaut_unlocked', 'true');
+        localStorage.setItem('astronaut_enabled', 'true');
+        setShowAstronautRedeemModal(false);
+        await loadData();
+      } else {
+        setError(result.error === 'insufficient_xp' ? t('shop.insufficientXP') : t('shop.alreadyUnlocked'));
+      }
+    } catch {
+      setError(t('shop.redeemError'));
+    }
+    setAstronautRedeeming(false);
+  };
 
   const handleCheckIn = async () => {
     if (!profileId || checkingIn) return;
@@ -276,6 +348,44 @@ export function ProfilePage() {
           )}
         </div>
 
+        {/* BB-8 Theme Toggle Unlock */}
+        <ShopItemCard
+          icon="🤖"
+          gradient="#f59e0b, #fbbf24"
+          title={t('shop.bb8Title')}
+          description={bb8Unlocked ? t('shop.bb8Unlocked') : t('shop.bb8Locked')}
+          cost={100}
+          unlocked={bb8Unlocked}
+          enabled={bb8Enabled}
+          canAfford={(gamData?.totalXP ?? 0) >= 100}
+          onToggle={() => {
+            const next = !bb8Enabled;
+            setBb8Enabled(next);
+            localStorage.setItem('bb8_enabled', next ? 'true' : 'false');
+            window.dispatchEvent(new Event('bb8-toggle-changed'));
+          }}
+          onRedeem={() => setShowRedeemModal(true)}
+        />
+
+        {/* Astronaut Homepage Effect */}
+        <ShopItemCard
+          icon="🧑‍🚀"
+          gradient="#6366f1, #a78bfa"
+          title={t('shop.astronautTitle')}
+          description={astronautUnlocked ? t('shop.astronautUnlocked') : t('shop.astronautLocked')}
+          cost={50}
+          unlocked={astronautUnlocked}
+          enabled={astronautEnabled}
+          canAfford={(gamData?.totalXP ?? 0) >= 50}
+          onToggle={() => {
+            const next = !astronautEnabled;
+            setAstronautEnabled(next);
+            localStorage.setItem('astronaut_enabled', next ? 'true' : 'false');
+            window.dispatchEvent(new Event('astronaut-toggle-changed'));
+          }}
+          onRedeem={() => setShowAstronautRedeemModal(true)}
+        />
+
         {/* XP Progress */}
         <div style={cardStyle}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
@@ -424,6 +534,144 @@ export function ProfilePage() {
           </form>
         </div>
       </div>
+
+      {/* Redemption modal */}
+      {showRedeemModal && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={() => setShowRedeemModal(false)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 200,
+            background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+          }}
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: '#fff', borderRadius: 20, padding: '40px 36px',
+              maxWidth: 420, width: '90%', textAlign: 'center',
+              boxShadow: '0 25px 80px rgba(0,0,0,0.25)',
+            }}
+          >
+            <div style={{ fontSize: 64, marginBottom: 16 }}>🤖</div>
+            <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1f2937', margin: '0 0 8px' }}>
+              {t('shop.redeemBB8Title')}
+            </h2>
+            <p style={{ fontSize: 14, color: '#6b7280', margin: '0 0 20px', lineHeight: 1.5 }}>
+              {t('shop.redeemBB8Description')}
+            </p>
+            <div style={{
+              padding: '10px 16px', borderRadius: 10,
+              background: '#fef3c7', marginBottom: 24,
+              display: 'flex', justifyContent: 'space-between',
+            }}>
+              <span style={{ fontSize: 13, color: '#92400e' }}>{t('shop.cost')}</span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#d97706' }}>100 XP</span>
+            </div>
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+              <button
+                onClick={() => setShowRedeemModal(false)}
+                style={{
+                  padding: '10px 24px', borderRadius: 10,
+                  border: '1px solid #d1d5db', background: '#fff',
+                  color: '#374151', fontSize: 14, fontWeight: 500, cursor: 'pointer',
+                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                }}
+              >
+                {t('shop.cancel')}
+              </button>
+              <button
+                onClick={handleRedeem}
+                disabled={redeeming}
+                style={{
+                  padding: '10px 24px', borderRadius: 10, border: 'none',
+                  background: redeeming ? '#93c5fd' : '#1e40af',
+                  color: '#fff', fontSize: 14, fontWeight: 600, cursor: redeeming ? 'default' : 'pointer',
+                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                }}
+              >
+                {redeeming ? t('shop.redeeming') : t('shop.redeem')}
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+
+      {/* Astronaut redemption modal */}
+      {showAstronautRedeemModal && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={() => setShowAstronautRedeemModal(false)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 200,
+            background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+          }}
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: '#fff', borderRadius: 20, padding: '40px 36px',
+              maxWidth: 420, width: '90%', textAlign: 'center',
+              boxShadow: '0 25px 80px rgba(0,0,0,0.25)',
+            }}
+          >
+            <div style={{ fontSize: 64, marginBottom: 16 }}>🧑‍🚀</div>
+            <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1f2937', margin: '0 0 8px' }}>
+              {t('shop.redeemAstronautTitle')}
+            </h2>
+            <p style={{ fontSize: 14, color: '#6b7280', margin: '0 0 20px', lineHeight: 1.5 }}>
+              {t('shop.redeemAstronautDescription')}
+            </p>
+            <div style={{
+              padding: '10px 16px', borderRadius: 10,
+              background: '#ede9fe', marginBottom: 24,
+              display: 'flex', justifyContent: 'space-between',
+            }}>
+              <span style={{ fontSize: 13, color: '#6d28d9' }}>{t('shop.cost')}</span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#7c3aed' }}>50 XP</span>
+            </div>
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+              <button
+                onClick={() => setShowAstronautRedeemModal(false)}
+                style={{
+                  padding: '10px 24px', borderRadius: 10,
+                  border: '1px solid #d1d5db', background: '#fff',
+                  color: '#374151', fontSize: 14, fontWeight: 500, cursor: 'pointer',
+                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                }}
+              >
+                {t('shop.cancel')}
+              </button>
+              <button
+                onClick={handleAstronautRedeem}
+                disabled={astronautRedeeming}
+                style={{
+                  padding: '10px 24px', borderRadius: 10, border: 'none',
+                  background: astronautRedeeming ? '#c4b5fd' : '#6366f1',
+                  color: '#fff', fontSize: 14, fontWeight: 600, cursor: astronautRedeeming ? 'default' : 'pointer',
+                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                }}
+              >
+                {astronautRedeeming ? t('shop.redeeming') : t('shop.redeem')}
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
 
       {/* Celebration overlay */}
       {celebration && (

@@ -451,3 +451,41 @@ export async function useFreeze(userId: string): Promise<boolean> {
 
   return true;
 }
+
+// ---- User Unlocks / Redemption ----
+
+export interface RedeemResult {
+  success: boolean;
+  error?: 'already_unlocked' | 'insufficient_xp' | 'user_not_found' | 'unknown';
+  current_xp?: number;
+  new_xp?: number;
+}
+
+export interface UserUnlock {
+  unlock_key: string;
+  unlocked_at: string;
+}
+
+export async function redeemBB8Theme(): Promise<RedeemResult> {
+  const { data, error } = await supabase.rpc('redeem_unlock', {
+    p_unlock_key: 'bb8_theme',
+  });
+  if (error) return { success: false, error: 'unknown' };
+  return data as RedeemResult;
+}
+
+export async function getUserUnlocks(userId: string): Promise<UserUnlock[]> {
+  const { data } = await supabase
+    .from('user_unlocks')
+    .select('unlock_key, unlocked_at')
+    .eq('user_id', userId);
+  return (data ?? []) as UserUnlock[];
+}
+
+export async function redeemAstronaut(): Promise<RedeemResult> {
+  const { data, error } = await supabase.rpc('redeem_unlock_50', {
+    p_unlock_key: 'astronaut_home',
+  });
+  if (error) return { success: false, error: 'unknown' };
+  return data as RedeemResult;
+}

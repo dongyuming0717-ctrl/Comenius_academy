@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.cache/
+.env
+.env.local
+*.log
+__pycache__/
+*.pyc
+.venv/
+venv/
+.vite/
+.DS_Store
+*.db
+*.db-journal
+**/question-images/
+papers/

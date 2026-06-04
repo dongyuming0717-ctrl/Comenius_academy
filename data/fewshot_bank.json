@@ -1,0 +1,107 @@
+{
+  "calculus": [
+    {
+      "question": "Use the trapezium rule with 4 strips to estimate $\\int_{-2}^2 \\sqrt{4-x^2}\\,dx$",
+      "solution": "**思路分析**\n考察梯形法则的数值积分应用，核心是确定步长 $h$ 和节点值 $f(x_i)$。\n\n**步骤 1：确定参数**\n积分区间 $[-2, 2]$，$n=4$ 个 strips。\n步长 $h = \\frac{2-(-2)}{4} = 1$。\n节点: $x_0=-2, x_1=-1, x_2=0, x_3=1, x_4=2$。\n\n**步骤 2：计算函数值**\n$f(-2) = \\sqrt{4-(-2)^2} = \\sqrt{0} = 0$\n$f(-1) = \\sqrt{4-(-1)^2} = \\sqrt{3}$\n$f(0) = \\sqrt{4-0^2} = 2$\n$f(1) = \\sqrt{4-1^2} = \\sqrt{3}$\n$f(2) = \\sqrt{4-2^2} = 0$\n\n**步骤 3：代入梯形法则公式**\n$$\\begin{align*}\n\\int_{-2}^2 f(x)\\,dx &\\approx \\frac{h}{2}[f(x_0) + 2f(x_1) + 2f(x_2) + 2f(x_3) + f(x_4)] \\\\\n&= \\frac{1}{2}[0 + 2\\sqrt{3} + 2(2) + 2\\sqrt{3} + 0] \\\\\n&= \\frac{1}{2}[4\\sqrt{3} + 4] \\\\\n&= 2\\sqrt{3} + 2\n\\end{align*}$$\n\n> **答案: $2\\sqrt{3} + 2$**\n\n**要点总结**\n梯形法则的关键是正确写出通式 $\\frac{h}{2}[y_0 + 2y_1 + \\cdots + 2y_{n-1} + y_n]$，端节点系数为 1，内部节点系数为 2。\n\n**自检**\n$\\int_{-2}^2 \\sqrt{4-x^2}\\,dx$ 是半径为 2 的半圆面积 $= 2\\pi \\approx 6.28$，$2\\sqrt{3}+2 \\approx 5.46$，作为近似合理（梯形法则对凹函数会略微低估）。",
+      "answer": "H"
+    },
+    {
+      "question": "Find the coordinates of the stationary point of $y = x^3 - 3x^2 - 9x + 5$ and determine its nature",
+      "solution": "**思路分析**\n考察导数的极值应用，通过一阶导数找驻点，二阶导数判断极值性质。\n\n**步骤 1：求一阶导数**\n$\\frac{dy}{dx} = 3x^2 - 6x - 9$\n\n**步骤 2：令 $\\frac{dy}{dx} = 0$ 求驻点**\n$3x^2 - 6x - 9 = 0$\n$x^2 - 2x - 3 = 0$\n$(x-3)(x+1) = 0$\n$x = 3$ 或 $x = -1$\nx=3 时 $y = 27 - 27 - 27 + 5 = -22$\nx=-1 时 $y = -1 - 3 + 9 + 5 = 10$\n\n**步骤 3：二阶导数判极值**\n$\\frac{d^2y}{dx^2} = 6x - 6$\nx=3: $6(3)-6 = 12 > 0$ → 极小值点 (3, -22)\nx=-1: $6(-1)-6 = -12 < 0$ → 极大值点 (-1, 10)\n\n> **答案: 极大值点 (-1, 10)，极小值点 (3, -22)**\n\n**要点总结**\n二阶导数正→极小，负→极大。一阶导为 0 的点只是候选，必须验证。\n\n**自检**\n代入 $x=0$ 得 $y=5$，在 (-1,10) 和 (3,-22) 之间，符合函数图像走势。",
+      "answer": "N/A"
+    }
+  ],
+  "trigonometry": [
+    {
+      "question": "Solve $2\\sin^2 x - \\sin x - 1 = 0$ for $0 \\le x < 2\\pi$",
+      "solution": "**思路分析**\n考察三角方程的求解，核心是将三角方程化为代数方程再回代求角。\n\n**步骤 1：换元化为二次方程**\n令 $t = \\sin x$，则 $2t^2 - t - 1 = 0$\n$(2t+1)(t-1) = 0$\n$t = -\\frac{1}{2}$ 或 $t = 1$\n\n**步骤 2：回代求解**\n$\\sin x = 1$: $x = \\frac{\\pi}{2}$\n$\\sin x = -\\frac{1}{2}$: 在 $[0, 2\\pi)$ 内，$x = \\frac{7\\pi}{6}$ 或 $x = \\frac{11\\pi}{6}$\n\n> **答案: $x = \\frac{\\pi}{2}, \\frac{7\\pi}{6}, \\frac{11\\pi}{6}$**\n\n**要点总结**\n三角换元是解三角方程的核心技巧。注意 $\\sin x = k$ 在 $[0, 2\\pi)$ 内通常有 2 个解 ($k=\\pm 1$ 除外)。\n\n**自检**\n分别代入验证: $2(1)^2-1-1=0$ ✓; $2(\\frac{1}{4})-( -\\frac{1}{2})-1 = \\frac{1}{2}+\\frac{1}{2}-1=0$ ✓。",
+      "answer": "D"
+    },
+    {
+      "question": "Given that $\\tan\\theta = \\frac{3}{4}$ and $\\pi < \\theta < \\frac{3\\pi}{2}$, find $\\sin\\theta$ and $\\cos\\theta$",
+      "solution": "**思路分析**\n已知 $\\tan\\theta$ 求 $\\sin\\theta$ 和 $\\cos\\theta$，可利用恒等式 $\\tan\\theta = \\frac{\\sin\\theta}{\\cos\\theta}$ 和 $\\sin^2\\theta + \\cos^2\\theta = 1$。象限信息决定正负号。\n\n**步骤 1：利用恒等式**\n$\\tan\\theta = \\frac{\\sin\\theta}{\\cos\\theta} = \\frac{3}{4}$，设 $\\sin\\theta = 3k$，$\\cos\\theta = 4k$\n\n**步骤 2：代入 $\\sin^2\\theta + \\cos^2\\theta = 1$**\n$(3k)^2 + (4k)^2 = 1$\n$9k^2 + 16k^2 = 1$\n$25k^2 = 1$\n$k = \\pm\\frac{1}{5}$\n\n**步骤 3：由象限确定符号**\n$\\theta$ 在第三象限 ($\\pi < \\theta < \\frac{3\\pi}{2}$)，$\\sin\\theta < 0$，$\\cos\\theta < 0$\n取 $k = -\\frac{1}{5}$\n$\\sin\\theta = 3(-\\frac{1}{5}) = -\\frac{3}{5}$\n$\\cos\\theta = 4(-\\frac{1}{5}) = -\\frac{4}{5}$\n\n> **答案: $\\sin\\theta = -\\frac{3}{5}$，$\\cos\\theta = -\\frac{4}{5}$**\n\n**要点总结**\n象限决定三角函数的正负号。ASTC 记忆法: 第三象限只有 tan 为正。\n\n**自检**\n$\\sin^2\\theta + \\cos^2\\theta = \\frac{9}{25} + \\frac{16}{25} = 1$ ✓; $\\frac{\\sin\\theta}{\\cos\\theta} = \\frac{-3/5}{-4/5} = \\frac{3}{4}$ ✓。",
+      "answer": "N/A"
+    }
+  ],
+  "sequences": [
+    {
+      "question": "An arithmetic sequence has first term 5 and common difference 3. Find the sum of the first 20 terms",
+      "solution": "**思路分析**\n等差数列求和，直接套用求和公式 $S_n = \\frac{n}{2}[2a + (n-1)d]$。\n\n**步骤 1：明确参数**\n$a = 5$，$d = 3$，$n = 20$\n\n**步骤 2：套用等差数列求和公式**\n$$\\begin{align*}\nS_{20} &= \\frac{20}{2}[2(5) + (20-1)(3)] \\\\\n&= 10[10 + 57] \\\\\n&= 10 \\times 67 \\\\\n&= 670\n\\end{align*}$$\n\n> **答案: $670$**\n\n**要点总结**\n等差求和公式 $S_n = \\frac{n}{2}(a_1 + a_n) = \\frac{n}{2}[2a + (n-1)d]$，两个形式等价，选方便的用。\n\n**自检**\n末项 $a_{20} = 5 + 19 \\times 3 = 62$，$S_{20} = \\frac{20}{2}(5+62) = 10 \\times 67 = 670$ ✓。",
+      "answer": "C"
+    },
+    {
+      "question": "Find the sum to infinity of the geometric series $8 + 4 + 2 + 1 + \\cdots$",
+      "solution": "**思路分析**\n无穷等比级数求和，先确认公比 $|r| < 1$ 满足收敛条件，再用 $S_{\\infty} = \\frac{a}{1-r}$。\n\n**步骤 1：确定参数**\n首项 $a = 8$\n公比 $r = \\frac{4}{8} = \\frac{1}{2}$\n$|r| = \\frac{1}{2} < 1$，收敛 ✓\n\n**步骤 2：套用无穷等比求和公式**\n$$\\begin{align*}\nS_{\\infty} &= \\frac{a}{1-r} \\\\\n&= \\frac{8}{1 - \\frac{1}{2}} \\\\\n&= \\frac{8}{\\frac{1}{2}} \\\\\n&= 16\n\\end{align*}$$\n\n> **答案: $16$**\n\n**要点总结**\n无穷等比级数收敛当且仅当 $|r| < 1$。部分和 $S_n = \\frac{a(1-r^n)}{1-r}$ 在 $n \\to \\infty$ 时 $r^n \\to 0$，故 $S_{\\infty} = \\frac{a}{1-r}$。\n\n**自检**\n$8+4+2+1+0.5+...$ 前几项之和趋近 16，直观合理。",
+      "answer": "B"
+    }
+  ],
+  "algebra": [
+    {
+      "question": "Find the remainder when $x^3 - 4x^2 + 5x - 2$ is divided by $(x-1)$",
+      "solution": "**思路分析**\n多项式除法求余数，用余数定理：$f(x)$ 除以 $(x-a)$ 的余数为 $f(a)$。\n\n**步骤 1：应用余数定理**\n$f(x) = x^3 - 4x^2 + 5x - 2$\n$a = 1$\n$$\\begin{align*}\nf(1) &= (1)^3 - 4(1)^2 + 5(1) - 2 \\\\\n&= 1 - 4 + 5 - 2 \\\\\n&= 0\n\\end{align*}$$\n\n> **答案: $0$，即 $(x-1)$ 是 $f(x)$ 的一个因式**\n\n**要点总结**\n余数定理是快速判断因式的利器。若 $f(a)=0$，则 $(x-a)$ 是 $f(x)$ 的因式。\n\n**自检**\n$f(x) = (x-1)(x^2 - 3x + 2) = (x-1)(x-1)(x-2)$，确实被 $(x-1)$ 整除 ✓。",
+      "answer": "A"
+    },
+    {
+      "question": "Solve the inequality $x^2 - 5x + 6 > 0$",
+      "solution": "**思路分析**\n二次不等式，先因式分解找出根，再通过符号分析确定区间。\n\n**步骤 1：因式分解**\n$x^2 - 5x + 6 = (x-2)(x-3)$\n根为 $x = 2$ 和 $x = 3$\n\n**步骤 2：符号分析**\n二次项系数为正，抛物线开口向上。\n当 $x < 2$: $(x-2)<0$, $(x-3)<0$, 积 $>0$ ✓\n当 $2 < x < 3$: $(x-2)>0$, $(x-3)<0$, 积 $<0$ ✗\n当 $x > 3$: $(x-2)>0$, $(x-3)>0$, 积 $>0$ ✓\n\n> **答案: $x < 2$ 或 $x > 3$**\n\n**要点总结**\n开口向上的抛物线在两根之外取正值。快速判断: $ax^2+bx+c>0$ ($a>0$) 的解为 $x < x_1$ 或 $x > x_2$ ($x_1 < x_2$)。\n\n**自检**\n$x=0$: $6>0$ ✓; $x=2.5$: $6.25-12.5+6=-0.25<0$ ✓; $x=4$: $16-20+6=2>0$ ✓。",
+      "answer": "F"
+    }
+  ],
+  "coordinate_geometry": [
+    {
+      "question": "Find the distance between points A(1, 2) and B(4, 6)",
+      "solution": "**思路分析**\n两点间距离公式 $d = \\sqrt{(x_2-x_1)^2 + (y_2-y_1)^2}$。\n\n**步骤 1：代入距离公式**\n$$\\begin{align*}\nd &= \\sqrt{(4-1)^2 + (6-2)^2} \\\\\n&= \\sqrt{3^2 + 4^2} \\\\\n&= \\sqrt{9 + 16} \\\\\n&= \\sqrt{25} \\\\\n&= 5\n\\end{align*}$$\n\n> **答案: $5$**\n\n**要点总结**\n距离公式本质是勾股定理。注意顺序无关: $(x_2-x_1)^2 = (x_1-x_2)^2$。\n\n**自检**\n3-4-5 是经典直角三角形，直观成立 ✓。",
+      "answer": "B"
+    },
+    {
+      "question": "Find the equation of the circle with centre (2, -1) and radius 3",
+      "solution": "**思路分析**\n标准圆方程 $(x-h)^2 + (y-k)^2 = r^2$，其中 $(h,k)$ 为圆心，$r$ 为半径。\n\n**步骤 1：代入标准形式**\n$(h,k) = (2, -1)$，$r = 3$\n$$\\begin{align*}\n(x-2)^2 + (y-(-1))^2 &= 3^2 \\\\\n(x-2)^2 + (y+1)^2 &= 9\n\\end{align*}$$\n\n**步骤 2：展开为标准二次形式 (可选)**\n$$\\begin{align*}\nx^2 - 4x + 4 + y^2 + 2y + 1 &= 9 \\\\\nx^2 + y^2 - 4x + 2y - 4 &= 0\n\\end{align*}$$\n\n> **答案: $(x-2)^2 + (y+1)^2 = 9$ 或 $x^2 + y^2 - 4x + 2y - 4 = 0$**\n\n**要点总结**\n圆方程的核心要素是圆心和半径。$(y+1)^2$ 对应 $y - (-1)$。\n\n**自检**\n点 (5, -1) 代入: $(5-2)^2+(-1+1)^2=9$ ✓，该点在圆上。",
+      "answer": "N/A"
+    }
+  ],
+  "exponentials": [
+    {
+      "question": "Solve $\\log_2(x+1) + \\log_2(x-1) = 3$",
+      "solution": "**思路分析**\n对数方程，先合并对数项，再化为指数形式求解，最后验证定义域。\n\n**步骤 1：合并对数项**\n$\\log_2[(x+1)(x-1)] = 3$\n$\\log_2(x^2-1) = 3$\n\n**步骤 2：化为指数形式**\n$x^2 - 1 = 2^3 = 8$\n$x^2 = 9$\n$x = \\pm 3$\n\n**步骤 3：验证定义域**\n对数定义域要求: $x+1 > 0$ 且 $x-1 > 0$，即 $x > 1$\n$x = -3$ 不满足定义域，舍去。\n\n> **答案: $x = 3$**\n\n**要点总结**\n解对数方程务必验证定义域，对数真数必须为正。\n\n**自检**\n$\\log_2(4) + \\log_2(2) = 2 + 1 = 3$ ✓。",
+      "answer": "E"
+    },
+    {
+      "question": "If $2^{2x+1} = 8^{x-1}$, find $x$",
+      "solution": "**思路分析**\n指数方程，将两边化为同底 $2$ 的指数，再利用指数相等。\n\n**步骤 1：同底化**\n$2^{2x+1} = (2^3)^{x-1}$\n$2^{2x+1} = 2^{3(x-1)} = 2^{3x-3}$\n\n**步骤 2：令指数相等**\n$2x + 1 = 3x - 3$\n$x = 4$\n\n> **答案: $x = 4$**\n\n**要点总结**\n同底化是解指数方程的核心策略。记住 $8 = 2^3$、$4 = 2^2$、$9 = 3^2$ 等常见转换。\n\n**自检**\n左: $2^{2(4)+1} = 2^9 = 512$; 右: $8^{4-1} = 8^3 = 512$ ✓。",
+      "answer": "D"
+    }
+  ],
+  "logic": [
+    {
+      "question": "If the statement 'If it rains, then the ground is wet' is true, which must also be true? A) If the ground is wet, it rained B) If it doesn't rain, the ground is not wet C) If the ground is not wet, it didn't rain D) All of the above",
+      "solution": "**思路分析**\n考察逻辑蕴含 $P \\Rightarrow Q$ 的等价命题。\n\n**步骤 1：写出逻辑形式**\n$P$: it rains\n$Q$: ground is wet\n原命题: $P \\Rightarrow Q$ (真)\n\n**步骤 2：分析各选项**\nA) $Q \\Rightarrow P$ (逆命题 converse) — 不一定真\nB) $\\neg P \\Rightarrow \\neg Q$ (否命题 inverse) — 不一定真\nC) $\\neg Q \\Rightarrow \\neg P$ (逆否命题 contrapositive) — 与原命题逻辑等价 ✓\n\n> **答案: C**\n\n**要点总结**\n$P \\Rightarrow Q$ 等价于其逆否命题 $\\neg Q \\Rightarrow \\neg P$，不等价于逆命题 $Q \\Rightarrow P$。\n\n**自检**\n如果地面没湿 ($\\neg Q$)，则一定没下雨 ($\\neg P$)。如果下雨地面必然湿，所以地面没湿说明没下雨。",
+      "answer": "C"
+    },
+    {
+      "question": "Determine whether the statement '$\\forall x \\in \\mathbb{R}, \\exists y \\in \\mathbb{R}: y > x$' is true or false",
+      "solution": "**思路分析**\n考察量词逻辑。$\\forall x \\exists y: y > x$ 的意义是：对任意实数 $x$，总存在比它更大的实数 $y$。\n\n**步骤 1：翻译语句**\n\"对于每个实数 $x$，存在实数 $y$ 使得 $y > x$\"\n\n**步骤 2：判断真值**\n给定任意 $x$，取 $y = x + 1$，则 $y > x$ 且 $y \\in \\mathbb{R}$。\n该语句为真——实数无上界。\n\n> **答案: 真**\n\n**要点总结**\n量词顺序至关重要。$\\forall x \\exists y$ (选 $y$ 可依赖 $x$) 与 $\\exists y \\forall x$ ($y$ 必须在选 $x$ 之前固定) 含义完全不同。\n\n**自检**\n$\\exists y \\forall x: y > x$ 是假的——不存在比所有实数都大的实数。",
+      "answer": "N/A"
+    }
+  ],
+  "probability": [
+    {
+      "question": "A bag contains 3 red and 5 blue balls. Two balls are drawn without replacement. Find the probability that both are red",
+      "solution": "**思路分析**\n无放回抽取，用条件概率的乘法原理: $P(\\text{both red}) = P(\\text{1st red}) \\times P(\\text{2nd red} | \\text{1st red})$。\n\n**步骤 1：计算概率**\n$$\\begin{align*}\nP(\\text{both red}) &= \\frac{3}{8} \\times \\frac{2}{7} \\\\\n&= \\frac{6}{56} \\\\\n&= \\frac{3}{28}\n\\end{align*}$$\n\n> **答案: $\\frac{3}{28}$**\n\n**要点总结**\n不放回抽样每次概率都变——这是条件概率的经典场景。\n\n**自检**\n用组合法: $\\frac{\\binom{3}{2}}{\\binom{8}{2}} = \\frac{3}{28}$ ✓。",
+      "answer": "B"
+    }
+  ],
+  "combinatorics": [
+    {
+      "question": "How many different ways can the letters of 'AMOS' be arranged?",
+      "solution": "**思路分析**\n四个不同字母的全排列，直接 $4!$。\n\n**步骤 1：计算排列数**\n4 个不同的字母，全排列数 $= 4! = 4 \\times 3 \\times 2 \\times 1 = 24$\n\n> **答案: $24$**\n\n**要点总结**\n$n$ 个不同元素的全排列为 $n!$。有重复字母时需除以重复字母的阶乘。\n\n**自检**\nAMOS, AMSO, AOMS, AOSM, ASMO, ASOM, ... 共 24 种 ✓。",
+      "answer": "D"
+    }
+  ],
+  "number_theory": [
+    {
+      "question": "Find the number of positive factors of 72",
+      "solution": "**思路分析**\n先做质因数分解，再用公式：若 $n = p_1^{a_1}p_2^{a_2}\\cdots p_k^{a_k}$，则因子数为 $(a_1+1)(a_2+1)\\cdots(a_k+1)$。\n\n**步骤 1：质因数分解**\n$72 = 2^3 \\times 3^2$\n\n**步骤 2：套用公式**\n因子数 $= (3+1)(2+1) = 4 \\times 3 = 12$\n\n> **答案: $12$**\n\n**要点总结**\n每个质因数的指数可以取 $0$ 到 $a_i$ (共 $a_i+1$ 种选择)，乘法原理得总因子数。\n\n**自检**\n72 的因子: 1,2,3,4,6,8,9,12,18,24,36,72 共 12 个 ✓。",
+      "answer": "C"
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "total": 5,
+  "correct": 5,
+  "errors": 0,
+  "accuracy": 100.0,
+  "by_topic": {
+    "general": {
+      "correct": 2,
+      "total": 2,
+      "accuracy": 100.0
+    },
+    "algebra": {
+      "correct": 1,
+      "total": 1,
+      "accuracy": 100.0
+    },
+    "coordinate_geometry": {
+      "correct": 1,
+      "total": 1,
+      "accuracy": 100.0
+    },
+    "sequences": {
+      "correct": 1,
+      "total": 1,
+      "accuracy": 100.0
+    }
+  },
+  "by_paper": {
+    "2016-1": {
+      "correct": 5,
+      "total": 5,
+      "accuracy": 100.0
+    }
+  },
+  "results": [
+    {
+      "id": "2016-1-Q1",
+      "year": 2016,
+      "paper": 1,
+      "question_no": 1,
+      "topic": "general",
+      "correct_answer": "H",
+      "amos_choice": "H",
+      "is_correct": true,
+      "response": "### 分析题目类型和考查知识点  \n本题考查**代数展开与系数比较**，属于 Paper 1 中的 **Algebra（代数）** 部分。核心是利用二项式定理展开 $(ax + b)^3$，并对比已知多项式的各项系数。\n\n---\n\n### 列出已知条件和求解目标  \n- 已知：$(ax + b)^3 = 8x^3 - px^2 + 18x - 3\\sqrt{3}$  \n- 求：实数常数 $p$ 的值  \n\n---\n\n### 分步推导  \n\n#### **1. 展开 $(ax + b)^3$**\n根据二项式定理：\n$$\n(ax + b)^3 = a^3x^3 + 3a^2bx^2 + 3ab^2x + b^3\n$$\n\n#### **2. 对比对应项系数**\n将展开式与题目给出的多项式逐项对比：\n\n- **$x^3$ 项**：  \n  $$\n  a^3 = 8 \\Rightarrow a = 2\n  $$\n\n- **常数项**：  \n  $$\n  b^3 = -3\\sqrt{3} \\Rightarrow b = -\\sqrt{3}\n  $$  \n  （因为 $(-\\sqrt{3})^3 ",
+      "time": 32.3
+    },
+    {
+      "id": "2016-1-Q2",
+      "year": 2016,
+      "paper": 1,
+      "question_no": 2,
+      "topic": "algebra",
+      "correct_answer": "E",
+      "amos_choice": "E",
+      "is_correct": true,
+      "response": "### 分析题目类型和考查知识点  \n本题考查**因式定理**与**多项式因式分解**，属于 Paper 1 中的代数部分。关键在于利用因式定理确定常数 $ a $，再通过多项式除法或配方法完成因式分解。\n\n---\n\n### 已知条件与求解目标  \n- 多项式：$ 3x^3 + 13x^2 + 8x + a $  \n- 条件：$ (x+2) $ 是其因子  \n- 目标：找出完全因式分解形式（选项 A-F）\n\n---\n\n### 分步推导  \n\n#### **1. 利用因式定理确定 $ a $**  \n若 $ (x+2) $ 是因子，则 $ x = -2 $ 时多项式值为 0：  \n$$\n3(-2)^3 + 13(-2)^2 + 8(-2) + a = 0 \\\\\n\\Rightarrow -24 + 52 - 16 + a = 0 \\Rightarrow a = -12\n$$\n\n#### **2. 代入 $ a = -12 $ 得到完整多项式**  \n$$\n3x^3 + 13x^2 + 8x - 12\n$$\n\n#### **3. 用长除法将多项式除以 $ (x+2) $**  \n- 商式为 ",
+      "time": 36.2
+    },
+    {
+      "id": "2016-1-Q3",
+      "year": 2016,
+      "paper": 1,
+      "question_no": 3,
+      "topic": "coordinate_geometry",
+      "correct_answer": "C",
+      "amos_choice": "C",
+      "is_correct": true,
+      "response": "### 分析题目类型和考查知识点  \n本题属于 **Paper 1: Mathematical Thinking** 中的 **Coordinate Geometry（坐标几何）** 和 **Differentiation（微分）** 综合应用题，主要考查：  \n- 曲线在某点的切线与法线斜率计算  \n- 法线方程的建立  \n- 坐标轴截距的求解  \n- 两点间距离公式  \n\n---\n\n### 已知条件和求解目标  \n- 曲线 $ y = \\frac{2}{x^2} $  \n- 在 $ x = 1 $ 处作法线，交 $ x $-轴于 $ P $，交 $ y $-轴于 $ Q $  \n- 求 $ PQ $ 的长度  \n\n---\n\n### 分步推导  \n\n#### **1. 确定曲线上的点**  \n当 $ x = 1 $ 时，  \n$$\ny = \\frac{2}{1^2} = 2 \\quad \\Rightarrow \\text{点为 } (1, 2)\n$$\n\n#### **2. 计算法线斜率**  \n对 $ y = \\frac{2}{x^2} = 2x^{-2} $ 求导：  \n$$\n\\f",
+      "time": 34.8
+    },
+    {
+      "id": "2016-1-Q4",
+      "year": 2016,
+      "paper": 1,
+      "question_no": 4,
+      "topic": "sequences",
+      "correct_answer": "B",
+      "amos_choice": "B",
+      "is_correct": true,
+      "response": "### 分析题目类型和考查知识点  \n本题属于 **Paper 1: Mathematical Thinking** 中的 **Sequences & Series（数列与级数）** 部分，主要涉及 **递推关系、通项公式化简、求和技巧**。需要识别序列的周期性规律，并利用等比数列求和公式或直接分组计算。\n\n---\n\n### 已知条件和求解目标  \n- 序列定义：  \n  $$\n  a_n = (-1)^n - (-1)^{n-1} + (-1)^{n+2}, \\quad n \\geq 1\n  $$\n- 求：  \n  $$\n  \\sum_{n=1}^{39} a_n\n  $$\n\n---\n\n### 分步推导  \n\n#### **1. 化简通项公式**\n观察每一项的结构：\n- 第一项：$(-1)^n$\n- 第二项：$-(-1)^{n-1} = -[(-1)^n \\cdot (-1)^{-1}] = -[(-1)^n \\cdot (-1)] = (-1)^n$\n- 第三项：$(-1)^{n+2} = (-1)^n \\cdot (-1)^2 = (-1)^n$\n\n因此：\n$$\na_n = (-",
+      "time": 50.0
+    },
+    {
+      "id": "2016-1-Q5",
+      "year": 2016,
+      "paper": 1,
+      "question_no": 5,
+      "topic": "general",
+      "correct_answer": "C",
+      "amos_choice": "C",
+      "is_correct": true,
+      "response": "### 解题过程\n\n**题目分析**  \n本题考查坐标几何与积分应用（知识点：Integration），要求计算曲线 $y = x^2 - 1$ 与 $x$-轴、直线 $x = -2$ 和 $x = 2$ 所围成的**总面积**。关键点在于曲线在区间 $[-2, 2]$ 内穿过 $x$-轴（交点为 $x = \\pm 1$），因此需分段计算面积并取绝对值（总面积需考虑所有部分的正面积）。\n\n**已知条件与目标**  \n- 曲线方程：$y = x^2 - 1$  \n- 边界：$x = -2$、$x = 2$、$x$-轴  \n- 求：总面积（所有区域面积之和，取正值）  \n- 关键点：$y = 0$ 时 $x = \\pm 1$，将区间分为 $[-2, -1]$、$[-1, 1]$、$[1, 2]$  \n  - $[-2, -1]$ 和 $[1, 2]$：$y \\geq 0$（曲线上方）  \n  - $[-1, 1]$：$y \\leq 0$（曲线下方，面积需取绝对值）  \n- 利用函数偶对称性简化计算：$y = x^2 - 1$ 是偶函数，故 $[-2, -1]$ 与 $[1, 2]$ 面积相",
+      "time": 82.1
+    }
+  ]
+}

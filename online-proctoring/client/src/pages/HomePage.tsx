@@ -3,7 +3,9 @@ import { Link } from 'react-router-dom';
 import { useProctor } from '../sdk/useProctor';
 import { supabase } from '../supabase';
 import { TopNav } from '../components/TopNav';
+import { FloatingAstronaut } from '../components/FloatingAstronaut';
 import { useInView } from '../hooks/useInView';
+import { getUserUnlocks } from '../services/gamification';
 import { colors, typography, radii, spacing } from '../theme/tokens';
 
 const font = typography.fontFamily;
@@ -42,10 +44,6 @@ const btnPrimary: React.CSSProperties = {
 const btnOutline: React.CSSProperties = {
   ...btnPrimary, background: 'transparent', color: colors.foreground,
   border: `1px solid ${colors.border}`,
-};
-
-const btnLg: React.CSSProperties = {
-  ...btnPrimary, padding: '12px 32px', fontSize: typography.size.md, height: 56,
 };
 
 const btnOutlineLg: React.CSSProperties = {
@@ -434,6 +432,7 @@ function AnimatedSection({ children, style, className }: { children: React.React
 
 export function HomePage() {
   const [liveStreak, setLiveStreak] = useState(0);
+  const [astronautEnabled, setAstronautEnabled] = useState(() => localStorage.getItem('astronaut_enabled') !== 'false');
   const [liveXP, setLiveXP] = useState(0);
   const { user } = useProctor();
   const [heroVisible, setHeroVisible] = useState(false);
@@ -487,6 +486,28 @@ export function HomePage() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // Sync astronaut unlock state
+  useEffect(() => {
+    if (!user) return;
+    supabase.from('users').select('id').eq('auth_id', user.id).single().then(({ data: profile }) => {
+      if (!profile) return;
+      getUserUnlocks(profile.id).then((unlocks) => {
+        const has = unlocks.some((u) => u.unlock_key === 'astronaut_home');
+        localStorage.setItem('astronaut_unlocked', has ? 'true' : 'false');
+        setAstronautEnabled(has && localStorage.getItem('astronaut_enabled') !== 'false');
+      });
+    });
+  }, [user]);
+
+  // Listen for astronaut toggle changes from ProfilePage
+  useEffect(() => {
+    const handler = () => {
+      setAstronautEnabled(localStorage.getItem('astronaut_enabled') !== 'false');
+    };
+    window.addEventListener('astronaut-toggle-changed', handler);
+    return () => window.removeEventListener('astronaut-toggle-changed', handler);
+  }, []);
+
   const containerStyle: React.CSSProperties = {
     maxWidth: 1280, margin: '0 auto', padding: '0 24px',
     fontFamily: font,
@@ -510,6 +531,7 @@ export function HomePage() {
         <div className="bg-blob" style={{ position: 'absolute', top: 160, left: 0, width: 300, height: 300, background: 'rgba(96,165,250,0.05)', borderRadius: '50%', filter: 'blur(80px)', pointerEvents: 'none' }} />
         <OrbitCards />
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.65)', pointerEvents: 'none' }} />
+        <FloatingAstronaut enabled={astronautEnabled} />
         <div style={{ position: 'relative', zIndex: 10, textAlign: 'center', maxWidth: 1024, margin: '0 auto', padding: '128px 24px' }}>
           <h1 style={{
             fontSize: 60, fontWeight: 600, lineHeight: 1.25, letterSpacing: '-0.025em', marginBottom: 48,
@@ -523,14 +545,75 @@ export function HomePage() {
           }}>
             For International Exam Preparations
           </p>
+          <style>{`
+            .shine-btn {
+              position: relative;
+              transition: all 0.3s ease-in-out;
+              box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+              padding: 12px 32px;
+              background-color: ${colors.primary};
+              border-radius: 9999px;
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              color: #fff;
+              gap: 10px;
+              font-weight: 600;
+              border: 3px solid rgba(255,255,255,0.3);
+              outline: none;
+              overflow: hidden;
+              font-size: ${typography.size.md};
+              cursor: pointer;
+              text-decoration: none;
+              white-space: nowrap;
+              font-family: ${typography.fontFamily};
+              box-sizing: border-box;
+            }
+            .shine-btn .shine-icon {
+              width: 20px;
+              height: 20px;
+              transition: all 0.3s ease-in-out;
+              flex-shrink: 0;
+            }
+            .shine-btn:hover {
+              transform: scale(1.05);
+              border-color: rgba(255,255,255,0.6);
+            }
+            .shine-btn:hover .shine-icon {
+              transform: translateX(4px);
+            }
+            .shine-btn:hover::before {
+              animation: shine 1.5s ease-out infinite;
+            }
+            .shine-btn::before {
+              content: "";
+              position: absolute;
+              width: 100px;
+              height: 100%;
+              background-image: linear-gradient(
+                120deg,
+                rgba(255, 255, 255, 0) 30%,
+                rgba(255, 255, 255, 0.8),
+                rgba(255, 255, 255, 0) 70%
+              );
+              top: 0;
+              left: -100px;
+              opacity: 0.6;
+            }
+            @keyframes shine {
+              0% { left: -100px; }
+              60% { left: 100%; }
+              to { left: 100%; }
+            }
+          `}</style>
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, flexWrap: 'wrap',
             opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'translateY(0)' : 'translateY(20px)',
             transition: 'opacity 0.8s ease 0.3s, transform 0.8s ease 0.3s',
           }}>
-            <Link to="/admission-tests" style={btnLg}>
+            <Link to="/admission-tests" className="shine-btn">
               Start Practice
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              <svg className="shine-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </Link>
             <Link to={analyticsLink} style={btnOutlineLg}>View Analytics</Link>
           </div>

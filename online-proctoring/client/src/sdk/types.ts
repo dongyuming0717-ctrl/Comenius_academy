@@ -35,6 +35,7 @@ export interface ProctorState {
 export interface Paper {
   id: string;
   title: string;
+  subject?: string;
   paper_number: 1 | 2;
   year: number;
   sitting: string;

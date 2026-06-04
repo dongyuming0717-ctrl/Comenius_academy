@@ -1,10 +1,12 @@
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useProctor } from '../sdk/useProctor';
 import { useLocale } from '../i18n/LocaleContext';
 import { TopNav } from '../components/TopNav';
 import { TAG_LIST, TAG_LABEL, TAG_COLOR, TAG_BG, type TopicTag } from '../data/tagColors';
 import type { Paper, Question } from '../sdk/types';
+import { MathText } from '../components/MathText';
+import { QuestionReviewModal } from '../components/QuestionReviewModal';
 
 type PaperFilter = 'all' | 1 | 2;
 type StatusFilter = 'all' | 'correct' | 'incorrect' | 'not_attempted';
@@ -23,32 +25,22 @@ interface QuestionEntry {
   question: Question; // full question object
 }
 
-const PAPERS_CACHE_KEY = 'tmua_papers_cache_v2';
+const PAPERS_CACHE_KEY = 'tmua_papers_cache_v3';
 const CACHE_TTL_MS = 5 * 60 * 1000;
-const PDF_BOOKLET = '/tmua-booklet.pdf';
+const GENERATED_PAPER_KEY = 'tmua_generated_paper';
 
-// PDF page where each paper starts (1-indexed PDF page number)
-const PAPER_START_PAGES: Record<string, number> = {
-  '2016-1': 3, '2016-2': 19,
-  '2017-1': 39, '2017-2': 63,
-  '2018-1': 87, '2018-2': 111,
-  '2019-1': 135, '2019-2': 159,
-  '2020-1': 183, '2020-2': 207,
-  '2021-1': 231, '2021-2': 255,
-  '2022-1': 279, '2022-2': 303,
-  '2023-1': 327, '2023-2': 351,
+const PAPER1_DISTRIBUTION: Partial<Record<TopicTag, number>> = {
+  algebra: 2, quadratics_polynomials: 2, inequalities: 1,
+  functions: 2, transformations_graphs: 1, exponentials_logs: 2,
+  trigonometry: 2, differentiation: 2, integration: 2,
+  sequences_series: 1, coordinate_geometry: 2, number_theory: 1,
 };
-
-function getPdfPage(year: number, paperNumber: 1 | 2, questionIndex: number): number {
-  const key = `${year}-${paperNumber}`;
-  const start = PAPER_START_PAGES[key] || 3;
-  return start + 2 + questionIndex; // skip cover + blank/instructions page
-}
-
-function openPdfReview(year: number, paperNumber: 1 | 2, questionIndex: number) {
-  const page = getPdfPage(year, paperNumber, questionIndex);
-  window.open(`${PDF_BOOKLET}#page=${page}`, '_blank');
-}
+const PAPER2_DISTRIBUTION: Partial<Record<TopicTag, number>> = {
+  algebra: 1, quadratics_polynomials: 1, inequalities: 1,
+  functions: 1, transformations_graphs: 1, exponentials_logs: 1,
+  trigonometry: 2, differentiation: 2, integration: 2,
+  sequences_series: 1, coordinate_geometry: 2, number_theory: 2, logic_proof: 3,
+};
 
 function loadCachedPapers(): Paper[] | null {
   try {
@@ -82,6 +74,10 @@ export function TopicsPage() {
   const [search, setSearch] = useState('');
   const [userAnswers, setUserAnswers] = useState<Record<string, Record<string, number>>>({});
   const [appliedPaperId, setAppliedPaperId] = useState(false);
+  const [reviewEntry, setReviewEntry] = useState<QuestionEntry | null>(null);
+  const [genMsg, setGenMsg] = useState('');
+  const [genPaperNum, setGenPaperNum] = useState<1 | 2>(1);
+  const [generatedQuestions, setGeneratedQuestions] = useState<QuestionEntry[] | null>(null);
 
   // Fetch papers and user answers
   useEffect(() => {
@@ -89,7 +85,7 @@ export function TopicsPage() {
       setLoading(true);
       try {
         const cached = loadCachedPapers();
-        if (cached) setPapers(cached);
+        if (cached) setPapers(cached.filter(p => p.subject !== 'economics'));
 
         const { data: paperData, error: paperErr } = await supabase
           .from('papers')
@@ -98,9 +94,10 @@ export function TopicsPage() {
           .order('paper_number');
 
         if (!paperErr && paperData) {
-          setPapers(paperData as Paper[]);
+          const tmuaOnly = (paperData as Paper[]).filter(p => p.subject !== 'economics');
+          setPapers(tmuaOnly);
           try {
-            localStorage.setItem(PAPERS_CACHE_KEY, JSON.stringify({ papers: paperData, ts: Date.now() }));
+            localStorage.setItem(PAPERS_CACHE_KEY, JSON.stringify({ papers: tmuaOnly, ts: Date.now() }));
           } catch { /* ignore */ }
         }
 
@@ -231,212 +228,360 @@ export function TopicsPage() {
     return { correct, incorrect, notAttempted };
   }, [allQuestions, selectedTag, paperFilter]);
 
-  const handleQuestionClick = (_entry: QuestionEntry) => {
-    // navigate to home — user picks the paper from there
+  const generateRandomPaper = () => {
+    const distribution = genPaperNum === 1 ? PAPER1_DISTRIBUTION : PAPER2_DISTRIBUTION;
+    const pool = allQuestions.filter(q => q.paperNumber === genPaperNum);
+    const byTopic: Record<string, QuestionEntry[]> = {};
+    for (const q of pool) {
+      if (!byTopic[q.topic]) byTopic[q.topic] = [];
+      byTopic[q.topic].push(q);
+    }
+    const selected: QuestionEntry[] = [];
+    const usedIds = new Set<string>();
+    for (const [tag, count] of Object.entries(distribution)) {
+      const candidates = byTopic[tag] || [];
+      const available = candidates.filter(q => !usedIds.has(`${q.paperId}-${q.questionIndex}`));
+      const picked = shuffle(available).slice(0, count);
+      for (const q of picked) { selected.push(q); usedIds.add(`${q.paperId}-${q.questionIndex}`); }
+    }
+    const remaining = 20 - selected.length;
+    if (remaining > 0) {
+      const restPool = pool.filter(q => !usedIds.has(`${q.paperId}-${q.questionIndex}`));
+      for (const q of shuffle(restPool).slice(0, remaining)) { selected.push(q); }
+    }
+    setGeneratedQuestions(shuffle(selected));
+  };
+
+  const startGeneratedExam = () => {
+    if (!generatedQuestions || generatedQuestions.length === 0) return;
+    const genPaper = {
+      id: `generated_p${genPaperNum}`,
+      title: `Random Paper ${genPaperNum}`,
+      paper_number: genPaperNum,
+      year: 0, sitting: 'Generated', duration_minutes: 75, total_marks: generatedQuestions.length,
+      topics: [...new Set(generatedQuestions.map(q => q.topic))],
+      created_at: new Date().toISOString(),
+      questions: generatedQuestions.map((q, i) => ({ ...q.question, id: `gq${i + 1}` })),
+    };
+    localStorage.setItem(GENERATED_PAPER_KEY, JSON.stringify(genPaper));
     navigate('/');
   };
 
-  const filterBtnStyle = (active: boolean) => ({
-    padding: '4px 14px',
-    fontSize: 12,
-    fontWeight: active ? 600 : 400,
-    color: active ? '#fff' : '#555',
-    background: active ? TAG_COLOR : '#f0f0f0',
-    border: 'none',
-    borderRadius: 14,
-    cursor: 'pointer' as const,
-    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
-  });
+  const pageBg = '#f8fafc';
+  const cardBg = '#ffffff';
+  const borderColor = '#e2e8f0';
+  const textMain = '#1e293b';
+  const textMuted = '#94a3b8';
+  const accent = TAG_COLOR;
+  const accentBg = TAG_BG;
 
   return (
-    <div style={{ minHeight: '100vh', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
-      {/* Top Bar */}
-      <TopNav currentPage="topics" />
+    <div style={{ minHeight: '100vh', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: pageBg }}>
+      <TopNav currentPage="topics-generate" />
 
-      {/* Search Bar */}
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '20px 20px 0' }}>
-        <input
-          type="text"
-          placeholder={t('topicsPage.searchPlaceholder')}
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          style={{
-            width: '100%', padding: '8px 16px', fontSize: 13, border: '1px solid #ddd',
-            borderRadius: 6, outline: 'none', fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
-            boxSizing: 'border-box',
-          }}
-        />
+      {/* Inline Review Modal */}
+      {reviewEntry && (
+        <div style={{ borderBottom: '1px solid #e0e0e0' }}>
+          <QuestionReviewModal
+            entry={reviewEntry}
+            allEntries={filteredQuestions}
+            onClose={() => setReviewEntry(null)}
+            onPrevious={() => {
+              const idx = filteredQuestions.findIndex(fq => fq.paperId === reviewEntry.paperId && fq.questionIndex === reviewEntry.questionIndex);
+              if (idx > 0) setReviewEntry(filteredQuestions[idx - 1]);
+            }}
+            onNext={() => {
+              const idx = filteredQuestions.findIndex(fq => fq.paperId === reviewEntry.paperId && fq.questionIndex === reviewEntry.questionIndex);
+              if (idx < filteredQuestions.length - 1) setReviewEntry(filteredQuestions[idx + 1]);
+            }}
+            topicLabel={TAG_LABEL[reviewEntry.topic]}
+            closeLabel="Close Review"
+          />
+        </div>
+      )}
+
+      {/* ── Page Header ── */}
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 20px 0' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 20 }}>
+          <div>
+            <h1 style={{ margin: 0, fontSize: 26, fontWeight: 700, color: textMain }}>Topics &amp; Generate</h1>
+            <p style={{ margin: '4px 0 0', fontSize: 14, color: textMuted }}>Browse TMUA questions by topic or generate practice papers</p>
+          </div>
+          {/* Search */}
+          <input
+            type="text"
+            placeholder={t('topicsPage.searchPlaceholder')}
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={{
+              width: 240, padding: '10px 16px', fontSize: 13,
+              border: `1px solid ${borderColor}`, borderRadius: 8,
+              outline: 'none', background: cardBg,
+              fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+            }}
+          />
+        </div>
+
+        {/* ── Filters Pills ── */}
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 24 }}>
+          {(['all', 1, 2] as const).map(v => (
+            <button key={v} onClick={() => setPaperFilter(v)}
+              style={{
+                padding: '6px 16px', fontSize: 12, fontWeight: paperFilter === v ? 600 : 400,
+                color: paperFilter === v ? '#fff' : textMuted,
+                background: paperFilter === v ? accent : cardBg,
+                border: `1px solid ${paperFilter === v ? accent : borderColor}`,
+                borderRadius: 20, cursor: 'pointer',
+                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+              }}>
+              {v === 'all' ? `All (${allQuestions.length})` : `Paper ${v} (${v === 1 ? paperCounts.p1 : paperCounts.p2})`}
+            </button>
+          ))}
+          <span style={{ width: 8, borderLeft: `1px solid ${borderColor}` }} />
+          {(['all', 'correct', 'incorrect', 'not_attempted'] as const).map(v => (
+            <button key={v} onClick={() => setStatusFilter(v)}
+              style={{
+                padding: '6px 16px', fontSize: 12, fontWeight: statusFilter === v ? 600 : 400,
+                color: statusFilter === v ? '#fff' : textMuted,
+                background: statusFilter === v ? accent : cardBg,
+                border: `1px solid ${statusFilter === v ? accent : borderColor}`,
+                borderRadius: 20, cursor: 'pointer',
+                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+              }}>
+              {v === 'all' ? t('topicsPage.statusAll') : v === 'correct' ? `✓ ${statusCounts.correct}` : v === 'incorrect' ? `✗ ${statusCounts.incorrect}` : `— ${statusCounts.notAttempted}`}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Filters */}
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '12px 20px 0', display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center' }}>
-        <span style={{ fontSize: 12, color: '#888', fontWeight: 600 }}>{t('topicsPage.paperFilterLabel')}</span>
-        <button onClick={() => setPaperFilter('all')} style={filterBtnStyle(paperFilter === 'all')}>
-          {t('topicsPage.statusAll')} ({allQuestions.length})
-        </button>
-        <button onClick={() => setPaperFilter(1)} style={filterBtnStyle(paperFilter === 1)}>
-          Paper 1 ({paperCounts.p1})
-        </button>
-        <button onClick={() => setPaperFilter(2)} style={filterBtnStyle(paperFilter === 2)}>
-          Paper 2 ({paperCounts.p2})
-        </button>
-
-        <span style={{ width: 16 }} />
-
-        <span style={{ fontSize: 12, color: '#888', fontWeight: 600 }}>{t('topicsPage.statusFilterLabel')}</span>
-        <button onClick={() => setStatusFilter('all')} style={filterBtnStyle(statusFilter === 'all')}>
-          {t('topicsPage.statusAll')}
-        </button>
-        <button onClick={() => setStatusFilter('correct')} style={filterBtnStyle(statusFilter === 'correct')}>
-          {t('topicsPage.statusCorrect').replace('{count}', String(statusCounts.correct))}
-        </button>
-        <button onClick={() => setStatusFilter('incorrect')} style={filterBtnStyle(statusFilter === 'incorrect')}>
-          {t('topicsPage.statusIncorrect').replace('{count}', String(statusCounts.incorrect))}
-        </button>
-        <button onClick={() => setStatusFilter('not_attempted')} style={filterBtnStyle(statusFilter === 'not_attempted')}>
-          {t('topicsPage.statusNotAttempted').replace('{count}', String(statusCounts.notAttempted))}
-        </button>
-      </div>
-
-      {/* Main Content */}
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '16px 20px 60px', display: 'flex', gap: 24 }}>
-        {/* Left Sidebar - Tags */}
+      {/* ── Main Content ── */}
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 20px 60px', display: 'flex', gap: 24 }}>
+        {/* Left Sidebar */}
         <div style={{ width: 220, flexShrink: 0 }}>
           <div style={{
-            fontSize: 13, fontWeight: 600, color: '#333', marginBottom: 8,
-            padding: '0 12px',
+            background: cardBg, borderRadius: 12, border: `1px solid ${borderColor}`,
+            padding: '8px 0', overflow: 'hidden',
           }}>
-            {t('topicsPage.sidebarTitle')}
+            <div style={{ padding: '10px 16px', fontSize: 11, fontWeight: 600, color: textMuted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              {t('topicsPage.sidebarTitle')}
+            </div>
+            {TAG_LIST.map(tag => {
+              const count = tagCounts[tag] || 0;
+              const isActive = selectedTag === tag;
+              return (
+                <div key={tag} onClick={() => { setSelectedTag(tag); setPaperFilter('all'); setStatusFilter('all'); }}
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    padding: '9px 16px', cursor: 'pointer',
+                    background: isActive ? accentBg : 'transparent',
+                    color: isActive ? accent : textMain,
+                    fontWeight: isActive ? 600 : 400,
+                    fontSize: 13,
+                    borderRight: isActive ? `3px solid ${accent}` : '3px solid transparent',
+                    transition: 'all 0.15s',
+                  }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{
+                      width: 8, height: 8, borderRadius: '50%',
+                      background: isActive ? accent : '#d4d4d8',
+                      flexShrink: 0,
+                    }} />
+                    {TAG_LABEL[tag]}
+                  </span>
+                  <span style={{
+                    fontSize: 11, color: isActive ? accent : textMuted,
+                    background: isActive ? '#dbeafe' : '#f3f4f6',
+                    padding: '1px 8px', borderRadius: 10, fontWeight: 500,
+                  }}>{count}</span>
+                </div>
+              );
+            })}
           </div>
-          {TAG_LIST.map(tag => {
-            const count = tagCounts[tag] || 0;
-            const isActive = selectedTag === tag;
-            return (
-              <div
-                key={tag}
-                onClick={() => { setSelectedTag(tag); setPaperFilter('all'); setStatusFilter('all'); }}
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  padding: '8px 12px', marginBottom: 2, borderRadius: 6,
-                  cursor: 'pointer',
-                  background: isActive ? TAG_BG : 'transparent',
-                  borderLeft: isActive ? `3px solid ${TAG_COLOR}` : '3px solid transparent',
-                  fontWeight: isActive ? 600 : 400,
-                  color: isActive ? TAG_COLOR : '#444',
-                  fontSize: 13,
-                  transition: 'background 0.15s',
-                }}
-              >
-                <span>{TAG_LABEL[tag]}</span>
-                <span style={{
-                  fontSize: 11, color: isActive ? TAG_COLOR : '#999',
-                  background: isActive ? '#dbeafe' : '#f3f3f3',
-                  padding: '1px 8px', borderRadius: 10,
-                  fontWeight: 500,
-                }}>
-                  {count}
-                </span>
-              </div>
-            );
-          })}
         </div>
 
         {/* Right Panel */}
         <div style={{ flex: 1, minWidth: 0 }}>
 
-          {/* ── Question List ── */}
+          {/* ── Random Generator Card ── */}
           <div style={{
-            fontSize: 14, fontWeight: 600, color: '#333', marginBottom: 12,
+            background: cardBg, borderRadius: 12, border: `1px solid ${borderColor}`,
+            padding: '20px 24px', marginBottom: 24,
           }}>
-            {TAG_LABEL[selectedTag]}
-            <span style={{ fontWeight: 400, color: '#888', marginLeft: 8, fontSize: 13 }}>
-              ({filteredQuestions.length} questions)
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: 15, fontWeight: 600, color: textMain }}>Random Paper Generator</h3>
+                <p style={{ margin: '2px 0 0', fontSize: 12, color: textMuted }}>Balanced 20-question paper matching real TMUA distribution</p>
+              </div>
+              <button onClick={generateRandomPaper}
+                style={{
+                  padding: '10px 24px', fontSize: 14, fontWeight: 600,
+                  color: '#fff', background: accent, border: 'none',
+                  borderRadius: 8, cursor: 'pointer',
+                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                }}>
+                Generate
+              </button>
+            </div>
+            <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+              <button onClick={() => setGenPaperNum(1)}
+                style={{
+                  padding: '6px 20px', fontSize: 12, fontWeight: genPaperNum === 1 ? 600 : 400,
+                  color: genPaperNum === 1 ? '#fff' : textMuted,
+                  background: genPaperNum === 1 ? accent : '#f1f5f9',
+                  border: 'none', borderRadius: 20, cursor: 'pointer',
+                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                }}>Paper 1</button>
+              <button onClick={() => setGenPaperNum(2)}
+                style={{
+                  padding: '6px 20px', fontSize: 12, fontWeight: genPaperNum === 2 ? 600 : 400,
+                  color: genPaperNum === 2 ? '#fff' : textMuted,
+                  background: genPaperNum === 2 ? accent : '#f1f5f9',
+                  border: 'none', borderRadius: 20, cursor: 'pointer',
+                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                }}>Paper 2</button>
+            </div>
+            <div style={{ fontSize: 11, color: textMuted, lineHeight: 1.6 }}>
+              {Object.entries(genPaperNum === 1 ? PAPER1_DISTRIBUTION : PAPER2_DISTRIBUTION)
+                .map(([tag, count]) => `${TAG_LABEL[tag as TopicTag] || tag} ×${count}`).join(' · ')}
+            </div>
+
+            {generatedQuestions && generatedQuestions.length > 0 && (
+              <div style={{
+                marginTop: 16, padding: '12px 16px',
+                background: '#f8fafc', borderRadius: 8, border: `1px solid ${borderColor}`,
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                    {(() => {
+                      const dist: Record<string, number> = {};
+                      for (const q of generatedQuestions) dist[q.topic] = (dist[q.topic] || 0) + 1;
+                      return Object.entries(dist).map(([tag, count]) => (
+                        <span key={tag} style={{
+                          background: accentBg, color: accent,
+                          padding: '2px 8px', borderRadius: 8, fontSize: 11,
+                        }}>{TAG_LABEL[tag as TopicTag] || tag}: {count}</span>
+                      ));
+                    })()}
+                  </div>
+                  <button onClick={startGeneratedExam}
+                    style={{
+                      padding: '8px 20px', fontSize: 13, fontWeight: 600,
+                      color: '#fff', background: '#1e40af', border: 'none',
+                      borderRadius: 6, cursor: 'pointer',
+                      fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                    }}>Start Exam</button>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  {generatedQuestions.map((q, idx) => (
+                    <div key={idx} style={{
+                      display: 'flex', alignItems: 'center', gap: 10,
+                      padding: '4px 8px', borderRadius: 4, fontSize: 12, color: textMuted,
+                    }}>
+                      <span style={{ fontWeight: 600, color: textMain, minWidth: 28 }}>Q{idx + 1}</span>
+                      <span>{q.year} P{q.paperNumber} · Q{q.questionIndex + 1}</span>
+                      <span style={{ marginLeft: 'auto', fontSize: 11, color: accent }}>{TAG_LABEL[q.topic] || q.topic}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
-          {loading ? (
-            <div style={{ textAlign: 'center', padding: 60, color: '#888' }}>
-              <div style={{
-                width: 32, height: 32, margin: '0 auto 12px',
-                border: '3px solid #e0e0e0', borderTopColor: TAG_COLOR,
-                borderRadius: '50%', animation: 'spin 0.8s linear infinite',
-              }} />
-              {t('topicsPage.loading')}
-              <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+          {/* ── Topic Question Section ── */}
+          <div style={{
+            background: cardBg, borderRadius: 12, border: `1px solid ${borderColor}`,
+            padding: '20px 24px',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+              <h2 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: textMain }}>
+                {TAG_LABEL[selectedTag]}
+                <span style={{ fontWeight: 400, color: textMuted, marginLeft: 8, fontSize: 14 }}>({filteredQuestions.length} Qs)</span>
+              </h2>
+              <button
+                disabled={filteredQuestions.length < 5}
+                onClick={() => {
+                  const pool = filteredQuestions.length > 20 ? shuffle(filteredQuestions).slice(0, 20) : filteredQuestions;
+                  const genPaper = {
+                    id: `generated_${selectedTag}`,
+                    title: `${TAG_LABEL[selectedTag]} Practice Paper`,
+                    paper_number: 1 as const, year: 0, sitting: 'Generated',
+                    duration_minutes: 75, total_marks: pool.length, topics: [selectedTag],
+                    created_at: new Date().toISOString(),
+                    questions: pool.map((q, i) => ({ ...q.question, id: `gt${i + 1}` })),
+                  };
+                  localStorage.setItem(GENERATED_PAPER_KEY, JSON.stringify(genPaper));
+                  setGenMsg(`${TAG_LABEL[selectedTag]} paper (${pool.length} Q) generated!`);
+                  setTimeout(() => setGenMsg(''), 4000);
+                }}
+                style={{
+                  padding: '8px 18px', fontSize: 12, fontWeight: 600,
+                  color: filteredQuestions.length < 5 ? '#cbd5e1' : '#fff',
+                  background: filteredQuestions.length < 5 ? '#f1f5f9' : accent,
+                  border: 'none', borderRadius: 8, cursor: filteredQuestions.length < 5 ? 'default' : 'pointer',
+                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                }}>Generate Paper</button>
             </div>
-          ) : filteredQuestions.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: 40, color: '#888', fontSize: 13 }}>
-              {t('topicsPage.noResults')}
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              {filteredQuestions.map((q) => {
-                const statusColors: Record<string, { color: string; bg: string }> = {
-                  correct: { color: '#16a34a', bg: '#f0fdf4' },
-                  incorrect: { color: '#dc2626', bg: '#fef2f2' },
-                  not_attempted: { color: '#888', bg: '#fafafa' },
-                };
-                const sc = statusColors[q.status];
-                const statusLabel = q.status === 'correct' ? t('topicsPage.statusLabelCorrect') : q.status === 'incorrect' ? t('topicsPage.statusLabelIncorrect') : t('topicsPage.statusLabelNotAttempted');
 
-                return (
-                  <div
-                    key={`${q.paperId}-${q.questionIndex}`}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: 12,
-                      padding: '10px 16px', borderRadius: 6,
-                      background: '#fafafa', border: '1px solid #eee',
-                      fontSize: 13,
-                    }}
-                  >
-                    <span
-                      onClick={() => handleQuestionClick(q)}
+            {genMsg && (
+              <div style={{ marginBottom: 12, padding: '10px 16px', borderRadius: 8,
+                background: '#dcfce7', color: '#16a34a', fontSize: 13, fontWeight: 500 }}>
+                ✓ {genMsg}
+              </div>
+            )}
+
+            {loading ? (
+              <div style={{ textAlign: 'center', padding: 60, color: textMuted }}>
+                <div style={{ width: 32, height: 32, margin: '0 auto 12px',
+                  border: '3px solid #e0e0e0', borderTopColor: accent,
+                  borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                {t('topicsPage.loading')}
+                <style>{'@keyframes spin{to{transform:rotate(360deg)}}'}</style>
+              </div>
+            ) : filteredQuestions.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: 40, color: textMuted, fontSize: 13 }}>{t('topicsPage.noResults')}</div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {filteredQuestions.map(q => {
+                  const sc = q.status === 'correct' ? { color: '#16a34a', bg: '#f0fdf4' }
+                    : q.status === 'incorrect' ? { color: '#dc2626', bg: '#fef2f2' }
+                    : { color: '#94a3b8', bg: '#f8fafc' };
+                  const statusLabel = q.status === 'correct' ? '✓' : q.status === 'incorrect' ? '✗' : '—';
+
+                  return (
+                    <div key={`${q.paperId}-${q.questionIndex}`}
                       style={{
-                        fontSize: 11, fontWeight: 600, color: sc.color,
-                        background: sc.bg, padding: '2px 10px', borderRadius: 10,
-                        minWidth: 80, textAlign: 'center',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      {statusLabel}
-                    </span>
-                    <span
-                      onClick={() => handleQuestionClick(q)}
-                      style={{ color: '#333', fontWeight: 500, cursor: 'pointer' }}
-                    >
-                      {q.year} Paper {q.paperNumber}
-                    </span>
-                    <span
-                      onClick={() => handleQuestionClick(q)}
-                      style={{ color: '#888', cursor: 'pointer' }}
-                    >
-                      Question {q.questionIndex + 1}
-                    </span>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openPdfReview(q.year, q.paperNumber, q.questionIndex);
-                      }}
-                      style={{
-                        marginLeft: 'auto',
-                        padding: '3px 12px',
-                        fontSize: 11,
-                        fontWeight: 500,
-                        color: TAG_COLOR,
-                        background: '#fff',
-                        border: `1px solid ${TAG_COLOR}`,
-                        borderRadius: 4,
-                        cursor: 'pointer',
-                        fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
-                      }}
-                    >
-                      {t('topicsPage.reviewButton')}
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+                        display: 'flex', alignItems: 'center', gap: 12,
+                        padding: '10px 16px', borderRadius: 8,
+                        background: '#f8fafc', border: `1px solid ${borderColor}`,
+                        fontSize: 13,
+                      }}>
+                      <span style={{
+                        width: 28, height: 28, borderRadius: '50%',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 12, fontWeight: 700,
+                        background: sc.bg, color: sc.color,
+                        flexShrink: 0,
+                      }}>{statusLabel}</span>
+                      <span style={{ color: textMain, fontWeight: 500 }}>{q.year} Paper {q.paperNumber}</span>
+                      <span style={{ color: textMuted }}>Q{q.questionIndex + 1}</span>
+                      <span style={{
+                        marginLeft: 'auto', fontSize: 11,
+                        background: accentBg, color: accent,
+                        padding: '2px 10px', borderRadius: 10, fontWeight: 500,
+                      }}>{TAG_LABEL[q.topic] || q.topic}</span>
+                      <button onClick={(e) => { e.stopPropagation(); setReviewEntry(q); }}
+                        style={{
+                          padding: '4px 14px', fontSize: 11, fontWeight: 500,
+                          color: accent, background: '#fff',
+                          border: `1px solid ${accent}`, borderRadius: 6, cursor: 'pointer',
+                          fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                        }}>{t('topicsPage.reviewButton')}</button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
