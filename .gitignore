@@ -1,13 +1,54 @@
+# 依赖
 node_modules/
-dist/
-.env
-*.log
-.DS_Store
 __pycache__/
 *.pyc
 .venv/
 venv/
+
+# 构建产物
+dist/
+dist.bak/
+*.tsbuildinfo
+
+# 密钥
+.env
+.env.local
+.env.production
+
+# 日志
+*.log
+logs/
+
+# 数据文件（太大，不放 GitHub）
 papers/
 *.db
 *.db-journal
-online-proctoring/client/public/tmua-papers
+*.tar.gz
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+
+# 备份
+*bak/
+*backup/
+*old/
+*snapshot/
+comenius-website/
+all-projects-online-proctoring/
+comenius-academy-old/
+
+# 临时文件
+tmp/
+temp/
+
+# 静态 HTML（旧版）
+*.html
+!online-proctoring/client/index.html
+
+# 构建分析
+stats.html

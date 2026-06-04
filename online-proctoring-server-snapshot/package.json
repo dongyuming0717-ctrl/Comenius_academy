@@ -1,8 +1,0 @@
-{
-  "name": "online-proctoring",
-  "private": true,
-  "scripts": {
-    "build": "npm --prefix client npm install && npm run build",
-    "vercel-build": "npm --prefix client npm install && npm run build"
-  }
-}

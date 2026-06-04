@@ -53,6 +53,16 @@ function removeGeneratedPaper() {
   localStorage.removeItem(GENERATED_PAPER_KEY);
 }
 
+/**
+ * ExamPage — TMUA Mock Examination (2245 lines, to be split into 4 modules)
+ *
+ * SECTION 1 (lines ~60-560):  Paper Selection — list papers, stats, year grouping
+ * SECTION 2 (lines ~560-700): Exam Confirmation — pre-check + confirm dialog
+ * SECTION 3 (lines ~700-1050): Exam Engine — timer, questions, answers, webcam
+ * SECTION 4 (lines ~1050-1227): Results & Review — score, breakdown, question review
+ *
+ * TODO: Extract into ExamPaperList, ExamConfirmation, ExamEngine, ExamReview
+ */
 export function ExamPage() {
   const { supabase, user, status, sessionId, startSession, endSession, resetSession } = useProctor();
   const navigate = useNavigate();
@@ -563,6 +573,9 @@ export function ExamPage() {
     );
   }
 
+  // ══════════════════════════════════════════════════
+  // SECTION 2: Exam Confirmation
+  // ══════════════════════════════════════════════════
   // ---- Exam Confirmation Page (after PreExamCheck) ----
   if (showExamConfirm && !examStarted && selectedPaper) {
     const qCount = (selectedPaper.questions as Question[]).length;
