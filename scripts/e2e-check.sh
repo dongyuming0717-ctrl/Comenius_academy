@@ -160,3 +160,15 @@ if curl -s -o /dev/null -w "%{http_code}" "http://localhost:${MCQ_PORT}/" 2>/dev
 else
   echo "  ⚠️  MCQ Viewer not running on :${MCQ_PORT}"
 fi
+
+# ── MCQ Viewer ──
+echo "── MCQ Viewer ──"
+MCQ_PORT=3456
+if curl -s -o /dev/null -w "%{http_code}" "http://localhost:${MCQ_PORT}/" 2>/dev/null | grep -q 200; then
+  pass "Viewer HTTP 200"
+  # Check JS is valid (balanced braces)
+  JS_BRACES=$(curl -s "http://localhost:${MCQ_PORT}/" | python3 -c "import sys; t=sys.stdin.read(); o=t.count('{'); c=t.count('}'); print('OK' if o==c else 'BROKEN')")
+  if [ "$JS_BRACES" = "OK" ]; then pass "Viewer JS valid"; else fail "Viewer JS" "unbalanced braces — white screen"; fi
+else
+  fail "Viewer" "not running"
+fi
