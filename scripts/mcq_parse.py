@@ -176,18 +176,7 @@ for block in blocks:
         if tag == 'img':
             images_in_q.append(f'![image]({text})')
         elif tag == 'table':
-            # Fix 2: table with A/B/C/D in first column = option table
-            first_col_vals = [r.split('|')[0].strip() for r in text.split('\n') if r.strip() and not r.strip().startswith('|---')]
-            if len(first_col_vals) >= 2 and all(v in 'ABCD' or v == '' for v in first_col_vals[:5] if v):
-                # This table IS the options — extract cells as option text
-                rows = [r for r in text.split('\n') if r.strip() and not r.startswith('|---')]
-                for ri, row in enumerate(rows[1:5] if len(rows) > 1 else []):
-                    cells = [c.strip() for c in row.split('|') if c.strip()]
-                    if cells:
-                        letters = 'ABCD'
-                        opts.append((letters[min(ri, 3)], ' | '.join(cells[1:])))
-            else:
-                tables_in_q.append(f'\n{text}\n')
+            tables_in_q.append(f'\n{text}\n')
         elif tag == 'p':
             t = text.strip()
             if not t or re.match(r'^\d+$', t):
