@@ -47,24 +47,20 @@ if EXT == 'docx':
             tbl = doc.tables[ti]
             ti += 1
             rows = []
-            ncols = len(tbl.rows[0].cells) if tbl.rows else 0
             for row in tbl.rows:
                 cells = [cell.text.strip() for cell in row.cells]
-                # Trim trailing empty cells
                 while cells and cells[-1] == '': cells.pop()
                 while cells and cells[0] == '': cells.pop(0)
-                if cells: rows.append('| ' + ' | '.join(cells) + ' |')
-            # Remove duplicate empty rows
-            clean_rows = []
-            for r in rows:
-                stripped = r.replace('|', '').replace(' ', '').replace('-', '')
-                if stripped and r not in clean_rows:
-                    clean_rows.append(r)
-                elif not stripped:
-                    clean_rows.append(r)
-            if len(clean_rows) >= 2:
-                md = clean_rows[0] + '\n|' + '|'.join(['---'] * len(clean_rows[0].split('|'))) + '|'
-                for r in clean_rows[1:]:
+                if cells: rows.append(cells)
+            # Detect ABCD option table (first column of data rows = A/B/C/D)
+            is_opt = len(rows) >= 5 and all(rows[i][0] in 'ABCD' for i in range(1, min(5, len(rows))))
+            md_rows = []
+            for ri, cells in enumerate(rows):
+                if is_opt and ri == 0: continue  # skip header for option tables
+                md_rows.append('| ' + ' | '.join(cells) + ' |')
+            if len(md_rows) >= 2:
+                md = md_rows[0] + '\n|' + '|'.join(['---'] * len(md_rows[0].split('|'))) + '|'
+                for r in md_rows[1:]:
                     md += '\n' + r
                 items.append(('table', md))
 
@@ -189,16 +185,19 @@ for block in blocks:
             images_in_q.append(f'![image]({text})')
         elif tag == 'table':
             tables_in_q.append(f'\n{text}\n')
-            # Also extract options from table if first column has A/B/C/D
-            rows = [r for r in text.split('\n') if r.strip() and not r.startswith('|---')]
-            if len(rows) >= 5:
-                first_col = [r.split('|')[1].strip() if len(r.split('|')) > 1 else '' for r in rows[1:]]  # skip header
+            # Also extract options from table markdown if first column is ABCD
+            tbl_rows = [r for r in text.split('\n') if r.strip() and not r.startswith('|---')]
+            if len(tbl_rows) >= 4:
+                first_col = []
+                for r in tbl_rows:
+                    parts = [c.strip() for c in r.split('|') if c.strip()]
+                    if parts: first_col.append(parts[0])
                 if len(first_col) >= 4 and all(v in 'ABCD' for v in first_col[:4]):
-                    for ri in range(min(4, len(rows)-1)):
-                        cells = [c.strip() for c in rows[ri+1].split('|') if c.strip()]
-                        if cells:
-                            label = cells[0]
-                            rest = ' | '.join(cells[1:]) if len(cells) > 1 else ''
+                    for ri in range(min(4, len(tbl_rows))):
+                        parts = [c.strip() for c in tbl_rows[ri].split('|') if c.strip()]
+                        if parts:
+                            label = parts[0]
+                            rest = ' | '.join(parts[1:]) if len(parts) > 1 else ''
                             if label in 'ABCD' and label not in {o[0] for o in opts}:
                                 opts.append((label, rest))
         elif tag == 'p':
