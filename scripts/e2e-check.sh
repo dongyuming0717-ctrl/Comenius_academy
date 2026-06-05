@@ -149,3 +149,14 @@ if [ "$FAIL" -gt 0 ]; then
 else
   echo -e "${GREEN}✅ ALL $PASS CHECKS PASSED — ready to deploy${NC}"
 fi
+
+# ── MCQ Viewer Check ──
+echo "── MCQ Viewer ──"
+MCQ_PORT=3456
+if curl -s -o /dev/null -w "%{http_code}" "http://localhost:${MCQ_PORT}/" 2>/dev/null | grep -q 200; then
+  IMGS=$(curl -s "http://localhost:${MCQ_PORT}/0455_11_MayJune_2021.md" 2>/dev/null | grep -c '!\[image\]')
+  QS=$(curl -s "http://localhost:${MCQ_PORT}/0455_11_MayJune_2021.md" 2>/dev/null | grep -c '### Q')
+  echo "  ✅ MCQ Viewer :${MCQ_PORT} — $QS questions, $IMGS images"
+else
+  echo "  ⚠️  MCQ Viewer not running on :${MCQ_PORT}"
+fi
