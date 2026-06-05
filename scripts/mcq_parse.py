@@ -47,12 +47,24 @@ if EXT == 'docx':
             tbl = doc.tables[ti]
             ti += 1
             rows = []
+            ncols = len(tbl.rows[0].cells) if tbl.rows else 0
             for row in tbl.rows:
                 cells = [cell.text.strip() for cell in row.cells]
-                rows.append('| ' + ' | '.join(cells) + ' |')
-            if rows:
-                md = rows[0] + '\n|' + '|'.join(['---'] * len(rows[0].split('|'))) + '|'
-                for r in rows[1:]:
+                # Trim trailing empty cells
+                while cells and cells[-1] == '': cells.pop()
+                while cells and cells[0] == '': cells.pop(0)
+                if cells: rows.append('| ' + ' | '.join(cells) + ' |')
+            # Remove duplicate empty rows
+            clean_rows = []
+            for r in rows:
+                stripped = r.replace('|', '').replace(' ', '').replace('-', '')
+                if stripped and r not in clean_rows:
+                    clean_rows.append(r)
+                elif not stripped:
+                    clean_rows.append(r)
+            if len(clean_rows) >= 2:
+                md = clean_rows[0] + '\n|' + '|'.join(['---'] * len(clean_rows[0].split('|'))) + '|'
+                for r in clean_rows[1:]:
                     md += '\n' + r
                 items.append(('table', md))
 
