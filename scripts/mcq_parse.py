@@ -13,13 +13,36 @@ if EXT == 'docx':
     from docx import Document
     from docx.oxml.ns import qn
     doc = Document(INPUT)
+
+    # Extract all images to OUTDIR/images
+    img_dir = os.path.join(OUTDIR, 'images')
+    os.makedirs(img_dir, exist_ok=True)
+    rel_map = {}  # rId -> filename
+    for rel_id, rel in doc.part.rels.items():
+        if 'image' in rel.reltype:
+            ext = rel.target_ref.split('.')[-1]
+            fname = f"img_{rel_id}.{ext}"
+            with open(os.path.join(img_dir, fname), 'wb') as f:
+                f.write(rel.target_part.blob)
+            rel_map[rel_id] = fname
+
     pi = ti = 0
     for child in doc.element.body:
         if child.tag == qn('w:p'):
+            # Check for inline images in this paragraph
+            has_img = False
+            for run in doc.paragraphs[pi].runs:
+                for blip in run._element.findall('.//' + qn('a:blip')):
+                    embed = blip.get(qn('r:embed'))
+                    if embed and embed in rel_map:
+                        items.append(('img', f'images/{rel_map[embed]}'))
+                        has_img = True
             t = doc.paragraphs[pi].text.strip()
             pi += 1
             if t:
                 items.append(('p', t))
+            elif has_img:
+                pass  # image-only paragraph, already added
         elif child.tag == qn('w:tbl') and ti < len(doc.tables):
             tbl = doc.tables[ti]
             ti += 1
