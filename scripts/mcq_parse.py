@@ -192,8 +192,8 @@ for block in blocks:
             # Also extract options from table if first column has A/B/C/D
             rows = [r for r in text.split('\n') if r.strip() and not r.startswith('|---')]
             if len(rows) >= 5:
-                first_col = [r.split('|')[1].strip() if len(r.split('|')) > 1 else '' for r in rows]
-                if all(v in 'ABCD' for v in first_col[:4]):
+                first_col = [r.split('|')[1].strip() if len(r.split('|')) > 1 else '' for r in rows[1:]]  # skip header
+                if len(first_col) >= 4 and all(v in 'ABCD' for v in first_col[:4]):
                     for ri in range(min(4, len(rows)-1)):
                         cells = [c.strip() for c in rows[ri+1].split('|') if c.strip()]
                         if cells:
