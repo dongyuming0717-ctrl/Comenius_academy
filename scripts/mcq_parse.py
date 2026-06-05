@@ -195,6 +195,24 @@ for block in blocks:
             # Fix 3: paper code line at end
             if re.match(r'^\d{4}/\d{2}/', t):
                 continue
+
+            # Detect LaTeX table: @lll@ & & year 1 & year 2 \\ agriculture & 4 & 3 \\
+            if re.match(r'^@[lcr| ]+@', t) or ('&' in t and '\\\\' in t):
+                # Convert LaTeX tabular to markdown table
+                latex = t.replace('\\\\', '\n').strip()
+                # Remove column spec like @lll@
+                latex = re.sub(r'^@[^@]*@\s*', '', latex)
+                rows = [r.strip() for r in latex.split('\n') if r.strip()]
+                md_rows = []
+                for ri, row in enumerate(rows):
+                    cells = [c.strip() for c in row.split('&')]
+                    md_rows.append('| ' + ' | '.join(cells) + ' |')
+                    if ri == 0 and cells:
+                        md_rows.append('|' + '|'.join(['---'] * len(cells)) + '|')
+                if md_rows:
+                    tables_in_q.append('\n' + '\n'.join(md_rows) + '\n')
+                continue
+
             m2 = re.match(r'^([A-D])\s+(.+)', t)
             if m2:
                 opts.append((m2.group(1), m2.group(2)))
@@ -213,15 +231,31 @@ for block in blocks:
                 qbody.remove(candidate)
                 opts.insert(0, ('A', candidate))
 
-    # Fix 3: inline options "0.8 B 0.9 C 1.2 D 1.25"
+    # Fix 3: inline options "A 0.8 B 0.9 C 1.2 D 1.25" or "0.8 B 0.9 C 1.2 D 1.25"
+    expanded_opts = []
+    for label, text in opts:
+        # Check if this option text contains B/C/D labels inline
+        if re.search(r'\s+[B-D]\s+', text):
+            parts = re.split(r'\s+(?=[B-D]\s)', text)
+            expanded_opts.append((label, parts[0].strip()))
+            for part in parts[1:]:
+                m3 = re.match(r'^([B-D])\s+(.+)', part)
+                if m3:
+                    expanded_opts.append((m3.group(1), m3.group(2).strip()))
+        else:
+            expanded_opts.append((label, text))
+    opts = expanded_opts
+    del expanded_opts
+
+    # Fix 3b: inline options in qbody "0.8 B 0.9 C 1.2 D 1.25" (no A label at all)
     for idx, item in enumerate(qbody):
         if re.search(r'\s+B\s+.*\s+C\s+.*\s+D\s+', item):
             parts = re.split(r'\s+(?=[BCD]\s)', item)
             if len(parts) >= 3:
-                # First part before B = option A
+                # First part before B = option A (may be empty if text starts with B)
                 a_part = parts[0].strip()
-                if a_part and 'A' not in labels_found:
-                    opts.insert(0, ('A', a_part))
+                if 'A' not in labels_found:
+                    opts.insert(0, ('A', a_part if a_part else '⚠️ Missing in source'))
                 # B, C, D parts
                 for part in parts[1:]:
                     m3 = re.match(r'^([B-D])\s+(.+)', part)
