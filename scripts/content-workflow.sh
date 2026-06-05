@@ -32,8 +32,10 @@ if [ -n "$INPUT" ] && [ -f "$INPUT" ]; then
   case "$INPUT" in
     *.md)
       echo "  📄 Markdown detected"
-      PAPERS=$(grep -c "^## " "$INPUT" 2>/dev/null || echo 0)
-      QS=$(grep -c "^### Q" "$INPUT" 2>/dev/null || echo 0)
+      PAPERS=$(grep -c "^## " "$INPUT" 2>/dev/null || true)
+      PAPERS=${PAPERS:-0}
+      QS=$(grep -c "^### Q" "$INPUT" 2>/dev/null || true)
+      QS=${QS:-0}
       echo "  Papers: $PAPERS"
       echo "  Questions: $QS"
       # Validate with content validator
