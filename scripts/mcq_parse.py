@@ -199,7 +199,7 @@ for block in blocks:
                             label = parts[0]
                             rest = ' | '.join(parts[1:]) if len(parts) > 1 else ''
                             if label in 'ABCD' and label not in {o[0] for o in opts}:
-                                opts.append((label, '—'))
+                                opts.append((label, ''))
         elif tag == 'p':
             t = text.strip()
             if not t or re.match(r'^\d+$', t):
