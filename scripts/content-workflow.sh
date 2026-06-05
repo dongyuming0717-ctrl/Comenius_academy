@@ -122,7 +122,7 @@ if [ -n "$INPUT" ] && [ -f "$INPUT" ]; then
   Number of questions: [N]
   Batch: [1/5]
 
-  Standard format:
+  Standard format (see docs/econ-mcq-templates.md for all 5 templates):
   ## <paper code> <session> <year> · <syllabus> Paper <number>
 
   ### Q1
