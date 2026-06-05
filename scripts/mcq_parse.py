@@ -177,6 +177,18 @@ for block in blocks:
             images_in_q.append(f'![image]({text})')
         elif tag == 'table':
             tables_in_q.append(f'\n{text}\n')
+            # Also extract options from table if first column has A/B/C/D
+            rows = [r for r in text.split('\n') if r.strip() and not r.startswith('|---')]
+            if len(rows) >= 5:
+                first_col = [r.split('|')[1].strip() if len(r.split('|')) > 1 else '' for r in rows]
+                if all(v in 'ABCD' for v in first_col[:4]):
+                    for ri in range(min(4, len(rows)-1)):
+                        cells = [c.strip() for c in rows[ri+1].split('|') if c.strip()]
+                        if cells:
+                            label = cells[0]
+                            rest = ' | '.join(cells[1:]) if len(cells) > 1 else ''
+                            if label in 'ABCD' and label not in {o[0] for o in opts}:
+                                opts.append((label, rest))
         elif tag == 'p':
             t = text.strip()
             if not t or re.match(r'^\d+$', t):
@@ -262,16 +274,19 @@ for block in blocks:
     q_parts = qbody + images_in_q + tables_in_q
     qt = ' '.join(q_parts).strip()
 
-    # Fill remaining slots
-    while len(opts) < 4:
-        next_label = chr(65 + len(opts))
-        # Try fallback from qbody
-        text_items = [x for x in qbody if not x.startswith('![')]
-        if text_items:
-            opts.append((next_label, text_items[-1]))
-            qbody = [x for x in qbody if x != text_items[-1]]
-        else:
-            opts.append((next_label, '⚠️ Missing'))
+    # Fill remaining slots: only from qbody if no tables present (tables mean options are visual)
+    if not tables_in_q:
+        while len(opts) < 4:
+            next_label = chr(65 + len(opts))
+            text_items = [x for x in qbody if not x.startswith('![') and len(x) > 3]
+            if text_items:
+                opts.append((next_label, text_items[-1]))
+                qbody = [x for x in qbody if x != text_items[-1]]
+            else:
+                opts.append((next_label, '⚠️ Missing'))
+    else:
+        while len(opts) < 4:
+            opts.append((chr(65 + len(opts)), '⚠️ Missing'))
     questions.append((num, qt, opts[:4]))
 
 # ── Group papers (Q1 = new paper) ──
