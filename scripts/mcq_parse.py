@@ -146,29 +146,54 @@ for el in items:
 if cur:
     blocks.append(cur)
 
-# ── Parse each block: A/B/C/D = options, rest = question ──
+# ── Parse each block ──
 questions = []
 for block in blocks:
     if not block or block[0][0] != 'p':
         continue
-    m = re.match(r'^(\d{1,2})\s+', block[0][1])
+    first_text = block[0][1]
+
+    # Fix 3: Skip copyright block
+    if 'Permission to reproduce' in first_text:
+        continue
+
+    m = re.match(r'^(\d{1,2})\s+', first_text)
     if not m:
         continue
     num = int(m.group(1))
     if not (1 <= num <= 30):
         continue
 
-    qbody = [re.sub(r'^\d{1,2}\s+', '', block[0][1])]
+    qbody = [re.sub(r'^\d{1,2}\s+', '', first_text)]
     opts = []
+    images_in_q = []
+    tables_in_q = []
 
     for tag, text in block[1:]:
+        # Fix 3: copyright text in block → skip
+        if tag == 'p' and 'Permission to reproduce' in text:
+            break
         if tag == 'img':
-            qbody.append(f'![image]({text})')
+            images_in_q.append(f'![image]({text})')
         elif tag == 'table':
-            qbody.append(f'\n{text}\n')
+            # Fix 2: table with A/B/C/D in first column = option table
+            first_col_vals = [r.split('|')[0].strip() for r in text.split('\n') if r.strip() and not r.strip().startswith('|---')]
+            if len(first_col_vals) >= 2 and all(v in 'ABCD' or v == '' for v in first_col_vals[:5] if v):
+                # This table IS the options — extract cells as option text
+                rows = [r for r in text.split('\n') if r.strip() and not r.startswith('|---')]
+                for ri, row in enumerate(rows[1:5] if len(rows) > 1 else []):
+                    cells = [c.strip() for c in row.split('|') if c.strip()]
+                    if cells:
+                        letters = 'ABCD'
+                        opts.append((letters[min(ri, 3)], ' | '.join(cells[1:])))
+            else:
+                tables_in_q.append(f'\n{text}\n')
         elif tag == 'p':
             t = text.strip()
             if not t or re.match(r'^\d+$', t):
+                continue
+            # Fix 3: paper code line at end
+            if re.match(r'^\d{4}/\d{2}/', t):
                 continue
             m2 = re.match(r'^([A-D])\s+(.+)', t)
             if m2:
@@ -176,19 +201,33 @@ for block in blocks:
             else:
                 qbody.append(t)
 
-    # Fallback: if <4 labeled options, use last N text items from qbody
+    # Fix 5: missing A label — if we have B/C/D but no A
+    labels_found = {o[0] for o in opts}
+    if 'A' not in labels_found and labels_found:
+        opts.insert(0, ('A', '⚠️ Missing in source — check image'))
+
+    # Fix 4: image-only question (no text options, has images)
+    if not opts and images_in_q:
+        opts = [('A', 'See diagram'), ('B', 'See diagram'),
+                ('C', 'See diagram'), ('D', 'See diagram')]
+
+    # Assemble question text: text → images → tables
+    q_parts = qbody + images_in_q + tables_in_q
+    qt = ' '.join(q_parts).strip()
+
+    # Fix 1: text-only items from qbody as fallback, NOT including images/tables position
     if len(opts) < 4:
         text_only = [x for x in qbody if not x.startswith('![') and not x.startswith('\n|')]
         need = 4 - len(opts)
-        if len(text_only) >= need:
-            fallback = text_only[-need:]
-            qbody = [x for x in qbody if x not in fallback]
-            for t in fallback:
-                opts.append((chr(65 + len(opts)), t))
+        existing_labels = {o[0] for o in opts}
+        for t in text_only[-need:]:
+            next_label = chr(65 + len(opts))
+            if next_label not in existing_labels:
+                opts.append((next_label, t))
 
-    qt = ' '.join(qbody).strip()
     while len(opts) < 4:
-        opts.append(('?', ''))
+        next_label = chr(65 + len(opts))
+        opts.append((next_label, '⚠️ Missing'))
     questions.append((num, qt, opts[:4]))
 
 # ── Group papers (Q1 = new paper) ──
