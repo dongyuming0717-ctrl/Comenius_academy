@@ -80,15 +80,30 @@ if cp: papers.append(cp)
 
 os.makedirs(OUTDIR, exist_ok=True)
 
-KNOWN = [('0455_11','MayJune','2021'),('0455_12','MayJune','2021'),('0455_13','MayJune','2021'),('0455_11','OctNov','2021'),('0455_12','OctNov','2021'),('0455_13','OctNov','2021'),('0455_11','MayJune','2022'),('0455_12','MayJune','2022'),('0455_13','MayJune','2022'),('0455_11','OctNov','2022')]
+# Known paper codes extracted from HTML source
+KNOWN = [
+    ('0455/11', 'May/June', '2021'), ('0455/12', 'May/June', '2021'),
+    ('0455/13', 'May/June', '2021'), ('0455/11', 'Oct/Nov', '2021'),
+    ('0455/12', 'Oct/Nov', '2021'), ('0455/13', 'Oct/Nov', '2021'),
+    ('0455/11', 'May/June', '2022'), ('0455/12', 'May/June', '2022'),
+    ('0455/13', 'May/June', '2022'), ('0455/11', 'Oct/Nov', '2022'),
+]
 
 for pi, paper in enumerate(papers):
-    if pi < len(KNOWN): code, session, year = KNOWN[pi]
-    else: code, session, year = ('0455_XX','Unknown',f'Seq{pi-9}')
-    fname = f"{code}_{session}_{year}.md"
+    if pi < len(KNOWN):
+        code, session, year = KNOWN[pi]
+        code_safe = code.replace('/', '_')
+        sess_safe = session.replace('/', '')
+        fname = f"{code_safe}_{sess_safe}_{year}.md"
+        title = f"{code} {session} {year}"
+    else:
+        seq = pi - len(KNOWN) + 1
+        fname = f"0455_Paper_{pi+1:02d}_2023_2025.md"
+        title = f"0455 Paper {pi+1} (2023-2025)"
+    path = os.path.join(OUTDIR, fname)
     path = os.path.join(OUTDIR, fname)
     with open(path, 'w', encoding='utf-8') as f:
-        f.write(f"## {code} {session} {year} · IGCSE Economics Paper 1\n\n")
+        f.write(f"## {title} · IGCSE Economics Paper 1\n\n")
         letters = 'ABCD'
         for num, qt, opts in paper:
             valid = sum(1 for o in opts if o)
