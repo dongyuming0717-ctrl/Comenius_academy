@@ -201,33 +201,54 @@ for block in blocks:
             else:
                 qbody.append(t)
 
-    # Fix 5: missing A label — if we have B/C/D but no A
+    # Fix 1: unlabeled text before B/C/D → it's the missing A
     labels_found = {o[0] for o in opts}
-    if 'A' not in labels_found and labels_found:
-        opts.insert(0, ('A', '⚠️ Missing in source — check image'))
+    if 'A' not in labels_found and labels_found and qbody:
+        # Last item in qbody that is not an image/table marker is likely the missing A
+        text_items = [x for x in qbody if not x.startswith('![') and not x.startswith('\n|')]
+        if text_items:
+            candidate = text_items[-1]
+            # Only if it's short (option-like) and not clearly question text
+            if len(candidate) < 200:
+                qbody.remove(candidate)
+                opts.insert(0, ('A', candidate))
 
-    # Fix 4: image-only question (no text options, has images)
+    # Fix 3: inline options "0.8 B 0.9 C 1.2 D 1.25"
+    for idx, item in enumerate(qbody):
+        if re.search(r'\s+B\s+.*\s+C\s+.*\s+D\s+', item):
+            parts = re.split(r'\s+(?=[BCD]\s)', item)
+            if len(parts) >= 3:
+                # First part before B = option A
+                a_part = parts[0].strip()
+                if a_part and 'A' not in labels_found:
+                    opts.insert(0, ('A', a_part))
+                # B, C, D parts
+                for part in parts[1:]:
+                    m3 = re.match(r'^([B-D])\s+(.+)', part)
+                    if m3 and m3.group(1) not in labels_found:
+                        opts.append((m3.group(1), m3.group(2)))
+                qbody[idx] = ''  # Remove from question text
+    qbody = [x for x in qbody if x]
+
+    # Fix 4: image-only question
     if not opts and images_in_q:
         opts = [('A', 'See diagram'), ('B', 'See diagram'),
                 ('C', 'See diagram'), ('D', 'See diagram')]
 
-    # Assemble question text: text → images → tables
+    # Assemble question text
     q_parts = qbody + images_in_q + tables_in_q
     qt = ' '.join(q_parts).strip()
 
-    # Fix 1: text-only items from qbody as fallback, NOT including images/tables position
-    if len(opts) < 4:
-        text_only = [x for x in qbody if not x.startswith('![') and not x.startswith('\n|')]
-        need = 4 - len(opts)
-        existing_labels = {o[0] for o in opts}
-        for t in text_only[-need:]:
-            next_label = chr(65 + len(opts))
-            if next_label not in existing_labels:
-                opts.append((next_label, t))
-
+    # Fill remaining slots
     while len(opts) < 4:
         next_label = chr(65 + len(opts))
-        opts.append((next_label, '⚠️ Missing'))
+        # Try fallback from qbody
+        text_items = [x for x in qbody if not x.startswith('![')]
+        if text_items:
+            opts.append((next_label, text_items[-1]))
+            qbody = [x for x in qbody if x != text_items[-1]]
+        else:
+            opts.append((next_label, '⚠️ Missing'))
     questions.append((num, qt, opts[:4]))
 
 # ── Group papers (Q1 = new paper) ──
