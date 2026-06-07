@@ -16,6 +16,10 @@ export default defineConfig({
     port: 5173,
     https: true,
     proxy: {
+      '/api/chat': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
       '/api': 'http://localhost:3001',
       '/cie-papers': {
         target: 'http://localhost:8080',
