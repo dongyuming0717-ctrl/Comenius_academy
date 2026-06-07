@@ -53,3 +53,6 @@ jobs:
       - name: Build
         working-directory: online-proctoring/client-topics-prototype
         run: npm run build
+      - name: Smoke test
+        working-directory: online-proctoring/client-topics-prototype
+        run: npx playwright install chromium && npm test
