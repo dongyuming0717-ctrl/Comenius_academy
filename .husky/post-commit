@@ -2,3 +2,6 @@
 # Enterprise: auto-push after every local commit
 # Falls back gracefully if remote/upstream not configured (e.g. forks)
 git push 2>/dev/null || git push --set-upstream origin "$(git rev-parse --abbrev-ref HEAD)" 2>/dev/null || true
+
+# Verify: log auto-push activity
+echo "[post-commit] auto-push triggered at $(date)" >> /tmp/hook_test.log 2>/dev/null || true
