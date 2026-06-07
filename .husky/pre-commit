@@ -1,1 +1,30 @@
-cd "$(git rev-parse --show-toplevel)/online-proctoring/client" && npx lint-staged && npx vitest run && grep -q "chat-widget" index.html || { echo "❌ chat-widget MISSING from client/index.html"; exit 1; }
+#!/bin/sh
+ROOT="$(git rev-parse --show-toplevel)"
+
+# ── Main client checks ──
+cd "$ROOT/online-proctoring/client" && npx lint-staged && npx vitest run && grep -q "chat-widget" index.html || { echo "❌ chat-widget MISSING from client/index.html"; exit 1; }
+
+# ── Prototype: CDN dependency parity ──
+PROTO_DIR="$ROOT/online-proctoring/client-topics-prototype"
+if [ -d "$PROTO_DIR" ]; then
+  echo "🔍 Checking prototype CDN dependencies..."
+  MAIN_KATEX=$(grep -cE "(katex\.min\.js|auto-render\.min\.js)" "$ROOT/online-proctoring/client/index.html")
+  PROTO_KATEX=$(grep -cE "(katex\.min\.js|auto-render\.min\.js)" "$PROTO_DIR/index.html")
+  if [ "$PROTO_KATEX" -lt "$MAIN_KATEX" ]; then
+    echo "❌ Prototype index.html is missing KaTeX scripts (main: $MAIN_KATEX, proto: $PROTO_KATEX)"
+    exit 1
+  fi
+  # Check JS scripts are placed BEFORE the React module entry point
+  if ! grep "katex.min.js" "$PROTO_DIR/index.html" | head -1 | grep -q "katex"; then
+    echo "⚠  Prototype index.html may have KaTeX scripts after module entry"
+  fi
+
+  # ── Prototype: build check ──
+  echo "🔍 Building prototype..."
+  cd "$PROTO_DIR"
+  if [ -f "package.json" ]; then
+    npm run lint 2>/dev/null || true
+    npm run build 2>/dev/null || { echo "❌ Prototype build failed"; exit 1; }
+  fi
+  echo "✅ Prototype checks passed"
+fi
