@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Grading — CIE Marking Scheme</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Inter,system-ui,-apple-system,sans-serif;background:#f8fafc;color:#1e293b;min-height:100vh}
+    .container{max-width:760px;margin:0 auto;padding:40px 20px}
+    h1{font-size:24px;margin-bottom:4px}
+    .sub{color:#94a3b8;font-size:14px;margin-bottom:32px}
+    .card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin-bottom:20px}
+    h2{font-size:16px;margin-bottom:16px}
+    label{display:block;font-size:13px;font-weight:500;color:#64748b;margin-bottom:4px;margin-top:12px}
+    label:first-child{margin-top:0}
+    input,textarea,select{width:100%;padding:10px 14px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;font-family:Inter,system-ui,sans-serif;margin-bottom:8px;outline:none}
+    textarea{resize:vertical;min-height:60px}
+    input:focus,textarea:focus{border-color:#1e40af;box-shadow:0 0 0 2px rgba(30,64,175,.1)}
+    .file-box{border:2px dashed #d1d5db;border-radius:8px;padding:20px;text-align:center;margin-bottom:8px;cursor:pointer;transition:all .2s}
+    .file-box:hover{border-color:#1e40af;background:#f8fafc}
+    .file-box.has{border-color:#16a34a;background:#f0fdf4}
+    .file-box span{color:#94a3b8;font-size:13px}
+    .file-box input{display:none}
+    .btn{width:100%;padding:14px;font-size:15px;font-weight:600;color:#fff;background:#1e40af;border:none;border-radius:8px;cursor:pointer;margin-top:16px;font-family:Inter,system-ui,sans-serif}
+    .btn:disabled{opacity:.5;cursor:default}
+    .total-score{font-size:40px;font-weight:700;color:#1e40af;text-align:center;margin-bottom:4px}
+    .total-sub{text-align:center;color:#94a3b8;font-size:13px;margin-bottom:24px}
+    .q-header{font-size:15px;font-weight:600;margin-bottom:8px;display:flex;justify-content:space-between}
+    .q-score{color:#1e40af}
+    .mark-row{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:6px;margin-bottom:3px;font-size:12px}
+    .mark-row.ok{background:#f0fdf4}
+    .mark-row.no{background:#fef2f2}
+    .mark-dot{min-width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px}
+    .mark-row.ok .mark-dot{background:#16a34a;color:#fff}
+    .mark-row.no .mark-dot{background:#dc2626;color:#fff}
+    .summary{background:#eff6ff;color:#1e40af;padding:14px 18px;border-radius:8px;font-size:13px;line-height:1.6;margin-top:12px}
+    .spinner{text-align:center;padding:40px;color:#94a3b8}
+    .spinner::after{content:'';display:block;width:32px;height:32px;margin:12px auto;border:3px solid #e2e8f0;border-top-color:#1e40af;border-radius:50%;animation:spin .6s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>📝 CIE Marking Scheme Grading</h1>
+  <p class="sub">上传 Marking Scheme + 学生答卷 → 逐题逐点评分</p>
+
+  <div class="card">
+    <h2>1. Marking Scheme</h2>
+    <label class="file-box" id="schemeBox"><input type="file" id="schemePdf" accept=".pdf" onchange="fileSelected('scheme')"><span id="schemeLabel">📎 Click to upload Marking Scheme PDF</span></label>
+    <label style="margin-top:8px">或粘贴 Marking Scheme 文本:</label>
+    <textarea id="schemeText" placeholder="Q1(a): M1 for..., A1 for...&#10;Q1(b): M1 for..., A1 for...&#10;Q2: ..."></textarea>
+  </div>
+
+  <div class="card">
+    <h2>2. Student Answer</h2>
+    <label class="file-box" id="answerBox"><input type="file" id="answerPdf" accept=".pdf" onchange="fileSelected('answer')"><span id="answerLabel">📄 Click to upload Student's Handwritten Answer PDF</span></label>
+    <button class="btn" id="submitBtn" onclick="grade()">Grade Now</button>
+  </div>
+  <div id="result"></div>
+</div>
+
+<script>
+function fileSelected(type) {
+  const input = document.getElementById(type+'Pdf');
+  const box = document.getElementById(type+'Box');
+  const label = document.getElementById(type+'Label');
+  if (input.files[0]) { box.classList.add('has'); label.textContent = '✅ ' + input.files[0].name; }
+}
+async function grade() {
+  const answerFile = document.getElementById('answerPdf').files[0];
+  if (!answerFile) return alert('请上传学生答卷');
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true; btn.textContent = 'AI is grading...';
+  document.getElementById('result').innerHTML = '<div class="spinner">Analyzing against marking scheme...</div>';
+
+  const form = new FormData();
+  form.append('answer_pdf', answerFile);
+  const schemeFile = document.getElementById('schemePdf').files[0];
+  if (schemeFile) form.append('scheme_pdf', schemeFile);
+  const schemeText = document.getElementById('schemeText').value.trim();
+  if (schemeText && !schemeFile) form.append('scheme_text', schemeText);
+
+  try {
+    const resp = await fetch('http://localhost:5190/api/grade', {method:'POST', body:form});
+    const r = (await resp.json()).result;
+    let html = '<div class="card">';
+    html += `<div class="total-score">${r.total_score ?? '?'} / ${r.max_score ?? '?'}</div>`;
+    html += '<div class="total-sub">CIE Marking Scheme — Per Question</div>';
+
+    if (r.questions) {
+      r.questions.forEach(q => {
+        html += `<div style="margin-bottom:16px;padding:14px 16px;background:#f8fafc;border-radius:8px">
+          <div class="q-header"><span>📝 Question ${q.question_number}</span><span class="q-score">${q.score}/${q.max_score}</span></div>`;
+        (q.marks||[]).forEach(m => {
+          html += `<div class="mark-row ${m.awarded?'ok':'no'}">
+            <div class="mark-dot">${m.awarded?'✓':'✗'}</div>
+            <div style="flex:1"><strong>${m.point}</strong></div>
+            <div style="font-size:11px;color:#64748b">${m.reason||''}</div>
+          </div>`;
+        });
+        html += '</div>';
+      });
+    }
+    if (r.summary) html += `<div class="summary">💡 ${r.summary}</div>`;
+    html += '</div>';
+    document.getElementById('result').innerHTML = html;
+  } catch(e) {
+    document.getElementById('result').innerHTML = `<div class="card" style="color:#dc2626">Error: ${e.message}</div>`;
+  }
+  btn.disabled = false; btn.textContent = 'Grade Now';
+}
+</script>
+</body>
+</html>
