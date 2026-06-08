@@ -80,8 +80,14 @@ export function PracticeModal({ entry: q, allEntries, onClose, onAnswer }: {
             </div>
           )}
           {revealed && (
-            <div style={{marginTop:16,display:'flex',gap:8,justifyContent:'center'}}>
+            <div style={{marginTop:16,display:'flex',gap:8,justifyContent:'center',alignItems:'center'}}>
               <button onClick={() => { setSelected(null); setRevealed(false); }} style={{padding:'8px 18px',fontSize:12,fontWeight:500,color:'#d97706',background:'#fffbeb',border:'1px solid #fcd34d',borderRadius:6,cursor:'pointer',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>🔄 Retry</button>
+              {!isCorrect && (
+                <button onClick={() => {
+                  const q = encodeURIComponent(`${cur.year} Paper ${cur.paperNumber} Q${cur.questionIndex+1}: ${cur.text.substring(0,200)}. I answered ${String.fromCharCode(65+(selected??0))}, correct is ${String.fromCharCode(65+cur.correctAnswer)}.`);
+                  window.open(`https://amos.comenius.cn/api/chat?q=${q}`, '_blank');
+                }} style={{padding:'8px 18px',fontSize:12,fontWeight:500,color:'#1e40af',background:'#eff6ff',border:'1px solid #bfdbfe',borderRadius:6,cursor:'pointer',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>🤖 Ask Amos</button>
+              )}
             </div>
           )}
         </div>
