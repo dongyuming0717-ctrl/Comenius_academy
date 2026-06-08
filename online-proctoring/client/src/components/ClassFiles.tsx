@@ -103,9 +103,9 @@ export function ClassFiles({ classId, isTeacher }: Props) {
     <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', overflow: 'hidden' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', borderBottom: '1px solid #e2e8f0' }}>
         <div>
-          <h3 style={{ margin: 0, fontSize: 15, fontWeight: 600, color: '#1e293b' }}>Class Files</h3>
+          <h3 style={{ margin: 0, fontSize: 15, fontWeight: 600, color: '#1e293b' }}>Teacher Files</h3>
           <p style={{ margin: '2px 0 0', fontSize: 12, color: '#94a3b8' }}>
-            {isTeacher ? 'Upload and manage class materials' : 'Download materials shared by your teacher'}
+            {isTeacher ? 'Upload and manage teaching materials' : 'Download materials shared by your teacher'}
           </p>
         </div>
         {isTeacher && (
