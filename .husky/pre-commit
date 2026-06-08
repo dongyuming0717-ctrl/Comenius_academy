@@ -25,3 +25,13 @@ if [ -d "$PROTO_DIR" ]; then
     echo "✅ Prototype checks passed (CDN + Build + Test Coverage)"
   fi
 fi
+
+# ── Grading prototype checks ──
+GRADING_DIR="$ROOT/online-proctoring/grading-prototype"
+if [ -d "$GRADING_DIR" ]; then
+  echo "🔍 Checking grading prototype..."
+  cd "$GRADING_DIR"
+  python3 -c "import py_compile; py_compile.compile('app.py', doraise=True)" || { echo "❌ Grading app.py syntax error"; exit 1; }
+  python3 tests/test_grading.py 2>/dev/null || { echo "❌ Grading tests failed"; exit 1; }
+  echo "✅ Grading prototype checks passed"
+fi
