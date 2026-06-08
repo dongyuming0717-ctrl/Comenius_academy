@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback, type FormEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { TopNav } from '../components/TopNav';
+import { ClassFiles } from '../components/ClassFiles';
+import { useProctor } from '../sdk/useProctor';
 import { supabase } from '../supabase';
 import type { Paper, Question } from '../sdk/types';
 import { useLocale } from '../i18n/LocaleContext';
@@ -57,6 +59,7 @@ export function ClassDetailPage() {
   const { t } = useLocale();
   const { classId } = useParams<{ classId: string }>();
   const navigate = useNavigate();
+  const { user } = useProctor();
 
   const [cls, setCls] = useState<ClassInfo | null>(null);
   const [loading, setLoading] = useState(true);
@@ -70,6 +73,8 @@ export function ClassDetailPage() {
   const [saving, setSaving] = useState(false);
   const [editError, setEditError] = useState('');
   const [editSuccess, setEditSuccess] = useState('');
+
+  const isTeacher = user && cls && user.id === cls.teacher_id;
 
   // Students
   const [students, setStudents] = useState<StudentRow[]>([]);
@@ -436,6 +441,11 @@ export function ClassDetailPage() {
             </div>
           )}
         </div>
+
+        {/* Class Files Section */}
+        {cls && <ClassFiles classId={classId!} isTeacher={!!isTeacher} />}
+
+        <div style={{ height: 20 }} />
 
         {/* Assigned Papers Section */}
         <div style={cardStyle}>
