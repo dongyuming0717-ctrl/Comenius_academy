@@ -6,7 +6,7 @@ import { TopNav } from '../components/TopNav';
 import { TAG_LIST, TAG_LABEL, TAG_COLOR, TAG_BG, type TopicTag } from '../data/tagColors';
 import type { Paper, Question } from '../sdk/types';
 import { MathText } from '../components/MathText';
-import { QuestionReviewModal } from '../components/QuestionReviewModal';
+import { PracticeModal } from '../components/PracticeModal';
 
 type PaperFilter = 'all' | 1 | 2;
 type StatusFilter = 'all' | 'correct' | 'incorrect' | 'not_attempted';
@@ -279,25 +279,13 @@ export function TopicsPage() {
     <div style={{ minHeight: '100vh', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: pageBg }}>
       <TopNav currentPage="topics-generate" />
 
-      {/* Inline Review Modal */}
+      {/* Practice Modal — overlay, no page shift */}
       {reviewEntry && (
-        <div style={{ borderBottom: '1px solid #e0e0e0' }}>
-          <QuestionReviewModal
-            entry={reviewEntry}
-            allEntries={filteredQuestions}
-            onClose={() => setReviewEntry(null)}
-            onPrevious={() => {
-              const idx = filteredQuestions.findIndex(fq => fq.paperId === reviewEntry.paperId && fq.questionIndex === reviewEntry.questionIndex);
-              if (idx > 0) setReviewEntry(filteredQuestions[idx - 1]);
-            }}
-            onNext={() => {
-              const idx = filteredQuestions.findIndex(fq => fq.paperId === reviewEntry.paperId && fq.questionIndex === reviewEntry.questionIndex);
-              if (idx < filteredQuestions.length - 1) setReviewEntry(filteredQuestions[idx + 1]);
-            }}
-            topicLabel={TAG_LABEL[reviewEntry.topic]}
-            closeLabel="Close Review"
-          />
-        </div>
+        <PracticeModal
+          entry={reviewEntry}
+          allEntries={filteredQuestions}
+          onClose={() => setReviewEntry(null)}
+        />
       )}
 
       {/* ── Page Header ── */}
