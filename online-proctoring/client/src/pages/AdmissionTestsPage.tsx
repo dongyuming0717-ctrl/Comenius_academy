@@ -50,6 +50,11 @@ const TESTS: AdmissionTest[] = [
     description: 'Required for Natural Sciences, Engineering, and Computer Science at Oxford',
     papers: 28, difficulty: 'Hard', duration: '90 minutes',
   },
+  {
+    id: 'engaa', name: 'ENGAA', fullName: 'Engineering Admissions Assessment',
+    description: 'Required for Engineering courses at Cambridge University (2016-2023)',
+    papers: 8, difficulty: 'Hard', duration: '80 minutes',
+  },
 ];
 
 // ── TMUA actual PDF data ──────────────────────────────────────────
@@ -145,6 +150,7 @@ const PAPER_NUMBERS: Record<string, string[]> = {
   esat: ['1', '2'],
   step: ['I', 'II', 'III'],
   tara: ['1'],
+  engaa: ['1'],
 };
 
 // ── Shared styles ─────────────────────────────────────────────────
@@ -321,12 +327,15 @@ function TestDetail() {
   const [userProfileId, setUserProfileId] = useState<string | null>(null);
 
   const isTMUA = testId === 'tmua';
+  const isENGAA = testId === 'engaa';
+  const isSupportedExam = isTMUA || isENGAA;  // TMUA and ENGAA share the same mock exam infra
   const generatedPaper = isTMUA ? loadGeneratedPaper() : null;
 
   useEffect(() => {
-    if (!isTMUA) { setLoading(false); return; }
+    if (!isSupportedExam) { setLoading(false); return; }
     setLoading(true);
     supabase.from('papers').select('*')
+      .ilike('title', `${testId}%`)
       .order('year', { ascending: false })
       .order('paper_number')
       .then(({ data, error }) => {
@@ -337,7 +346,7 @@ function TestDetail() {
 
   // Fetch user profile for stats
   useEffect(() => {
-    if (!user || !isTMUA) { setUserProfileId(null); return; }
+    if (!user || !isSupportedExam) { setUserProfileId(null); return; }
     supabase.from('users').select('id').eq('auth_id', user.id).single()
       .then(async ({ data, error }) => {
         if (!error && data) { setUserProfileId(data.id); return; }
@@ -348,11 +357,11 @@ function TestDetail() {
           .select('id').single();
         setUserProfileId(created?.id || user.id);
       });
-  }, [user, isTMUA]);
+  }, [user, isSupportedExam]);
 
   // Fetch user exam stats
   useEffect(() => {
-    if (!userProfileId || !isTMUA) return;
+    if (!userProfileId || !isSupportedExam) return;
     supabase.from('exam_sessions')
       .select('id, paper_id, answers, score')
       .eq('user_id', userProfileId)
@@ -376,7 +385,7 @@ function TestDetail() {
         // Store for later processing with papers
         (window as any).__tmuaSessions = sessions;
       });
-  }, [userProfileId, isTMUA]);
+  }, [userProfileId, isSupportedExam]);
 
   // Compute per-paper stats when papers and sessions are both loaded
   useEffect(() => {
@@ -508,8 +517,8 @@ function TestDetail() {
           </p>
         </div>
 
-        {/* TMUA-only: Stats + Video + Actions */}
-        {isTMUA && (
+        {/* Stats + Video + Actions (TMUA & ENGAA) */}
+        {isSupportedExam && (
           <>
             {/* Stats Cards */}
             <div style={{
@@ -620,7 +629,7 @@ function TestDetail() {
         )}
 
         {/* Available Mock Examinations */}
-        {isTMUA && (
+        {isSupportedExam && (
           <h2 style={{
             margin: '24px 0 16px 0', fontSize: 20, fontWeight: 600, color: '#333',
             fontFamily: font,
@@ -734,7 +743,7 @@ function TestDetail() {
               </div>
             );
           })}
-          {!loading && testId !== 'tmua' && (
+          {!loading && !isSupportedExam && (
             <div style={{ textAlign: 'center', padding: 48, color: colors.mutedForeground }}>
               <p style={{ fontSize: 18, fontWeight: 500, marginBottom: 8 }}>Coming Soon</p>
               <p>Interactive mock exams for {test?.name} are being prepared.</p>
