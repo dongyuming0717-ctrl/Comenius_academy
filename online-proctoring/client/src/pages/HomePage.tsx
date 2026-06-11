@@ -739,7 +739,17 @@ function ExamPreviewCard() {
               background: green, color: '#fff',
               fontSize: 14, fontWeight: 600,
               cursor: 'pointer', fontFamily: 'inherit',
-
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              {t('mcqExam.submit')}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function AnimatedSection({ children, style, className }: { children: React.ReactNode; style?: React.CSSProperties; className?: string }) {
   const { ref, inView } = useInView();
