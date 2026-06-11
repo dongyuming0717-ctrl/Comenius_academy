@@ -73,12 +73,12 @@ export default function App() {
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/update-password" element={<UpdatePasswordPage />} />
           {/* MCQ system */}
-          <Route path="/mcqs" element={<MCQs />} />
-          <Route path="/mcqs/:subject" element={<MCQSubject />} />
-          <Route path="/mcqs/:subject/:level/chapters" element={<MCQChapters />} />
-          <Route path="/mcqs/:subject/:level/chapters/:chapterId" element={<MCQExam />} />
-          <Route path="/mcqs/:subject/:level/full-papers" element={<MCQFullPapers />} />
-          <Route path="/mcqs/:subject/:level/full-papers/:paperId" element={<MCQExam />} />
+          <Route path="/mcqs" element={<ProtectedRoute><MCQs /></ProtectedRoute>} />
+          <Route path="/mcqs/:subject" element={<ProtectedRoute><MCQSubject /></ProtectedRoute>} />
+          <Route path="/mcqs/:subject/:level/chapters" element={<ProtectedRoute><MCQChapters /></ProtectedRoute>} />
+          <Route path="/mcqs/:subject/:level/chapters/:chapterId" element={<ProtectedRoute><MCQExam /></ProtectedRoute>} />
+          <Route path="/mcqs/:subject/:level/full-papers" element={<ProtectedRoute><MCQFullPapers /></ProtectedRoute>} />
+          <Route path="/mcqs/:subject/:level/full-papers/:paperId" element={<ProtectedRoute><MCQExam /></ProtectedRoute>} />
           {/* Profile settings */}
           <Route path="/profile-settings" element={<ProtectedRoute><ProfileSettings /></ProtectedRoute>} />
         </Routes>
