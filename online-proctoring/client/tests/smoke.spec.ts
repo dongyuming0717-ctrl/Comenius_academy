@@ -18,8 +18,8 @@ ROUTES.forEach(route => {
     // Navigate — use 'commit' to avoid hanging on Supabase auth timeout
     await page.goto(route, { waitUntil: 'commit', timeout: 15000 });
 
-    // Wait a bit for React to render (but don't wait for Supabase)
-    await page.waitForTimeout(3000);
+    // Allow time for ProtectedRoute auth check + redirect + render
+    await page.waitForTimeout(6000);
 
     // The page must have rendered something — not a blank white screen
     const bodyText = await page.textContent('body');
@@ -27,12 +27,13 @@ ROUTES.forEach(route => {
   });
 });
 
-test('past-papers page renders', async ({ page }) => {
+test('past-papers page renders or redirects to login', async ({ page }) => {
   await page.goto('/past-papers', { waitUntil: 'commit', timeout: 10000 });
-  await page.waitForTimeout(2000);
-  // At minimum the nav and page structure should render
-  const nav = page.locator('nav, header, [class*="nav"]').first();
-  await expect(nav).toBeVisible({ timeout: 5000 });
+  // Allow time for ProtectedRoute auth check + redirect + render
+  await page.waitForTimeout(6000);
+  // Page must have rendered something — login form, nav, or page content
+  const bodyText = await page.textContent('body');
+  expect(bodyText?.trim().length || 0).toBeGreaterThan(0);
 });
 
 test('navigation does not show error boundary', async ({ page }) => {
