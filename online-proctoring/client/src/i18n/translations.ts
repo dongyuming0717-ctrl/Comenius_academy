@@ -663,7 +663,6 @@ export const translations: Record<string, { en: string; zh: string }> = {
   'mcqExam.current': { en: 'Current', zh: '当前' },
   'mcqExam.flag': { en: 'Flag', zh: '标记' },
   'mcqExam.submit': { en: 'Submit', zh: '提交' },
-  'mcqExam.flagged': { en: 'Flagged', zh: '已标记' },
   'mcqExam.previous': { en: 'Previous', zh: '上一题' },
   'mcqExam.next': { en: 'Next', zh: '下一题' },
   'mcqExam.notAnswered': { en: 'Not answered', zh: '未作答' },
