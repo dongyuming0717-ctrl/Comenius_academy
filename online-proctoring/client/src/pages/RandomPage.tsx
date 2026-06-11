@@ -100,7 +100,7 @@ export function RandomPage() {
             localStorage.setItem(PAPERS_CACHE_KEY, JSON.stringify({ papers: paperData, ts: Date.now() }));
           } catch { /* ignore */ }
         }
-      } catch { /* ignore */ }
+      } catch (e) { console.warn('RandomPage: failed to load papers', e); }
       setLoading(false);
     }
     load();

@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { TopNav } from '../components/TopNav';
 import { useProctor } from '../sdk/useProctor';
@@ -328,6 +328,7 @@ function TestDetail() {
   const [userProfileId, setUserProfileId] = useState<string | null>(null);
   const [showAssign, setShowAssign] = useState(false);
   const [assignPaper, setAssignPaper] = useState<{ id: string; title: string } | null>(null);
+  const tmuaSessionsRef = useRef<any[]>([]);
 
   const isTMUA = testId === 'tmua';
   const isENGAA = testId === 'engaa';
@@ -386,13 +387,13 @@ function TestDetail() {
           avgScore: 0,
         });
         // Store for later processing with papers
-        (window as any).__tmuaSessions = sessions;
+        tmuaSessionsRef.current = sessions;
       });
   }, [userProfileId, isSupportedExam]);
 
   // Compute per-paper stats when papers and sessions are both loaded
   useEffect(() => {
-    const sessions = (window as any).__tmuaSessions;
+    const sessions = tmuaSessionsRef.current;
     if (!sessions || papers.length === 0) return;
 
     let totalCorrectAll = 0;
@@ -454,7 +455,7 @@ function TestDetail() {
 
     setUserStats(prev => prev ? { ...prev, avgAccuracy: avgAcc, avgScore } : null);
     setPaperStats(pStats);
-    delete (window as any).__tmuaSessions;
+    tmuaSessionsRef.current = [];
   }, [papers]);
 
   const sortedPapers = useMemo(() => papers, [papers]);

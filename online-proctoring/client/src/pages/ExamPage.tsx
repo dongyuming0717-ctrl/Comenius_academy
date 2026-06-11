@@ -97,6 +97,7 @@ export function ExamPage() {
   const [resultsView, setResultsView] = useState<'table' | 'score'>('table');
   const [userStats, setUserStats] = useState<{ mocksTaken: number; questionsDone: number; avgAccuracy: number; avgScore: number } | null>(null);
   const [paperStats, setPaperStats] = useState<Record<string, { completionRate: number; accuracy: number; score: number | null; hasRecord: boolean }>>({});
+  const rawSessionStatsRef = useRef<any[]>([]);
   const [showNavigator, setShowNavigator] = useState(false);
   const [examMode, setExamMode] = useState<'timed' | 'practice' | null>(null);
   const [showModeDialog, setShowModeDialog] = useState(false);
@@ -287,14 +288,14 @@ export function ExamPage() {
       });
 
       // Store raw session stats for later processing with papers
-      (window as any).__rawSessionStats = sessions;
+      rawSessionStatsRef.current = sessions;
     }
     fetchStats();
   }, [userProfileId, supabase]);
 
   // Compute per-paper stats when papers and sessions are both loaded
   useEffect(() => {
-    const rawSessions = (window as any).__rawSessionStats;
+    const rawSessions = rawSessionStatsRef.current;
     if (!rawSessions || papers.length === 0) return;
 
     const pStats: Record<string, { completionRate: number; accuracy: number; score: number | null; hasRecord: boolean }> = {};
@@ -380,7 +381,7 @@ export function ExamPage() {
     } : null);
 
     setPaperStats(pStats);
-    delete (window as any).__rawSessionStats;
+    rawSessionStatsRef.current = [];
   }, [papers, userProfileId]);
 
   function answeredCheck(sessions: any[], questions: Question[]): number {

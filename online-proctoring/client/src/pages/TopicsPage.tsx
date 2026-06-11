@@ -128,7 +128,7 @@ export function TopicsPage() {
             }
           }
         }
-      } catch { /* ignore */ }
+      } catch (e) { console.warn('TopicsPage: failed to load data', e); }
       setLoading(false);
     }
     load();

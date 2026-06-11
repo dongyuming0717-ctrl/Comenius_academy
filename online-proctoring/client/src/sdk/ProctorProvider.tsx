@@ -4,6 +4,9 @@ import type { User, Session } from '@supabase/supabase-js';
 import type { ProctorState, Violation, ViolationType, SensitivityConfig } from './types';
 import { DEFAULT_SENSITIVITY } from './sensitivity';
 
+/** Module-level callback ref for face detection updates — avoids window as any */
+export const faceUpdateCallback: { fn: ((detected: boolean, count: number) => void) | null } = { fn: null };
+
 interface ProctorContextValue extends ProctorState {
   supabase: typeof supabase;
   user: User | null;
@@ -162,11 +165,11 @@ export function ProctorProvider({ children }: { children: ReactNode }) {
   faceRef.current = setFaceDetection;
 
   useEffect(() => {
-    (window as any).__proctorFaceUpdate = (detected: boolean, count: number) => {
+    faceUpdateCallback.fn = (detected: boolean, count: number) => {
       faceRef.current(detected, count);
     };
     return () => {
-      delete (window as any).__proctorFaceUpdate;
+      faceUpdateCallback.fn = null;
     };
   }, []);
 

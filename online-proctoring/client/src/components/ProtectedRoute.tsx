@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useProctor } from '../sdk/useProctor';
 import { supabase } from '../supabase';
@@ -9,21 +9,19 @@ interface Props {
   allowedRoles?: string[];
 }
 
-let cachedRole: string | null = null;
-let cachedRoleUserId: string | null = null;
-
 /** Wraps routes that require authentication (and optionally, a specific role). */
 export function ProtectedRoute({ children, allowedRoles }: Props) {
   const { user, authLoading } = useProctor();
-  const [role, setRole] = useState<string | null>(
-    cachedRoleUserId === user?.id ? cachedRole : null,
-  );
-  const [checking, setChecking] = useState(allowedRoles && !role);
+  const [role, setRole] = useState<string | null>(null);
+  const [checking, setChecking] = useState(!!allowedRoles);
+
+  // Cache role lookup within component lifecycle (avoids module-level mutable state)
+  const roleCacheRef = useRef<{ role: string; userId: string } | null>(null);
 
   useEffect(() => {
     if (!user || !allowedRoles) return;
-    if (cachedRoleUserId === user.id && cachedRole) {
-      setRole(cachedRole);
+    if (roleCacheRef.current?.userId === user.id) {
+      setRole(roleCacheRef.current.role);
       setChecking(false);
       return;
     }
@@ -35,8 +33,7 @@ export function ProtectedRoute({ children, allowedRoles }: Props) {
       .single()
       .then(({ data, error }) => {
         if (error || !data) { setChecking(false); return; }
-        cachedRole = data.role;
-        cachedRoleUserId = user.id;
+        roleCacheRef.current = { role: data.role, userId: user.id };
         setRole(data.role);
         setChecking(false);
       });

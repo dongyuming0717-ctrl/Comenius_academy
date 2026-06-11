@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useProctor } from './useProctor';
+import { faceUpdateCallback } from './ProctorProvider';
 
 let faceapi: any = null;
 
@@ -91,7 +92,7 @@ export function WebcamCapture() {
         );
 
         const faceCount = result.length;
-        (window as any).__proctorFaceUpdate?.(faceCount === 1, faceCount);
+        faceUpdateCallback.fn?.(faceCount === 1, faceCount);
 
         const ctx = canvas.getContext('2d');
         if (ctx) {
