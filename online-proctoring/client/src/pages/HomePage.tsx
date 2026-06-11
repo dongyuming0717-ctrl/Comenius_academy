@@ -412,6 +412,335 @@ function ExamFeatureCard({ icon, title, desc, color }: { icon: React.ReactNode; 
   );
 }
 
+// -- Exam Preview Card (1:1 replica of real MCQ exam UI) --
+
+function ExamPreviewCard() {
+  const { t } = useLocale();
+  const [selected, setSelected] = useState<string | null>(null);
+  const [flagged, setFlagged] = useState(false);
+  const [timerSeconds, setTimerSeconds] = useState(43 * 60 + 27);
+
+  const totalQuestions = 30;
+  const currentQ = 21;
+  const answeredCount = 20; // mock: first 20 answered
+
+  const question = {
+    id: 21,
+    text: 'What is deflation?',
+    options: [
+      { label: 'A', text: 'a sustained fall in total demand' },
+      { label: 'B', text: 'a sustained fall in the general price level' },
+      { label: 'C', text: 'a sustained fall in the rate of inflation' },
+      { label: 'D', text: 'a sustained fall in the value of money' },
+    ],
+  };
+
+  const formatTime = (s: number) => {
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${m}:${sec.toString().padStart(2, '0')}`;
+  };
+
+  // Timer frozen for preview
+
+  const getQStatus = (n: number) => {
+    if (n === currentQ) return 'current';
+    if (n === currentQ && flagged) return 'current'; // current takes priority
+    if (flagged && n === currentQ) return 'current';
+    if (n < currentQ) return 'answered';
+    return 'unanswered';
+  };
+
+  // Tailwind equivalent color tokens
+  const primary = '#1e40af';
+  const primaryLight = '#eff6ff';
+  const green = '#22c55e';
+  const orange = '#f97316';
+  const border = '#e5e7eb';
+  const mutedFg = '#94a3b8';
+  const cardBg = '#fff';
+  const fg = '#1e293b';
+
+  return (
+    <div style={{
+      maxWidth: 1024, margin: '0 auto',
+      background: '#f8fafc',
+      borderRadius: 12,
+      boxShadow: '0 25px 50px rgba(0,0,0,0.15)',
+      border: `1px solid ${border}`,
+      overflow: 'hidden',
+      fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+      userSelect: 'none',
+    }}>
+      {/* ── Top bar (sticky) ── */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '0 20px', height: 48,
+        background: 'rgba(255,255,255,0.95)',
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
+        borderBottom: `1px solid ${border}`,
+        fontSize: 14,
+      }}>
+        <button style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          background: 'none', border: 'none', cursor: 'pointer',
+          color: mutedFg, fontSize: 14, fontFamily: 'inherit',
+        }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          Economics 0455/11
+        </button>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ color: mutedFg }}>
+            {answeredCount}/{totalQuestions} {t('mcqExam.answeredCount')}
+          </span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: mutedFg, fontVariantNumeric: 'tabular-nums' }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            {formatTime(timerSeconds)}
+          </span>
+        </div>
+      </div>
+
+      {/* ── Body ── */}
+      <div style={{ display: 'flex' }}>
+        {/* ── Left: question + options ── */}
+        <div style={{ flex: 1, minWidth: 0, padding: '24px 28px' }}>
+          {/* Progress bar */}
+          <div style={{ height: 4, borderRadius: 2, background: '#e2e8f0', marginBottom: 24, overflow: 'hidden' }}>
+            <div style={{
+              height: '100%', background: primary, borderRadius: 2,
+              width: `${(answeredCount / totalQuestions) * 100}%`,
+              transition: 'width 0.5s',
+            }} />
+          </div>
+
+          {/* Question card */}
+          <div style={{
+            borderRadius: 16, border: `1px solid ${border}`,
+            background: cardBg, padding: 28, marginBottom: 20,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 20 }}>
+              <span style={{
+                fontSize: 12, fontWeight: 600, color: mutedFg,
+                textTransform: 'uppercase', letterSpacing: 0.5,
+              }}>
+                Question {currentQ} of {totalQuestions}
+              </span>
+              <button
+                onClick={() => setFlagged(!flagged)}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 6,
+                  padding: '4px 12px', borderRadius: 9999,
+                  fontSize: 12, fontWeight: 500,
+                  background: flagged ? '#fff7ed' : '#f1f5f9',
+                  color: flagged ? '#9a3412' : mutedFg,
+                  border: 'none', cursor: 'pointer',
+                  fontFamily: 'inherit',
+                  transition: 'all 0.15s',
+                }}
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                {flagged ? t('mcqExam.flagged') : t('mcqExam.flag')}
+              </button>
+            </div>
+            <p style={{
+              fontSize: 16, lineHeight: 1.625, color: fg,
+            }}>
+              {question.text}
+            </p>
+          </div>
+
+          {/* Options */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32 }}>
+            {question.options.map((opt) => {
+              const isSelected = selected === opt.label;
+              return (
+                <button
+                  key={opt.label}
+                  onClick={() => setSelected(isSelected ? null : opt.label)}
+                  style={{
+                    display: 'flex', alignItems: 'flex-start', gap: 16,
+                    width: '100%', padding: '16px 20px',
+                    borderRadius: 12,
+                    border: isSelected
+                      ? `2px solid ${primary}`
+                      : `1px solid ${border}`,
+                    background: isSelected ? primaryLight : cardBg,
+                    cursor: 'pointer',
+                    textAlign: 'left' as const,
+                    fontFamily: 'inherit',
+                    transition: 'all 0.15s',
+                    boxShadow: isSelected ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isSelected) {
+                      e.currentTarget.style.borderColor = primary;
+                      e.currentTarget.style.background = 'rgba(241,245,249,0.5)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isSelected) {
+                      e.currentTarget.style.borderColor = border;
+                      e.currentTarget.style.background = cardBg;
+                    }
+                  }}
+                >
+                  <span style={{
+                    width: 28, height: 28, borderRadius: '50%',
+                    border: isSelected ? `2px solid ${primary}` : `2px solid ${border}`,
+                    background: isSelected ? primary : 'transparent',
+                    color: isSelected ? '#fff' : mutedFg,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 14, fontWeight: 700, flexShrink: 0,
+                    transition: 'all 0.15s',
+                  }}>
+                    {opt.label}
+                  </span>
+                  <span style={{
+                    fontSize: 14, lineHeight: 1.5, marginTop: 2,
+                    color: isSelected ? fg : '#475569',
+                    fontWeight: isSelected ? 500 : 400,
+                  }}>
+                    {opt.text}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Bottom nav */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <button style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              padding: '8px 16px', borderRadius: 8,
+              border: `1px solid ${border}`, background: cardBg,
+              cursor: 'pointer', fontSize: 14, fontWeight: 500,
+              color: fg, fontFamily: 'inherit',
+              transition: 'all 0.15s',
+            }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+              {t('mcqExam.previous')}
+            </button>
+            <button style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              padding: '8px 20px', borderRadius: 8,
+              border: 'none',
+              background: primary, color: '#fff',
+              cursor: 'pointer', fontSize: 14, fontWeight: 500,
+              fontFamily: 'inherit',
+              transition: 'all 0.15s',
+            }}>
+              {t('mcqExam.next')}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+          </div>
+        </div>
+
+        {/* ── Right: question navigator ── */}
+        <div style={{
+          width: 220, flexShrink: 0,
+          padding: '24px 16px',
+          borderLeft: `1px solid ${border}`,
+          background: cardBg,
+        }}>
+          <h3 style={{
+            fontSize: 14, fontWeight: 600, color: fg,
+            marginBottom: 16,
+          }}>
+            {t('mcqExam.questions')}
+          </h3>
+
+          {/* Question grid */}
+          <div style={{
+            display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)',
+            gap: 8, marginBottom: 20,
+          }}>
+            {Array.from({ length: totalQuestions }, (_, i) => {
+              const n = i + 1;
+              const status = getQStatus(n);
+              const isCurrent = status === 'current';
+              const isAnswered = status === 'answered';
+
+              let bg = '#fff'; let fgc = mutedFg; let bd = border;
+              if (isCurrent) { bg = primary; fgc = '#fff'; bd = primary; }
+              else if (isAnswered) { bg = '#dcfce7'; fgc = '#16a34a'; bd = '#bbf7d0'; }
+
+              return (
+                <button
+                  key={n}
+                  style={{
+                    width: 32, height: 32,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 12, fontWeight: 600,
+                    borderRadius: 8,
+                    background: bg, color: fgc,
+                    border: `1px solid ${bd}`,
+                    cursor: 'default',
+                    fontFamily: 'inherit',
+                    transition: 'all 0.15s',
+                    ...(isCurrent ? { boxShadow: '0 2px 8px rgba(30,64,175,0.3)', transform: 'scale(1.05)' } : {}),
+                  }}
+                >
+                  {n}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Legend */}
+          <div style={{
+            borderTop: `1px solid ${border}`,
+            paddingTop: 16,
+            display: 'flex', flexDirection: 'column', gap: 6,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: mutedFg }}>
+              <span style={{ width: 12, height: 12, borderRadius: 3, background: primary, flexShrink: 0 }} />
+              {t('mcqExam.current')}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: mutedFg }}>
+              <span style={{ width: 12, height: 12, borderRadius: 3, background: green, flexShrink: 0 }} />
+              {t('mcqExam.answered')}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: mutedFg }}>
+              <span style={{ width: 12, height: 12, borderRadius: 3, background: '#fff', border: `1px solid ${border}`, flexShrink: 0 }} />
+              {t('mcqExam.unanswered')}
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div style={{
+            borderTop: `1px solid ${border}`,
+            marginTop: 16, paddingTop: 16,
+            display: 'flex', flexDirection: 'column', gap: 4,
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
+              <span style={{ color: mutedFg }}>{t('mcqExam.answered')}</span>
+              <span style={{ fontWeight: 500, color: fg }}>{answeredCount}/{totalQuestions}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
+              <span style={{ color: mutedFg }}>{t('mcqExam.flag')}</span>
+              <span style={{ fontWeight: 500, color: orange }}>{flagged ? 1 : 0}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
+              <span style={{ color: mutedFg }}>{t('mcqExam.remaining')}</span>
+              <span style={{ fontWeight: 500, color: fg }}>{totalQuestions - answeredCount}</span>
+            </div>
+          </div>
+
+          {/* Submit button */}
+          <div style={{
+            borderTop: `1px solid ${border}`,
+            marginTop: 16, paddingTop: 16,
+          }}>
+            <button style={{
+              width: '100%', padding: '10px 16px',
+              borderRadius: 8, border: 'none',
+              background: green, color: '#fff',
+              fontSize: 14, fontWeight: 600,
+              cursor: 'pointer', fontFamily: 'inherit',
+
+
 function AnimatedSection({ children, style, className }: { children: React.ReactNode; style?: React.CSSProperties; className?: string }) {
   const { ref, inView } = useInView();
   return (
@@ -686,6 +1015,10 @@ export function HomePage() {
                 }}
               />
             </div>
+            <div style={{ marginBottom: 48 }}>
+              <ExamPreviewCard />
+            </div>
+
             {/* Exam Features */}
             <div style={grid3}>
               {[
