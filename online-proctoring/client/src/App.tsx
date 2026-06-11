@@ -26,6 +26,12 @@ import { PastPaperLibraryPage } from './pages/PastPaperLibraryPage';
 import { HomePage } from './pages/HomePage';
 import { AdmissionTestsPage } from './pages/AdmissionTestsPage';
 import { AdminUsersPage } from './pages/AdminUsersPage';
+import { MCQs } from './pages/MCQs';
+import { MCQSubject } from './pages/MCQSubject';
+import { MCQChapters } from './pages/MCQChapters';
+import { MCQExam } from './pages/MCQExam';
+import { MCQFullPapers } from './pages/MCQFullPapers';
+import { ProfileSettings } from './pages/ProfileSettings';
 
 export default function App() {
   return (
@@ -66,6 +72,15 @@ export default function App() {
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/update-password" element={<UpdatePasswordPage />} />
+          {/* MCQ system */}
+          <Route path="/mcqs" element={<MCQs />} />
+          <Route path="/mcqs/:subject" element={<MCQSubject />} />
+          <Route path="/mcqs/:subject/:level/chapters" element={<MCQChapters />} />
+          <Route path="/mcqs/:subject/:level/chapters/:chapterId" element={<MCQExam />} />
+          <Route path="/mcqs/:subject/:level/full-papers" element={<MCQFullPapers />} />
+          <Route path="/mcqs/:subject/:level/full-papers/:paperId" element={<MCQExam />} />
+          {/* Profile settings */}
+          <Route path="/profile-settings" element={<ProtectedRoute><ProfileSettings /></ProtectedRoute>} />
         </Routes>
         </LocaleProvider>
       </ProctorProvider>

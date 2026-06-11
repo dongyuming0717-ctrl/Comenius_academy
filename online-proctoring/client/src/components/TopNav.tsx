@@ -7,7 +7,7 @@ import { StreakFlame } from './StreakFlame';
 import { getUserUnlocks } from '../services/gamification';
 import { colors, typography, radii, nav as navTokens } from '../theme/tokens';
 
-type PageKey = 'home' | 'topics-generate' | 'random' | 'econ-mcq' | 'class-mode' | 'teacher' | 'profile' | 'analytics' | 'papers' | 'past-papers' | 'admission-tests' | 'exam' | 'checkin' | 'leaderboard' | 'users';
+type PageKey = 'home' | 'topics-generate' | 'random' | 'class-mode' | 'teacher' | 'profile' | 'analytics' | 'papers' | 'past-papers' | 'admission-tests' | 'exam' | 'checkin' | 'leaderboard' | 'users' | 'mcqs';
 
 interface Props {
   currentPage?: PageKey;
@@ -117,6 +117,12 @@ const AnalyticsIcon = () => (
 const UsersIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+  </svg>
+);
+
+const McqIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
   </svg>
 );
 
@@ -345,6 +351,9 @@ export function TopNav({ currentPage, minimal = false, scrolled = false }: Props
           {/* Desktop nav links */}
           {!minimal && (
             <div className="nav-desktop-links" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              <Link to="/mcqs" className={`nav-btn ${currentPage === 'mcqs' ? 'nav-btn-active' : ''}`}>
+                <McqIcon />{t('topnav.mcqs')}
+              </Link>
               <Link to="/past-papers" style={link(currentPage === 'past-papers')}>
                 <PastPaperIcon />Past Papers
               </Link>
@@ -722,6 +731,9 @@ export function TopNav({ currentPage, minimal = false, scrolled = false }: Props
       {/* Mobile menu */}
       {!minimal && menuOpen && (
         <div style={mobileLinksStyle}>
+          <Link to="/mcqs" className={`nav-btn ${currentPage === 'mcqs' ? 'nav-btn-active' : ''}`} onClick={() => setMenuOpen(false)}>
+            <McqIcon />{t('topnav.mcqs')}
+          </Link>
           <Link to="/past-papers" style={link(currentPage === 'past-papers')} onClick={() => setMenuOpen(false)}>
             <PastPaperIcon />Past Papers
           </Link>
