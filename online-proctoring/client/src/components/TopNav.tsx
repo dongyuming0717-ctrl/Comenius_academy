@@ -355,36 +355,36 @@ export function TopNav({ currentPage, minimal = false, scrolled = false }: Props
                 <McqIcon />{t('topnav.mcqs')}
               </Link>
               <Link to="/past-papers" style={link(currentPage === 'past-papers')}>
-                <PastPaperIcon />Past Papers
+                <PastPaperIcon />{t('topnav.pastPapers')}
               </Link>
               <Link to="/topics" style={link(currentPage === 'topics-generate')}>
-                <BookIcon />Topics & Generate
+                <BookIcon />{t('topnav.topicsGenerate')}
               </Link>
               <Link to="/admission-tests" style={link(currentPage === 'admission-tests')}>
-                <AdmissionIcon />Admission Tests
+                <AdmissionIcon />{t('topnav.admissionTests')}
               </Link>
               {!isTeacher && (
                 <Link to="/class-mode" style={link(currentPage === 'class-mode')}>
-                  <ClassIcon />Class Mode
+                  <ClassIcon />{t('topnav.classMode')}
                 </Link>
               )}
               {(!isTeacher || role === 'admin') && (
                 <>
                   <Link to="/analytics" style={link(currentPage === 'analytics')}>
-                    <AnalyticsIcon />Student Dashboard
+                    <AnalyticsIcon />{t('topnav.studentDashboard')}
                   </Link>
                   <Link to="/profile" style={link(currentPage === 'profile')}>
-                    <span style={{ fontSize: 14 }}>🔥</span> My Progress
+                    <span style={{ fontSize: 14 }}>🔥</span> {t('topnav.myProgress')}
                   </Link>
                 </>
               )}
               {isTeacher && (
                 <>
                   <Link to="/teacher" style={link(currentPage === 'teacher')}>
-                    <DashboardIcon />Teacher Dashboard
+                    <DashboardIcon />{t('topnav.teacherDashboard')}
                   </Link>
                   <Link to="/admin/users" style={link(currentPage === 'users')}>
-                    <UsersIcon /> Users
+                    <UsersIcon /> {t('topnav.users')}
                   </Link>
                 </>
               )}
@@ -698,7 +698,7 @@ export function TopNav({ currentPage, minimal = false, scrolled = false }: Props
                 <div style={dropdownMenuStyle}>
                   <Link to="/profile" style={{ ...dropdownItemStyle, textDecoration: 'none' }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    Profile
+                    {t('topnav.profile')}
                   </Link>
                   <div style={{ height: 1, background: colors.border, margin: '4px 0' }} />
                   <button
@@ -710,7 +710,7 @@ export function TopNav({ currentPage, minimal = false, scrolled = false }: Props
                     }}
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                    Sign Out
+                    {t('topnav.signOut')}
                   </button>
                 </div>
               </div>
@@ -718,10 +718,10 @@ export function TopNav({ currentPage, minimal = false, scrolled = false }: Props
           ) : (
             <>
               <Link to="/login" style={{ ...navLinkStyle, background: colors.primary, color: colors.primaryForeground, padding: '6px 12px', height: 32 }}>
-                Login
+                {t('topnav.login')}
               </Link>
               <Link to="/signup" style={{ ...navLinkStyle, background: colors.secondary, color: colors.secondaryForeground, padding: '6px 12px', height: 32 }}>
-                Sign Up
+                {t('topnav.signUp')}
               </Link>
             </>
           )}
@@ -735,36 +735,36 @@ export function TopNav({ currentPage, minimal = false, scrolled = false }: Props
             <McqIcon />{t('topnav.mcqs')}
           </Link>
           <Link to="/past-papers" style={link(currentPage === 'past-papers')} onClick={() => setMenuOpen(false)}>
-            <PastPaperIcon />Past Papers
+            <PastPaperIcon />{t('topnav.pastPapers')}
           </Link>
           <Link to="/topics" style={link(currentPage === 'topics-generate')} onClick={() => setMenuOpen(false)}>
-            <BookIcon />Topics & Generate
+            <BookIcon />{t('topnav.topicsGenerate')}
           </Link>
           <Link to="/admission-tests" style={link(currentPage === 'admission-tests')} onClick={() => setMenuOpen(false)}>
-            <AdmissionIcon />Admission Tests
+            <AdmissionIcon />{t('topnav.admissionTests')}
           </Link>
           {!isTeacher && (
             <Link to="/class-mode" style={link(currentPage === 'class-mode')} onClick={() => setMenuOpen(false)}>
-              <ClassIcon />Class Mode
+              <ClassIcon />{t('topnav.classMode')}
             </Link>
           )}
           {(!isTeacher || role === 'admin') && (
             <>
               <Link to="/analytics" style={link(currentPage === 'analytics')} onClick={() => setMenuOpen(false)}>
-                <AnalyticsIcon />Student Dashboard
+                <AnalyticsIcon />{t('topnav.studentDashboard')}
               </Link>
               <Link to="/profile" style={link(currentPage === 'profile')} onClick={() => setMenuOpen(false)}>
-                <span style={{ fontSize: 14 }}>🔥</span> My Progress
+                <span style={{ fontSize: 14 }}>🔥</span> {t('topnav.myProgress')}
               </Link>
             </>
           )}
           {isTeacher && (
             <>
               <Link to="/teacher" style={link(currentPage === 'teacher')} onClick={() => setMenuOpen(false)}>
-                <DashboardIcon />Teacher Dashboard
+                <DashboardIcon />{t('topnav.teacherDashboard')}
               </Link>
               <Link to="/admin/users" style={link(currentPage === 'users')} onClick={() => setMenuOpen(false)}>
-                <UsersIcon /> Users
+                <UsersIcon /> {t('topnav.users')}
               </Link>
             </>
           )}

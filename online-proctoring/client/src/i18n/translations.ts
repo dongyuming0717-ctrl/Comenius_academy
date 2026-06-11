@@ -1,17 +1,21 @@
 export const translations: Record<string, { en: string; zh: string }> = {
   // ============== TopNav ==============
   'topnav.pastPapers': { en: 'Past Papers', zh: '历年真题' },
+  'topnav.topicsGenerate': { en: 'Topics & Generate', zh: '专项生成' },
+  'topnav.mcqs': { en: 'MCQs', zh: '选择题' },
+  'topnav.admissionTests': { en: 'Admission Tests', zh: '入学考试' },
   'topnav.random': { en: 'Random', zh: '随机组卷' },
   'topnav.classMode': { en: 'Class Mode', zh: '课堂模式' },
   'topnav.analytics': { en: 'Analytics', zh: '数据分析' },
+  'topnav.studentDashboard': { en: 'Student Dashboard', zh: '学生面板' },
+  'topnav.myProgress': { en: 'My Progress', zh: '我的进度' },
   'topnav.teacherDashboard': { en: 'Teacher Dashboard', zh: '教师控制台' },
-  'topnav.papers': { en: 'Papers', zh: '试卷管理' },
+  'topnav.users': { en: 'Users', zh: '用户管理' },
   'topnav.profile': { en: 'Profile', zh: '个人资料' },
-  'topnav.checkin': { en: 'Check-In', zh: '打卡签到' },
-  'topnav.leaderboard': { en: 'Leaderboard', zh: '排行榜' },
   'topnav.signOut': { en: 'Sign Out', zh: '退出登录' },
   'topnav.signOutConfirm': { en: 'Are you sure you want to sign out?', zh: '您确定要退出登录吗？' },
-  'topnav.mcqs': { en: 'MCQs', zh: '选择题' },
+  'topnav.login': { en: 'Login', zh: '登录' },
+  'topnav.signUp': { en: 'Sign Up', zh: '注册' },
 
   // ============== LoginPage ==============
   'login.welcomeBack': { en: 'Welcome Back', zh: '欢迎回来' },
