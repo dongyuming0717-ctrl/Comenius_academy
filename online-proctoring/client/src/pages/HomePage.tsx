@@ -6,6 +6,7 @@ import { TopNav } from '../components/TopNav';
 import { FloatingAstronaut } from '../components/FloatingAstronaut';
 import { useInView } from '../hooks/useInView';
 import { getUserUnlocks } from '../services/gamification';
+import { useLocale } from '../i18n/LocaleContext';
 import { colors, typography, radii, spacing } from '../theme/tokens';
 
 const font = typography.fontFamily;

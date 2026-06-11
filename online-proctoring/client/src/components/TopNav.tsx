@@ -83,7 +83,7 @@ export function TopNav({ currentPage, minimal = false, scrolled = false }: Props
   const { t, locale, setLocale } = useLocale();
   const roleCacheRef = useRef<{ role: string; userId: string } | null>(null);
   const [role, setRole] = useState<string | null>(
-    roleCacheRef.current?.userId === user?.id ? roleCacheRef.current.role : null,
+    roleCacheRef.current?.userId === user?.id ? (roleCacheRef.current?.role ?? null) : null,
   );
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);

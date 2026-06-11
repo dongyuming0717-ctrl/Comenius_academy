@@ -16,19 +16,26 @@ export function useProfileId(): string | null {
       setProfileId(null);
       return;
     }
-    supabase
-      .from('users')
-      .select('id')
-      .eq('auth_id', user.id)
-      .single()
-      .then(({ data, error }) => {
+    let cancelled = false;
+    async function resolve() {
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .select('id')
+          .eq('auth_id', user!.id)
+          .single();
+        if (cancelled) return;
         if (error || !data) {
           setProfileId(null);
-          return;
+        } else {
+          setProfileId(data.id);
         }
-        setProfileId(data.id);
-      })
-      .catch(() => setProfileId(null));
+      } catch {
+        if (!cancelled) setProfileId(null);
+      }
+    }
+    resolve();
+    return () => { cancelled = true; };
   }, [user]);
 
   return profileId;
