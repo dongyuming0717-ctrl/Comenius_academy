@@ -212,24 +212,21 @@
     text = text.replace(/\\\(/g, "$");
     text = text.replace(/\\\)/g, "$");
 
-    // 兜底：包裹不含 $ 但含 LaTeX 命令的行 (模型偶尔忘记 $)
-    text = text.replace(/^([^$\n]*(?:\\[a-zA-Z]+\{[^}]*\}|\^\{[^}]*\}|_\{[^}]*\}|\\int|\\sum|\\prod|\\pi|\\theta|\\alpha|\\beta|\\infty|\\partial)[^$\n]*)$/gm, '$$$1$');
-
-    // 用占位符保护 LaTeX，避免 marked.js 破坏公式 (_→<em>, \\换行等)
+    // 用占位符保护 LaTeX，避免 marked.js 破坏公式
     var mathBlocks = [];
     var idx = 0;
 
-    // 先保护 $$...$$ 多行公式
+    // 1) 保护 $$...$$ 多行公式 (贪婪匹配，正确处理多块公式)
     var protected_ = text.replace(/\$\$([\s\S]*?)\$\$/g, function(_, math) {
       mathBlocks.push(math);
       return "@@MATH_" + (idx++) + "_MATH@@";
     });
-    // 保护裸 \begin{env}...\end{env} 数学环境（模型可能忘记包 $$）
+    // 2) 保护裸 \begin{env}...\end{env} 数学环境
     protected_ = protected_.replace(/(\\begin\{[a-zA-Z]+\*?\}[\s\S]*?\\end\{[a-zA-Z]+\*?\})/g, function(_, math) {
       mathBlocks.push(math);
       return "@@MATH_" + (idx++) + "_MATH@@";
     });
-    // 再保护 $...$ 行内公式（不可跨行）
+    // 3) 保护 $...$ 行内公式 (不可跨行)
     protected_ = protected_.replace(/\$([^$\n]+?)\$/g, function(_, math) {
       mathBlocks.push(math);
       return "@@INLINE_" + (idx++) + "_INLINE@@";

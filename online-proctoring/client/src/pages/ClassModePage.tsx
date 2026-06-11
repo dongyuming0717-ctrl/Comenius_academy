@@ -153,7 +153,7 @@ export function ClassModePage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
+    <div style={{ minHeight: '100vh', fontFamily: "'Geist', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
       <TopNav currentPage="class-mode" />
 
       <div style={{ maxWidth: 560, margin: '0 auto', padding: '40px 20px 60px' }}>
@@ -171,7 +171,7 @@ export function ClassModePage() {
           <div style={{ marginBottom: 32 }}>
             <h2 style={{
               margin: '0 0 12px', fontSize: 16, fontWeight: 600, color: '#1f2937',
-              fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+              fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
             }}>
               {t('classMode.myClasses')}
             </h2>
@@ -243,7 +243,7 @@ export function ClassModePage() {
                                   padding: '6px 16px', fontSize: 12, fontWeight: 500,
                                   color: '#fff', background: '#1e40af',
                                   border: 'none', borderRadius: 4, cursor: 'pointer',
-                                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                                 }}
                               >
                                 {t('classMode.startButton')}
@@ -279,7 +279,7 @@ export function ClassModePage() {
                   flex: 1, padding: '10px 16px', fontSize: 13, fontWeight: 600,
                   color: '#fff', background: '#1e40af', border: 'none',
                   borderRadius: 6, cursor: 'pointer',
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 }}
               >
                 {t('classMode.startPracticing')}
@@ -290,7 +290,7 @@ export function ClassModePage() {
                   flex: 1, padding: '10px 16px', fontSize: 13, fontWeight: 500,
                   color: '#1e40af', background: '#fff',
                   border: '1px solid #306ca0', borderRadius: 6, cursor: 'pointer',
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 }}
               >
                 {t('classMode.browseTopics')}
@@ -345,7 +345,7 @@ export function ClassModePage() {
                 style={{
                   width: '100%', padding: '10px 14px', border: '1px solid #d1d5db',
                   borderRadius: 8, fontSize: 14, outline: 'none',
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                   boxSizing: 'border-box',
                 }}
               />
@@ -367,7 +367,7 @@ export function ClassModePage() {
                 width: '100%', padding: '12px', border: 'none', borderRadius: 6,
                 background: loading ? '#93c5fd' : '#1e40af', color: '#fff',
                 cursor: loading ? 'not-allowed' : 'pointer', fontSize: 15, fontWeight: 500,
-                fontFamily: "'Inter', system-ui, -apple-system, sans-serif", marginTop: 8,
+                fontFamily: "'Geist', system-ui, -apple-system, sans-serif", marginTop: 8,
               }}
             >
               {loading ? t('classMode.joiningButton') : t('classMode.joinButton')}

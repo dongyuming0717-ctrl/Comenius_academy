@@ -4,6 +4,7 @@ import { TopNav } from '../components/TopNav';
 import { useProctor } from '../sdk/useProctor';
 import { supabase } from '../supabase';
 import { colors, typography, radii } from '../theme/tokens';
+import { AssignDialog } from '../components/AssignDialog';
 import type { Paper as SupabasePaper, Question } from '../sdk/types';
 
 const GENERATED_PAPER_KEY = 'tmua_generated_paper';
@@ -325,6 +326,8 @@ function TestDetail() {
   const [paperStats, setPaperStats] = useState<Record<string, { completionRate: number; accuracy: number; score: number | null; hasRecord: boolean }>>({});
   const [showPDFModal, setShowPDFModal] = useState(false);
   const [userProfileId, setUserProfileId] = useState<string | null>(null);
+  const [showAssign, setShowAssign] = useState(false);
+  const [assignPaper, setAssignPaper] = useState<{ id: string; title: string } | null>(null);
 
   const isTMUA = testId === 'tmua';
   const isENGAA = testId === 'engaa';
@@ -610,17 +613,30 @@ function TestDetail() {
                     <div style={{ fontSize: 12, color: '#888', marginBottom: 12 }}>
                       {generatedPaper.duration_minutes} min &middot; {(generatedPaper.questions as Question[]).length} questions
                     </div>
-                    <button
-                      onClick={() => navigate('/exam', { state: { paperId: generatedPaper.id } })}
-                      style={{
-                        padding: '10px 16px', fontSize: 13, fontWeight: 600,
-                        color: '#fff', background: colors.primary, border: 'none',
-                        borderRadius: 6, cursor: 'pointer', width: '100%',
-                        fontFamily: font,
-                      }}
-                    >
-                      Start Mock Exam
-                    </button>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button
+                        onClick={() => navigate('/exam', { state: { paperId: generatedPaper.id } })}
+                        style={{
+                          padding: '10px 16px', fontSize: 13, fontWeight: 600,
+                          color: '#fff', background: colors.primary, border: 'none',
+                          borderRadius: 6, cursor: 'pointer', flex: 1,
+                          fontFamily: font,
+                        }}
+                      >
+                        Start Mock Exam
+                      </button>
+                      <button
+                        onClick={() => { setAssignPaper({ id: generatedPaper.id, title: generatedPaper.title }); setShowAssign(true); }}
+                        style={{
+                          padding: '10px 16px', fontSize: 13, fontWeight: 600,
+                          color: colors.primary, background: '#fff',
+                          border: `1px solid ${colors.primary}`, borderRadius: 6,
+                          cursor: 'pointer', fontFamily: font,
+                        }}
+                      >
+                        Assign to Class
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -841,6 +857,26 @@ function TestDetail() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Assign Dialog */}
+      {showAssign && assignPaper && user && (
+        <AssignDialog
+          paperId={assignPaper.id}
+          paperTitle={assignPaper.title}
+          userId={user.id}
+          paper={generatedPaper ? {
+            paper_number: generatedPaper.paper_number,
+            year: generatedPaper.year,
+            sitting: generatedPaper.sitting,
+            duration_minutes: generatedPaper.duration_minutes,
+            total_marks: generatedPaper.total_marks,
+            topics: generatedPaper.topics,
+            questions: generatedPaper.questions,
+          } : undefined}
+          onClose={() => { setShowAssign(false); setAssignPaper(null); }}
+          onAssigned={() => { setShowAssign(false); setAssignPaper(null); }}
+        />
       )}
     </div>
   );

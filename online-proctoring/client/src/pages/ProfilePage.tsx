@@ -236,7 +236,7 @@ export function ProfilePage() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
+      <div style={{ minHeight: '100vh', fontFamily: "'Geist', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
         <TopNav currentPage="profile" />
         <div style={{ padding: 40, textAlign: 'center', color: '#9ca3af' }}>{t('profile.loading')}</div>
       </div>
@@ -252,7 +252,7 @@ export function ProfilePage() {
   const inputStyle: React.CSSProperties = {
     width: '100%', padding: '10px 14px', border: '1px solid #d1d5db',
     borderRadius: 8, fontSize: 14, outline: 'none',
-    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+    fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
     boxSizing: 'border-box',
   };
 
@@ -270,7 +270,7 @@ export function ProfilePage() {
     'Start your streak today!';
 
   return (
-    <div style={{ minHeight: '100vh', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
+    <div style={{ minHeight: '100vh', fontFamily: "'Geist', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
       <TopNav currentPage="profile" />
 
       <div style={{ maxWidth: 640, margin: '0 auto', padding: '32px 20px 60px' }}>
@@ -339,7 +339,7 @@ export function ProfilePage() {
                 background: 'linear-gradient(135deg, #1e40af, #3b82f6)',
                 color: '#fff', fontSize: 18, fontWeight: 700,
                 boxShadow: '0 4px 20px rgba(30,64,175,0.3)',
-                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 opacity: checkingIn ? 0.7 : 1,
               }}
             >
@@ -487,7 +487,7 @@ export function ProfilePage() {
                 padding: '10px 24px', background: saving ? '#93c5fd' : '#1e40af',
                 color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer',
                 fontSize: 14, fontWeight: 500, alignSelf: 'flex-start',
-                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
               }}
             >
               {saving ? t('profile.saving') : t('profile.saveChanges')}
@@ -526,7 +526,7 @@ export function ProfilePage() {
                 padding: '10px 24px', background: changingPassword ? '#93c5fd' : '#1e40af',
                 color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer',
                 fontSize: 14, fontWeight: 500, alignSelf: 'flex-start',
-                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
               }}
             >
               {changingPassword ? t('profile.updating') : t('profile.updatePassword')}
@@ -546,7 +546,7 @@ export function ProfilePage() {
             position: 'fixed', inset: 0, zIndex: 200,
             background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+            fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
           }}
         >
           <motion.div
@@ -582,7 +582,7 @@ export function ProfilePage() {
                   padding: '10px 24px', borderRadius: 10,
                   border: '1px solid #d1d5db', background: '#fff',
                   color: '#374151', fontSize: 14, fontWeight: 500, cursor: 'pointer',
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 }}
               >
                 {t('shop.cancel')}
@@ -594,7 +594,7 @@ export function ProfilePage() {
                   padding: '10px 24px', borderRadius: 10, border: 'none',
                   background: redeeming ? '#93c5fd' : '#1e40af',
                   color: '#fff', fontSize: 14, fontWeight: 600, cursor: redeeming ? 'default' : 'pointer',
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 }}
               >
                 {redeeming ? t('shop.redeeming') : t('shop.redeem')}
@@ -615,7 +615,7 @@ export function ProfilePage() {
             position: 'fixed', inset: 0, zIndex: 200,
             background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+            fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
           }}
         >
           <motion.div
@@ -651,7 +651,7 @@ export function ProfilePage() {
                   padding: '10px 24px', borderRadius: 10,
                   border: '1px solid #d1d5db', background: '#fff',
                   color: '#374151', fontSize: 14, fontWeight: 500, cursor: 'pointer',
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 }}
               >
                 {t('shop.cancel')}
@@ -663,7 +663,7 @@ export function ProfilePage() {
                   padding: '10px 24px', borderRadius: 10, border: 'none',
                   background: astronautRedeeming ? '#c4b5fd' : '#6366f1',
                   color: '#fff', fontSize: 14, fontWeight: 600, cursor: astronautRedeeming ? 'default' : 'pointer',
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 }}
               >
                 {astronautRedeeming ? t('shop.redeeming') : t('shop.redeem')}

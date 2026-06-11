@@ -48,7 +48,7 @@ export function QuestionReviewModal({
   const options = Array.isArray(q.question.options) ? q.question.options : [];
 
   return (
-    <div style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", width: '100vw', height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: '#ffffff' }}>
+    <div style={{ fontFamily: "'Geist', system-ui, -apple-system, sans-serif", width: '100vw', height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: '#ffffff' }}>
       {/* Blue Top Bar */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -143,14 +143,14 @@ export function QuestionReviewModal({
         <button onClick={onClose} style={{
           padding: '8px 28px', borderRadius: 4, border: '1px solid #ccc', background: '#fff',
           cursor: 'pointer', fontSize: 15, color: '#333',
-          fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+          fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
         }}>{closeLabel}</button>
         <div style={{ display: 'flex', gap: 12 }}>
           <button disabled={!hasPrevious} onClick={onPrevious} style={{
             padding: '8px 28px', borderRadius: 4, border: '1px solid #ccc', background: '#fff',
             cursor: hasPrevious ? 'pointer' : 'default', opacity: hasPrevious ? 1 : 0.4,
             fontSize: 15, color: '#333',
-            fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+            fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
           }}>← Previous</button>
           <button disabled={!hasNext} onClick={onNext} style={{
             padding: '8px 28px', borderRadius: 4,
@@ -159,7 +159,7 @@ export function QuestionReviewModal({
             border: nextButtonVariant === 'primary' ? 'none' : '1px solid #ccc',
             cursor: hasNext ? 'pointer' : 'default', opacity: hasNext ? 1 : 0.4,
             fontSize: 15,
-            fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+            fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
           }}>Next →</button>
         </div>
       </div>

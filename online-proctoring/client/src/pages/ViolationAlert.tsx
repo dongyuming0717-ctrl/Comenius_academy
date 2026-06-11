@@ -103,7 +103,7 @@ export function ViolationAlert() {
           style={{
             padding: '8px 32px', background: '#1e40af', color: '#fff',
             border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 14, fontWeight: 400,
-            fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+            fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
           }}
         >
           {t('violationAlert.iUnderstand')}

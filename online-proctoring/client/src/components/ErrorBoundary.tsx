@@ -22,7 +22,7 @@ export class ErrorBoundary extends Component<Props, State> {
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           minHeight: '100vh', background: '#f8fafc',
-          fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+          fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
         }}>
           <div style={{ textAlign: 'center', maxWidth: 400 }}>
             <div style={{ fontSize: 48, marginBottom: 16 }}>😵</div>

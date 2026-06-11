@@ -51,7 +51,7 @@ export function CheckInCelebration({ streak, xpEarned, newAchievements, onDismis
           position: 'fixed', inset: 0, zIndex: 200,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)',
-          fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+          fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
         }}
       >
         <motion.div

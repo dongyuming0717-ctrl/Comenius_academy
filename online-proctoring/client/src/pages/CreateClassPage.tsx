@@ -70,7 +70,7 @@ export function CreateClassPage() {
   const inputStyle = {
     width: '100%', padding: '10px 14px', border: '1px solid #d1d5db',
     borderRadius: 8, fontSize: 14, outline: 'none',
-    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+    fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
     boxSizing: 'border-box' as const,
   };
 
@@ -79,7 +79,7 @@ export function CreateClassPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
+    <div style={{ minHeight: '100vh', fontFamily: "'Geist', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
       {/* Top Nav */}
       <TopNav currentPage="teacher" />
 
@@ -154,7 +154,7 @@ export function CreateClassPage() {
                   style={{
                     padding: '10px 16px', border: '1px solid #d1d5db', borderRadius: 8,
                     background: '#fff', cursor: 'pointer', fontSize: 18,
-                    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                    fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                   }}
                   title={t('teacherCreateClass.titleTooltip')}
                 >
@@ -198,7 +198,7 @@ export function CreateClassPage() {
                 style={{
                   padding: '10px 28px', border: '1px solid #d1d5db', borderRadius: 6,
                   background: '#fff', cursor: 'pointer', fontSize: 14, color: '#374151',
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 }}
               >
                 {t('teacherCreateClass.cancelButton')}
@@ -210,7 +210,7 @@ export function CreateClassPage() {
                   padding: '10px 28px', border: 'none', borderRadius: 6,
                   background: loading ? '#93c5fd' : '#1e40af', color: '#fff',
                   cursor: loading ? 'not-allowed' : 'pointer', fontSize: 14, fontWeight: 500,
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 }}
               >
                 {loading ? t('teacherCreateClass.creatingButton') : t('teacherCreateClass.createButton')}

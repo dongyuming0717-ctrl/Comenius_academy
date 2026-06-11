@@ -29,7 +29,7 @@ export function AchievementCard({ achievement, earned }: Props) {
         opacity: earned ? 1 : 0.45,
         transition: 'all 0.2s',
         cursor: earned ? 'default' : 'default',
-        fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+        fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
       }}
     >
       <div style={{ fontSize: 28, marginBottom: 6, position: 'relative' }}>

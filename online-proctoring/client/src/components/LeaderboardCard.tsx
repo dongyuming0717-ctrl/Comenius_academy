@@ -45,7 +45,7 @@ export function LeaderboardCard({ type, classId, currentUserId }: Props) {
   };
 
   return (
-    <div style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
+    <div style={{ fontFamily: "'Geist', system-ui, -apple-system, sans-serif" }}>
       {entries.map((entry, i) => {
         const isMe = currentUserId === entry.userId;
         return (

@@ -76,7 +76,7 @@ export function RoleSelectionPage() {
     return (
       <div style={{
         minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: '#ffffff', color: '#888',
+        fontFamily: "'Geist', system-ui, -apple-system, sans-serif", background: '#ffffff', color: '#888',
       }}>
         {t('roleSelection.loading')}
       </div>
@@ -84,7 +84,7 @@ export function RoleSelectionPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
+    <div style={{ minHeight: '100vh', fontFamily: "'Geist', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
       {/* Top Nav */}
       <TopNav currentPage="home" />
 
@@ -205,7 +205,7 @@ export function RoleSelectionPage() {
               style={{
                 width: '100%', padding: '10px 14px', border: '1px solid #d1d5db',
                 borderRadius: 8, fontSize: 14, outline: 'none',
-                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 boxSizing: 'border-box',
               }}
             />
@@ -223,7 +223,7 @@ export function RoleSelectionPage() {
                 style={{
                   flex: 1, padding: '10px', border: '1px solid #d1d5db', borderRadius: 6,
                   background: '#fff', cursor: 'pointer', fontSize: 14,
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif", color: '#374151',
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif", color: '#374151',
                 }}
               >
                 {t('roleSelection.cancel')}
@@ -236,7 +236,7 @@ export function RoleSelectionPage() {
                   background: codeLoading || !inviteCode ? '#93c5fd' : '#1e40af',
                   color: '#fff', cursor: codeLoading || !inviteCode ? 'not-allowed' : 'pointer',
                   fontSize: 14, fontWeight: 500,
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 }}
               >
                 {codeLoading ? t('roleSelection.verifying') : t('roleSelection.verify')}

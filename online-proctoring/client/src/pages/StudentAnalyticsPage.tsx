@@ -332,7 +332,7 @@ export function StudentAnalyticsPage() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: '#f8fafc' }}>
+      <div style={{ minHeight: '100vh', fontFamily: "'Geist', system-ui, -apple-system, sans-serif", background: '#f8fafc' }}>
         <TopNav currentPage="analytics" />
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
           <div style={{ textAlign: 'center' }}>
@@ -361,7 +361,7 @@ export function StudentAnalyticsPage() {
 
   const sectionTitle: React.CSSProperties = {
     fontSize: 17, fontWeight: 600, color: textMain, margin: '0 0 16px',
-    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+    fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
   };
 
   const cardBase: React.CSSProperties = {
@@ -376,7 +376,7 @@ export function StudentAnalyticsPage() {
     pct >= 80 ? '#f0fdf4' : pct >= 50 ? '#fffbeb' : '#fef2f2';
 
   return (
-    <div style={{ minHeight: '100vh', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: pageBg }}>
+    <div style={{ minHeight: '100vh', fontFamily: "'Geist', system-ui, -apple-system, sans-serif", background: pageBg }}>
       <TopNav currentPage="analytics" />
 
       <div style={{ maxWidth: 960, margin: '0 auto', padding: '28px 20px 80px' }}>
@@ -419,7 +419,7 @@ export function StudentAnalyticsPage() {
                   gap: 8,
                   border: '1px solid rgba(255,255,255,0.2)',
                   cursor: 'pointer',
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                   transition: 'all 0.2s',
                 }}
                 onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.25)'; }}
@@ -582,7 +582,7 @@ export function StudentAnalyticsPage() {
                         style={{
                           fontSize: 11, fontWeight: 600, color: '#fff', background: accent,
                           border: 'none', borderRadius: 6, padding: '5px 12px', cursor: 'pointer',
-                          fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                          fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                         }}
                       >
                         Redo All →
@@ -616,7 +616,7 @@ export function StudentAnalyticsPage() {
                           fontSize: 13,
                           fontWeight: selectedYear === year ? 600 : 500,
                           cursor: 'pointer',
-                          fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                          fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                           transition: 'all 0.15s',
                           display: 'flex',
                           alignItems: 'center',
@@ -649,7 +649,7 @@ export function StudentAnalyticsPage() {
                         background: groupMode === 'topic' ? accent : cardBg,
                         color: groupMode === 'topic' ? '#fff' : textSub,
                         fontWeight: groupMode === 'topic' ? 600 : 500,
-                        fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                        fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                         fontSize: 12, transition: 'all 0.15s',
                       }}
                     >
@@ -662,7 +662,7 @@ export function StudentAnalyticsPage() {
                         background: groupMode === 'paper' ? accent : cardBg,
                         color: groupMode === 'paper' ? '#fff' : textSub,
                         fontWeight: groupMode === 'paper' ? 600 : 500,
-                        fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                        fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                         fontSize: 12, transition: 'all 0.15s',
                       }}
                     >
@@ -715,7 +715,7 @@ export function StudentAnalyticsPage() {
                                   style={{
                                     fontSize: 11, fontWeight: 600, color: accent, background: accentLight,
                                     border: 'none', borderRadius: 6, padding: '4px 10px', cursor: 'pointer',
-                                    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                                    fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                                   }}
                                 >
                                   Redo →
@@ -810,7 +810,7 @@ export function StudentAnalyticsPage() {
                                   style={{
                                     fontSize: 11, fontWeight: 600, color: accent, background: accentLight,
                                     border: 'none', borderRadius: 6, padding: '4px 10px', cursor: 'pointer',
-                                    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                                    fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                                   }}
                                 >
                                   Redo →

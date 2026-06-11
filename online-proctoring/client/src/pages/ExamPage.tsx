@@ -14,7 +14,7 @@ import { checkInToday, type CheckInResult } from '../services/gamification';
 import type { Paper, Question } from '../sdk/types';
 import { filterTMUA } from '../utils/papers';
 
-const PAPERS_CACHE_KEY = 'tmua_papers_cache_v2';
+const PAPERS_CACHE_KEY = 'tmua_papers_cache_v4';
 const GENERATED_PAPER_KEY = 'tmua_generated_paper';
 const CACHE_TTL_MS = 5 * 60 * 1000;
 
@@ -402,7 +402,8 @@ export function ExamPage() {
     setCurrentQ(0);
     setSelected(null);
     setExamStarted(true);
-    setTimeLeft(selectedPaper.duration_minutes * 60);
+    // Topic generate: no timer limit, but capped at 150 minutes
+    setTimeLeft((selectedPaper.duration_minutes || 150) * 60);
     setPracticeElapsed(0);
     setIsOvertime(false);
     examModeRef.current = examMode || 'timed';
@@ -468,8 +469,7 @@ export function ExamPage() {
     const id = setInterval(() => {
       supabase
         .from('exam_sessions')
-        .update({ answers })
-        .eq('id', sessionId)
+        .upsert({ id: sessionId, answers, status: 'active' }, { onConflict: 'id' })
         .then(() => {});
     }, 30000);
 
@@ -529,8 +529,12 @@ export function ExamPage() {
     if (sessionId) {
       supabase
         .from('exam_sessions')
-        .update({ answers, score, question_times: qTimes, status: 'completed', ended_at: new Date().toISOString() })
-        .eq('id', sessionId)
+        .upsert({
+          id: sessionId,
+          paper_id: selectedPaper.id,
+          user_id: userProfileId,
+          answers, score, question_times: qTimes, status: 'completed', ended_at: new Date().toISOString(),
+        }, { onConflict: 'id' })
         .then(() => {});
     }
 
@@ -581,7 +585,7 @@ export function ExamPage() {
     const qCount = (selectedPaper.questions as Question[]).length;
     return (
       <div style={{
-        fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+        fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
         minHeight: '100vh', background: '#ffffff',
       }}>
         {/* Blue Top Bar */}
@@ -592,7 +596,7 @@ export function ExamPage() {
         }}>
           <span style={{
             fontSize: 18, fontWeight: 400, color: '#ffffff',
-            fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+            fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
             letterSpacing: '0.3px',
           }}>
             {selectedPaper?.title?.includes('TMUA') ? 'Test of Mathematics for University Admission' : 'Comenius'}
@@ -603,7 +607,7 @@ export function ExamPage() {
         <div style={{ maxWidth: 900, margin: '0 auto', padding: '48px 20px' }}>
           <h1 style={{
             fontSize: 22, fontWeight: 400, color: '#333',
-            fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+            fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
             textAlign: 'center', marginBottom: 32,
           }}>
             Examination Confirmation
@@ -617,7 +621,7 @@ export function ExamPage() {
             <div style={{ marginBottom: 20 }}>
               <h3 style={{
                 margin: '0 0 4px 0', fontSize: 16, fontWeight: 600, color: '#333',
-                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
               }}>
                 {selectedPaper.title}
               </h3>
@@ -662,7 +666,7 @@ export function ExamPage() {
             }}>
               <h4 style={{
                 margin: '0 0 10px 0', fontSize: 13, fontWeight: 600, color: '#333',
-                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
               }}>
                 Important Information
               </h4>
@@ -684,7 +688,7 @@ export function ExamPage() {
                 padding: '12px 40px', fontSize: 15, fontWeight: 400,
                 background: '#fff', color: '#333',
                 border: '1px solid #ccc', borderRadius: 4, cursor: 'pointer',
-                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
               }}
             >
               Back
@@ -698,7 +702,7 @@ export function ExamPage() {
                 padding: '12px 40px', fontSize: 15, fontWeight: 400,
                 background: '#1e40af', color: '#fff',
                 border: 'none', borderRadius: 4, cursor: 'pointer',
-                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
               }}
             >
               Confirm & Start Exam
@@ -713,7 +717,7 @@ export function ExamPage() {
   if (incomingViewLatestRecord && !viewingPastRecord) {
     const hasError = !!viewLatestError;
     return (
-      <div style={{ minHeight: '100vh', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
+      <div style={{ minHeight: '100vh', fontFamily: "'Geist', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
         <TopNav currentPage="home" />
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
           <div style={{ textAlign: 'center' }}>
@@ -730,7 +734,7 @@ export function ExamPage() {
                   style={{
                     marginTop: 16, padding: '8px 20px', background: '#1e40af', color: '#fff',
                     border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 13, fontWeight: 500,
-                    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                    fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                   }}
                 >
                   Back to Papers
@@ -767,7 +771,7 @@ export function ExamPage() {
     } as const);
 
     return (
-      <div style={{ minHeight: '100vh', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
+      <div style={{ minHeight: '100vh', fontFamily: "'Geist', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
         {/* Blue Top Bar */}
         <TopNav currentPage="home" />
 
@@ -779,7 +783,7 @@ export function ExamPage() {
               onClick={() => navigate('/')}
               style={{
                 fontSize: 13, color: '#1e40af', cursor: 'pointer',
-                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
               }}
             >
               &larr; Back to Admission Tests
@@ -789,13 +793,13 @@ export function ExamPage() {
           {/* Title */}
           <h1 style={{
             margin: '0 0 4px 0', fontSize: 30, fontWeight: 700, color: '#111',
-            fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+            fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
           }}>
             TMUA
           </h1>
           <p style={{
             margin: '0 0 28px 0', fontSize: 16, color: '#666',
-            fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+            fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
           }}>
             Test of Mathematics for University Admission
           </p>
@@ -827,13 +831,13 @@ export function ExamPage() {
           }}>
             <h2 style={{
               margin: '0 0 6px 0', fontSize: 18, fontWeight: 600, color: '#333',
-              fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+              fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
             }}>
               Exam Simulator Demo
             </h2>
             <p style={{
               margin: '0 0 16px 0', fontSize: 13, color: '#888',
-              fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+              fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
             }}>
               Experience our premium mock examination platform in action
             </p>
@@ -877,7 +881,7 @@ export function ExamPage() {
                 <div style={{ marginBottom: 32 }}>
                   <h2 style={{
                     margin: '0 0 16px 0', fontSize: 20, fontWeight: 600, color: '#333',
-                    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                    fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                   }}>
                     Generated Papers
                   </h2>
@@ -915,7 +919,7 @@ export function ExamPage() {
                                 flex: 1, padding: '10px 16px', fontSize: 13, fontWeight: 600,
                                 color: '#fff', background: '#1e40af', border: 'none',
                                 borderRadius: 6, cursor: 'pointer',
-                                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                                fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                               }}
                             >
                               Start Mock Exam
@@ -930,7 +934,7 @@ export function ExamPage() {
                                 padding: '10px 16px', fontSize: 13, fontWeight: 500,
                                 color: '#dc2626', background: '#fff',
                                 border: '1px solid #dc2626', borderRadius: 6, cursor: 'pointer',
-                                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                                fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                               }}
                             >
                               Delete
@@ -946,7 +950,7 @@ export function ExamPage() {
               {/* Available Mock Examinations */}
               <h2 style={{
                 margin: '0 0 16px 0', fontSize: 20, fontWeight: 600, color: '#333',
-                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
               }}>
                 Available Mock Examinations
               </h2>
@@ -988,7 +992,7 @@ export function ExamPage() {
                         {/* Title */}
                         <h3 style={{
                           margin: '0 0 4px', fontSize: 17, fontWeight: 600, color: '#1f2937',
-                          fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                          fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                         }}>
                           {paper.title}
                         </h3>
@@ -1034,7 +1038,7 @@ export function ExamPage() {
                               flex: 1, padding: '10px 16px', fontSize: 13, fontWeight: 600,
                               color: '#fff', background: '#1e40af', border: 'none',
                               borderRadius: 6, cursor: 'pointer',
-                              fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                              fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                             }}
                           >
                             Start Mock Exam
@@ -1048,7 +1052,7 @@ export function ExamPage() {
                               background: '#fff',
                               border: `1px solid ${hasRecord ? '#1e40af' : '#e0e0e0'}`,
                               borderRadius: 6, cursor: hasRecord ? 'pointer' : 'default',
-                              fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                              fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                             }}
                           >
                             View Latest Record
@@ -1079,7 +1083,7 @@ export function ExamPage() {
 
       return (
         <div style={{
-          fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+          fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
           userSelect: 'none', width: '100vw', height: '100vh',
           display: 'flex', flexDirection: 'column', overflow: 'hidden',
           background: '#ffffff',
@@ -1092,14 +1096,14 @@ export function ExamPage() {
           }}>
             <span style={{
               fontSize: 18, fontWeight: 400, color: '#ffffff',
-              fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+              fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
               letterSpacing: '0.3px',
             }}>
               {selectedPaper?.title?.includes('TMUA') ? 'Test of Mathematics for University Admission' : 'Comenius'}
             </span>
             <span style={{
               fontSize: 18, fontWeight: 400, color: '#ffffff',
-              fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+              fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
             }}>
               Review Mode
             </span>
@@ -1117,7 +1121,7 @@ export function ExamPage() {
                 padding: '14px 20px', background: '#fafafa',
                 borderBottom: '1px solid #e0e0e0',
               }}>
-                <span style={{ fontSize: 15, fontWeight: 600, color: '#333', fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
+                <span style={{ fontSize: 15, fontWeight: 600, color: '#333', fontFamily: "'Geist', system-ui, -apple-system, sans-serif" }}>
                   Question {reviewQuestionIndex + 1}
                 </span>
                 <span style={{
@@ -1125,7 +1129,7 @@ export function ExamPage() {
                   color: isCorrect ? '#16a34a' : '#dc2626',
                   padding: '3px 12px', borderRadius: 4,
                   background: isCorrect ? '#dcfce7' : '#fef2f2',
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 }}>
                   {isCorrect ? 'Correct' : 'Incorrect'}
                 </span>
@@ -1184,7 +1188,7 @@ export function ExamPage() {
             <div style={{
               maxWidth: 800, margin: '16px auto 0', display: 'flex', gap: 16,
               justifyContent: 'center', fontSize: 14, color: '#555',
-              fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+              fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
             }}>
               <span>Your answer: <strong style={{ color: isCorrect ? '#16a34a' : '#dc2626' }}>{letter ?? 'Not answered'}</strong></span>
               <span>Correct answer: <strong style={{ color: '#16a34a' }}>{correctLetter}</strong></span>
@@ -1203,7 +1207,7 @@ export function ExamPage() {
                 padding: '8px 28px', borderRadius: 4,
                 border: '1px solid #ccc', background: '#fff',
                 cursor: 'pointer', fontSize: 15, fontWeight: 400,
-                color: '#333', fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                color: '#333', fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
               }}
             >
               Back to Results
@@ -1218,7 +1222,7 @@ export function ExamPage() {
                   cursor: reviewQuestionIndex === 0 ? 'default' : 'pointer',
                   opacity: reviewQuestionIndex === 0 ? 0.4 : 1,
                   fontSize: 15, fontWeight: 400, color: '#333',
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 }}
               >
                 Previous
@@ -1232,7 +1236,7 @@ export function ExamPage() {
                   cursor: reviewQuestionIndex === qs.length - 1 ? 'default' : 'pointer',
                   opacity: reviewQuestionIndex === qs.length - 1 ? 0.6 : 1,
                   fontSize: 15, fontWeight: 400, color: '#fff',
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 }}
               >
                 Next
@@ -1251,7 +1255,7 @@ export function ExamPage() {
 
       return (
         <div style={{
-          fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+          fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
           userSelect: 'none', width: '100vw', height: '100vh',
           display: 'flex', flexDirection: 'column', overflow: 'hidden',
           background: '#ffffff',
@@ -1264,14 +1268,14 @@ export function ExamPage() {
           }}>
             <span style={{
               fontSize: 18, fontWeight: 400, color: '#ffffff',
-              fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+              fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
               letterSpacing: '0.3px',
             }}>
               {selectedPaper?.title?.includes('TMUA') ? 'Test of Mathematics for University Admission' : 'Comenius'}
             </span>
             <span style={{
               fontSize: 15, fontWeight: 400, color: '#ffffff',
-              fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+              fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
             }}>
               Results
             </span>
@@ -1286,11 +1290,11 @@ export function ExamPage() {
               }}>
                 <h2 style={{
                   margin: 0, fontSize: 20, fontWeight: 400, color: '#333',
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 }}>
                   Question Status
                 </h2>
-                <div style={{ display: 'flex', gap: 16, fontSize: 13, color: '#666', fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
+                <div style={{ display: 'flex', gap: 16, fontSize: 13, color: '#666', fontFamily: "'Geist', system-ui, -apple-system, sans-serif" }}>
                   <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#16a34a' }} />
                     Completed ({answeredCount})
@@ -1313,7 +1317,7 @@ export function ExamPage() {
                   padding: '10px 20px', background: '#fafafa',
                   borderBottom: '2px solid #e0e0e0',
                   fontSize: 13, fontWeight: 600, color: '#555',
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 }}>
                   <span style={{ width: 60 }}>Page</span>
                   <span style={{ flex: 1 }}>Title</span>
@@ -1330,7 +1334,7 @@ export function ExamPage() {
                       display: 'flex', alignItems: 'center',
                       padding: '10px 20px',
                       borderBottom: i < qs.length - 1 ? '1px solid #f0f0f0' : 'none',
-                      fontSize: 14, fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                      fontSize: 14, fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                     }}>
                       <span style={{ width: 60, fontWeight: 600, color: '#333' }}>
                         {i + 1}
@@ -1362,7 +1366,7 @@ export function ExamPage() {
                             padding: '5px 16px', borderRadius: 4,
                             background: '#1e40af', border: 'none',
                             cursor: 'pointer', fontSize: 12, fontWeight: 400,
-                            color: '#fff', fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                            color: '#fff', fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                           }}
                         >
                           Review
@@ -1381,7 +1385,7 @@ export function ExamPage() {
                     padding: '10px 40px', borderRadius: 4,
                     background: '#1e40af', border: 'none',
                     cursor: 'pointer', fontSize: 15, fontWeight: 400,
-                    color: '#fff', fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                    color: '#fff', fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                   }}
                 >
                   Submit
@@ -1403,7 +1407,7 @@ export function ExamPage() {
 
       return (
         <div style={{
-          fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+          fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
           userSelect: 'none', width: '100vw', height: '100vh',
           display: 'flex', flexDirection: 'column', overflow: 'hidden',
           background: '#ffffff',
@@ -1416,14 +1420,14 @@ export function ExamPage() {
           }}>
             <span style={{
               fontSize: 18, fontWeight: 400, color: '#ffffff',
-              fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+              fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
               letterSpacing: '0.3px',
             }}>
               {selectedPaper?.title?.includes('TMUA') ? 'Test of Mathematics for University Admission' : 'Comenius'}
             </span>
             <span style={{
               fontSize: 15, fontWeight: 400, color: '#ffffff',
-              fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+              fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
             }}>
               Results
             </span>
@@ -1455,7 +1459,7 @@ export function ExamPage() {
                   </div>
                 </div>
 
-                <h1 style={{ margin: 0, fontSize: 22, fontWeight: 400, color: '#333', fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
+                <h1 style={{ margin: 0, fontSize: 22, fontWeight: 400, color: '#333', fontFamily: "'Geist', system-ui, -apple-system, sans-serif" }}>
                   Exam Submitted
                 </h1>
                 <span style={{
@@ -1465,20 +1469,23 @@ export function ExamPage() {
                 }}>
                   {gradeLabel}
                 </span>
+                {/* Hide TMUA scale for topic-generated practice papers */}
+                {(selectedPaper?.topics?.length || 0) > 1 && (
                 <div style={{ marginTop: 12 }}>
                   <span style={{
                     fontSize: 14, color: '#888',
-                    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                    fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                   }}>
                     TMUA Scale Score:{' '}
                   </span>
                   <span style={{
                     fontSize: 24, fontWeight: 700, color: '#1e40af',
-                    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                    fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                   }}>
                     {tmuaScale !== undefined ? tmuaScale.toFixed(1) : '--'}
                   </span>
                 </div>
+                )}
                 {sessionId && (
                   <p style={{ color: '#aaa', fontSize: 11, marginTop: 8 }}>
                     Session: {sessionId.slice(0, 8)}...
@@ -1495,7 +1502,7 @@ export function ExamPage() {
                 <div style={{
                   padding: '12px 20px', fontSize: 13, fontWeight: 600, color: '#555',
                   background: '#fafafa', borderBottom: '1px solid #e0e0e0',
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 }}>
                   Question Breakdown
                 </div>
@@ -1570,7 +1577,7 @@ export function ExamPage() {
                     background: '#1e40af',
                     color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer',
                     fontSize: 14, fontWeight: 400,
-                    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                    fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                   }}
                 >
                   Download Report (PDF)
@@ -1584,7 +1591,7 @@ export function ExamPage() {
                       background: '#fff', color: '#333',
                       border: '1px solid #ccc', borderRadius: 4,
                       cursor: 'pointer', fontSize: 14, fontWeight: 400,
-                      fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                      fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                     }}
                   >
                     Back to Results
@@ -1596,7 +1603,7 @@ export function ExamPage() {
                       background: '#fff', color: '#333',
                       border: '1px solid #ccc', borderRadius: 4,
                       cursor: 'pointer', fontSize: 14, fontWeight: 400,
-                      fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                      fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                     }}
                   >
                     Back to Papers
@@ -1628,7 +1635,7 @@ export function ExamPage() {
 
   return (
     <div style={{
-      fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+      fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
       userSelect: 'none', width: '100vw', height: '100vh',
       display: 'flex', flexDirection: 'column', overflow: 'hidden',
       background: '#ffffff',
@@ -1643,7 +1650,7 @@ export function ExamPage() {
       }}>
         <span style={{
           fontSize: 18, fontWeight: 400, color: '#ffffff',
-          fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+          fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
           letterSpacing: '0.3px',
         }}>
           {selectedPaper?.title?.includes('TMUA') ? 'Test of Mathematics for University Admission' : 'Comenius'}
@@ -1655,7 +1662,7 @@ export function ExamPage() {
               display: 'flex', alignItems: 'center', gap: 6,
               cursor: 'pointer', userSelect: 'none',
               color: '#ffffff', fontSize: 15, fontWeight: 400,
-              fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+              fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
               opacity: q && flaggedQuestions.has(q.id) ? 1 : 0.8,
             }}
           >
@@ -1668,7 +1675,7 @@ export function ExamPage() {
           <span style={{
             fontSize: 15, fontWeight: 400, fontVariantNumeric: 'tabular-nums',
             color: isOvertime ? '#ff6b6b' : '#ffffff',
-            fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+            fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
           }}>
             {isOvertime
               ? `Overtime: +${overtimeMin}:${overtimeSec.toString().padStart(2, '0')}`
@@ -1804,7 +1811,7 @@ export function ExamPage() {
               onClick={() => setShowEndTestDialog(true)}
               style={{
                 color: '#ffffff', fontSize: 15, fontWeight: 400,
-                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 cursor: 'pointer', userSelect: 'none',
               }}
             >
@@ -1822,7 +1829,7 @@ export function ExamPage() {
                 }}
                 style={{
                   color: '#ffffff', fontSize: 15, fontWeight: 400,
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                   cursor: isFirstQ ? 'default' : 'pointer',
                   opacity: isFirstQ ? 0.4 : 1,
                   userSelect: 'none',
@@ -1834,7 +1841,7 @@ export function ExamPage() {
                 onClick={() => setShowNavigator(true)}
                 style={{
                   color: '#ffffff', fontSize: 15, fontWeight: 400,
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                   cursor: 'pointer', userSelect: 'none',
                 }}
               >
@@ -1858,7 +1865,7 @@ export function ExamPage() {
                 }}
                 style={{
                   color: '#ffffff', fontSize: 15, fontWeight: 400,
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                   cursor: 'pointer', userSelect: 'none',
                 }}
               >
@@ -1937,13 +1944,13 @@ export function ExamPage() {
             }}>
               <h3 style={{
                 margin: 0, fontSize: 16, fontWeight: 600, color: '#333',
-                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
               }}>
                 Question Palette
               </h3>
               <span style={{
                 fontSize: 12, color: '#888',
-                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
               }}>
                 {answeredCount}/{questions.length} answered
               </span>
@@ -2027,7 +2034,7 @@ export function ExamPage() {
                 width: '100%', marginTop: 16, padding: '8px',
                 background: '#1e40af', color: '#fff', border: 'none',
                 borderRadius: 4, cursor: 'pointer', fontSize: 14,
-                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
               }}
             >
               Close
@@ -2097,7 +2104,7 @@ export function ExamPage() {
                 display: 'block', margin: '20px auto 0', padding: '8px 24px',
                 fontSize: 13, fontWeight: 500, color: '#6b7280', background: 'transparent',
                 border: 'none', cursor: 'pointer',
-                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
               }}
             >
               Cancel
@@ -2127,7 +2134,7 @@ export function ExamPage() {
             }}>
               <h3 style={{
                 margin: 0, fontSize: 18, fontWeight: 600, color: '#333',
-                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
               }}>
                 End Test
               </h3>
@@ -2147,7 +2154,7 @@ export function ExamPage() {
                       display: 'flex', alignItems: 'center',
                       padding: '8px 24px',
                       borderBottom: i < questions.length - 1 ? '1px solid #f5f5f5' : 'none',
-                      fontSize: 13, fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                      fontSize: 13, fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                       cursor: 'pointer',
                       background: 'transparent',
                     }}
@@ -2191,7 +2198,7 @@ export function ExamPage() {
                     return (
                       <p style={{
                         margin: '0 0 4px 0', fontSize: 13, color: '#d97706',
-                        fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                        fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                       }}>
                         You have <strong>{unansweredCount}</strong> unanswered question{unansweredCount > 1 ? 's' : ''}.
                       </p>
@@ -2201,7 +2208,7 @@ export function ExamPage() {
                 })()}
                 <p style={{
                   margin: 0, fontSize: 13, color: '#888',
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 }}>
                   Are you sure you want to end the test? You will not be able to change your answers after submission.
                 </p>
@@ -2220,7 +2227,7 @@ export function ExamPage() {
                   padding: '8px 24px', borderRadius: 4,
                   border: '1px solid #ccc', background: '#fff',
                   cursor: 'pointer', fontSize: 14, fontWeight: 400,
-                  color: '#333', fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  color: '#333', fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 }}
               >
                 Cancel
@@ -2234,7 +2241,7 @@ export function ExamPage() {
                   padding: '8px 24px', borderRadius: 4,
                   background: '#1e40af', border: 'none',
                   cursor: 'pointer', fontSize: 14, fontWeight: 400,
-                  color: '#fff', fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  color: '#fff', fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 }}
               >
                 End Test

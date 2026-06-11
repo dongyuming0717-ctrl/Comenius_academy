@@ -286,7 +286,7 @@ export function AdminDashboard() {
     : 0;
 
   return (
-    <div style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", minHeight: '100vh', background: '#ffffff' }}>
+    <div style={{ fontFamily: "'Geist', system-ui, -apple-system, sans-serif", minHeight: '100vh', background: '#ffffff' }}>
       {/* Header */}
       <TopNav currentPage="teacher" />
 
@@ -308,7 +308,7 @@ export function AdminDashboard() {
               padding: '6px 14px', border: '1px solid #d1d5db', borderRadius: 4,
               background: showStats ? '#eff6ff' : '#fff',
               color: '#1e40af', cursor: 'pointer', fontSize: 12,
-              fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+              fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
             }}
           >
             {t('admin.statistics')}
@@ -318,7 +318,7 @@ export function AdminDashboard() {
             style={{
               padding: '6px 14px', border: '1px solid #d1d5db', borderRadius: 4,
               background: '#fff', cursor: 'pointer', fontSize: 12, color: '#374151',
-              fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+              fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
             }}
           >
             {t('admin.refresh')}
@@ -329,7 +329,7 @@ export function AdminDashboard() {
               style={{
                 padding: '6px 14px', border: '1px solid #fecaca', borderRadius: 4,
                 background: '#fff', cursor: 'pointer', fontSize: 12, color: '#dc2626',
-                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
               }}
             >
               Delete
@@ -341,7 +341,7 @@ export function AdminDashboard() {
                 style={{
                   padding: '6px 14px', border: '1px solid #d1d5db', borderRadius: 4,
                   background: '#fff', cursor: 'pointer', fontSize: 12, color: '#374151',
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 }}
               >
                 Cancel
@@ -354,7 +354,7 @@ export function AdminDashboard() {
                   background: selectedIds.size > 0 ? '#dc2626' : '#fecaca',
                   cursor: selectedIds.size > 0 ? 'pointer' : 'default',
                   fontSize: 12, color: selectedIds.size > 0 ? '#fff' : '#f87171',
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 }}
               >
                 Delete Selected ({selectedIds.size})
@@ -702,7 +702,7 @@ export function AdminDashboard() {
                                     padding: '4px 12px', background: '#1e40af', color: '#fff',
                                     border: 'none', borderRadius: 5, cursor: 'pointer', fontSize: 12,
                                     fontWeight: 500,
-                                    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                                    fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                                   }}
                                 >
                                   {t('admin.view')}
@@ -715,7 +715,7 @@ export function AdminDashboard() {
                                       padding: '4px 12px', background: '#ef4444', color: '#fff',
                                       border: 'none', borderRadius: 5, cursor: 'pointer', fontSize: 12,
                                       fontWeight: 500, marginLeft: 6,
-                                      fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                                      fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                                     }}
                                   >
                                     {terminating === s.id ? '...' : t('admin.terminate')}

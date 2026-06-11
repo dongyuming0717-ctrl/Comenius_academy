@@ -47,7 +47,7 @@ interface ActiveSession {
 const inputStyle: React.CSSProperties = {
   width: '100%', padding: '10px 14px', border: '1px solid #d1d5db',
   borderRadius: 8, fontSize: 14, outline: 'none',
-  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
   boxSizing: 'border-box',
 };
 
@@ -295,7 +295,7 @@ export function ClassDetailPage() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
+      <div style={{ minHeight: '100vh', fontFamily: "'Geist', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
         <TopNav currentPage="teacher" />
         <div style={{ padding: 40, textAlign: 'center', color: '#9ca3af' }}>{t('classDetail.loading')}</div>
       </div>
@@ -304,13 +304,13 @@ export function ClassDetailPage() {
 
   if (error || !cls) {
     return (
-      <div style={{ minHeight: '100vh', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
+      <div style={{ minHeight: '100vh', fontFamily: "'Geist', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
         <TopNav currentPage="teacher" />
         <div style={{ maxWidth: 500, margin: '60px auto', textAlign: 'center' }}>
           <p style={{ color: '#dc2626' }}>{error || t('classDetail.classNotFound')}</p>
           <button onClick={() => navigate('/teacher')} style={{
             padding: '6px 20px', background: '#1e40af', color: '#fff', border: 'none',
-            borderRadius: 6, cursor: 'pointer', fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+            borderRadius: 6, cursor: 'pointer', fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
           }}>{t('classDetail.backToDashboard')}</button>
         </div>
       </div>
@@ -324,11 +324,11 @@ export function ClassDetailPage() {
 
   const sectionH2: React.CSSProperties = {
     margin: '0 0 16px', fontSize: 16, fontWeight: 600, color: '#1f2937',
-    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+    fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
   };
 
   return (
-    <div style={{ minHeight: '100vh', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
+    <div style={{ minHeight: '100vh', fontFamily: "'Geist', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
       <TopNav currentPage="teacher" />
 
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '24px 20px 60px' }}>
@@ -336,7 +336,7 @@ export function ClassDetailPage() {
         <button onClick={() => navigate('/teacher')} style={{
           background: 'none', border: 'none', color: '#1e40af', cursor: 'pointer',
           fontSize: 13, padding: 0, marginBottom: 16,
-          fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+          fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
         }}>&larr; {t('classDetail.backToDashboard')}</button>
 
         {/* Class Info Header */}
@@ -354,12 +354,12 @@ export function ClassDetailPage() {
               <button onClick={() => setEditing(!editing)} style={{
                 padding: '6px 16px', background: '#1e40af', color: '#fff', border: 'none',
                 borderRadius: 6, cursor: 'pointer', fontSize: 13, fontWeight: 500,
-                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
               }}>{editing ? t('classDetail.cancelButton') : t('classDetail.editButton')}</button>
               <button onClick={handleDeleteClass} style={{
                 padding: '6px 16px', background: '#fff', color: '#ef4444', border: '1px solid #ef4444',
                 borderRadius: 6, cursor: 'pointer', fontSize: 13, fontWeight: 500,
-                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
               }}>{t('classDetail.deleteButton')}</button>
             </div>
           </div>
@@ -388,7 +388,7 @@ export function ClassDetailPage() {
                 <button type="button" onClick={handleRegenerateCode} style={{
                   padding: '10px 16px', background: '#fff', color: '#1e40af', border: '1px solid #306ca0',
                   borderRadius: 6, cursor: 'pointer', fontSize: 13, fontWeight: 500,
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 }}>{t('classDetail.regenerateCode')}</button>
               </div>
               {editError && (
@@ -400,7 +400,7 @@ export function ClassDetailPage() {
               <button type="submit" disabled={saving} style={{
                 alignSelf: 'flex-start', padding: '8px 24px', background: saving ? '#93c5fd' : '#1e40af',
                 color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 14, fontWeight: 500,
-                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
               }}>{saving ? t('classDetail.saving') : t('classDetail.saveChanges')}</button>
             </form>
           )}
@@ -434,7 +434,7 @@ export function ClassDetailPage() {
                   <button onClick={() => handleRemoveStudent(s.student_id)} style={{
                     padding: '4px 12px', background: '#fff', color: '#ef4444', border: '1px solid #fecaca',
                     borderRadius: 4, cursor: 'pointer', fontSize: 12,
-                    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                    fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                   }}>{t('classDetail.removeStudentButton')}</button>
                 </div>
               ))}
@@ -454,7 +454,7 @@ export function ClassDetailPage() {
             <button onClick={() => setShowAssignModal(true)} style={{
               padding: '6px 16px', background: '#1e40af', color: '#fff', border: 'none',
               borderRadius: 6, cursor: 'pointer', fontSize: 13, fontWeight: 500,
-              fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+              fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
             }}>{t('classDetail.assignPapersButton')}</button>
           </div>
           {assignedPapers.length === 0 ? (
@@ -494,7 +494,7 @@ export function ClassDetailPage() {
             <button onClick={() => setShowLiveProctor(!showLiveProctor)} style={{
               padding: '6px 16px', background: showLiveProctor ? '#ef4444' : '#1e40af', color: '#fff',
               border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 13, fontWeight: 500,
-              fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+              fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
             }}>{showLiveProctor ? t('classDetail.stopMonitoring') : t('classDetail.startMonitoring')}</button>
           </div>
 
@@ -524,12 +524,12 @@ export function ClassDetailPage() {
                           <button onClick={() => navigate(`/admin/student/${s.id}`)} style={{
                             padding: '3px 10px', background: '#1e40af', color: '#fff', border: 'none',
                             borderRadius: 4, cursor: 'pointer', fontSize: 11,
-                            fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                            fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                           }}>{t('classDetail.viewButton')}</button>
                           <button onClick={() => handleTerminateSession(s.id)} disabled={terminatingSession === s.id} style={{
                             padding: '3px 10px', background: '#ef4444', color: '#fff', border: 'none',
                             borderRadius: 4, cursor: 'pointer', fontSize: 11,
-                            fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                            fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                           }}>{terminatingSession === s.id ? '...' : t('classDetail.terminateButton')}</button>
                         </div>
                       </div>
@@ -576,7 +576,7 @@ export function ClassDetailPage() {
               padding: '16px 24px', borderBottom: '1px solid #eee',
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
             }}>
-              <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
+              <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, fontFamily: "'Geist', system-ui, -apple-system, sans-serif" }}>
                 {t('classDetail.assignModalTitle')}
               </h3>
               <button onClick={() => { setShowAssignModal(false); setAssignError(''); setAssignSuccess(''); }} style={{
@@ -631,12 +631,12 @@ export function ClassDetailPage() {
               <button onClick={() => { setShowAssignModal(false); setAssignError(''); setAssignSuccess(''); }} style={{
                 padding: '8px 18px', background: '#fff', color: '#374151', border: '1px solid #d1d5db',
                 borderRadius: 6, cursor: 'pointer', fontSize: 13, marginRight: 8,
-                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
               }}>{t('classDetail.assignModalCancel')}</button>
               <button onClick={handleAssignPapers} disabled={assigning || selectedPaperIds.size === 0} style={{
                 padding: '8px 18px', background: assigning ? '#93c5fd' : '#1e40af', color: '#fff',
                 border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 13, fontWeight: 500,
-                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
               }}>{assigning ? t('classDetail.assigning') : t('classDetail.assignButton')}</button>
             </div>
           </div>

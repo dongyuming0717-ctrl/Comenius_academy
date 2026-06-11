@@ -115,7 +115,7 @@ export function PreExamCheck({ onComplete, onBack }: Props) {
 
   return (
     <div style={{
-      minHeight: '100vh', fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+      minHeight: '100vh', fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
       background: '#ffffff', padding: 20,
     }}>
       <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%' }}>
@@ -128,7 +128,7 @@ export function PreExamCheck({ onComplete, onBack }: Props) {
         }}>
           <span style={{
             fontSize: 18, fontWeight: 400, color: '#ffffff',
-            fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+            fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
             letterSpacing: '0.3px',
           }}>
             Test of Mathematics for University Admission
@@ -147,7 +147,7 @@ export function PreExamCheck({ onComplete, onBack }: Props) {
           {t('preExam.backToPaperSelection')}
         </button>
 
-        <h1 style={{ textAlign: 'center', marginBottom: 4, color: '#333', fontSize: 22, fontWeight: 400, fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
+        <h1 style={{ textAlign: 'center', marginBottom: 4, color: '#333', fontSize: 22, fontWeight: 400, fontFamily: "'Geist', system-ui, -apple-system, sans-serif" }}>
           {t('preExam.heading')}
         </h1>
         <p style={{ textAlign: 'center', color: '#888', marginBottom: 32, fontSize: 14 }}>
@@ -162,7 +162,7 @@ export function PreExamCheck({ onComplete, onBack }: Props) {
           transition: 'all 0.3s ease',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-            <h3 style={{ margin: 0, fontSize: 15, color: cameraOk ? '#16a34a' : '#333', display: 'flex', alignItems: 'center', gap: 8, fontWeight: 400, fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
+            <h3 style={{ margin: 0, fontSize: 15, color: cameraOk ? '#16a34a' : '#333', display: 'flex', alignItems: 'center', gap: 8, fontWeight: 400, fontFamily: "'Geist', system-ui, -apple-system, sans-serif" }}>
               {cameraOk ? (
                 <span style={{ width: 22, height: 22, borderRadius: '50%', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#16a34a' }}>✓</span>
               ) : (
@@ -176,7 +176,7 @@ export function PreExamCheck({ onComplete, onBack }: Props) {
               style={{
                 padding: '8px 20px', background: '#1e40af', color: '#fff',
                 border: 'none', borderRadius: 4, cursor: cameraOk ? 'default' : 'pointer', fontSize: 13,
-                fontWeight: 400, fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                fontWeight: 400, fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 opacity: cameraOk ? 0 : 1,
                 pointerEvents: cameraOk ? 'none' : 'auto',
                 transition: 'opacity 0.2s',
@@ -221,7 +221,7 @@ export function PreExamCheck({ onComplete, onBack }: Props) {
           transition: 'all 0.3s ease',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-            <h3 style={{ margin: 0, fontSize: 15, color: micOk ? '#16a34a' : '#333', display: 'flex', alignItems: 'center', gap: 8, fontWeight: 400, fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
+            <h3 style={{ margin: 0, fontSize: 15, color: micOk ? '#16a34a' : '#333', display: 'flex', alignItems: 'center', gap: 8, fontWeight: 400, fontFamily: "'Geist', system-ui, -apple-system, sans-serif" }}>
               {micOk ? (
                 <span style={{ width: 22, height: 22, borderRadius: '50%', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#16a34a' }}>✓</span>
               ) : (
@@ -235,7 +235,7 @@ export function PreExamCheck({ onComplete, onBack }: Props) {
               style={{
                 padding: '8px 20px', background: '#1e40af', color: '#fff',
                 border: 'none', borderRadius: 4, cursor: micOk ? 'default' : 'pointer', fontSize: 13,
-                fontWeight: 400, fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                fontWeight: 400, fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 opacity: micOk ? 0 : 1,
                 pointerEvents: micOk ? 'none' : 'auto',
                 transition: 'opacity 0.2s',
@@ -271,7 +271,7 @@ export function PreExamCheck({ onComplete, onBack }: Props) {
           borderRadius: 8, padding: 22, marginBottom: 28,
           transition: 'all 0.3s ease',
         }}>
-          <h3 style={{ margin: '0 0 14px 0', fontSize: 15, color: rulesAccepted ? '#16a34a' : '#333', display: 'flex', alignItems: 'center', gap: 8, fontWeight: 400, fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
+          <h3 style={{ margin: '0 0 14px 0', fontSize: 15, color: rulesAccepted ? '#16a34a' : '#333', display: 'flex', alignItems: 'center', gap: 8, fontWeight: 400, fontFamily: "'Geist', system-ui, -apple-system, sans-serif" }}>
             {rulesAccepted ? (
               <span style={{ width: 22, height: 22, borderRadius: '50%', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#16a34a' }}>✓</span>
             ) : (
@@ -315,7 +315,7 @@ export function PreExamCheck({ onComplete, onBack }: Props) {
             border: 'none',
             borderRadius: 4, cursor: allOk ? 'pointer' : 'not-allowed',
             fontSize: 17, fontWeight: 400,
-            fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+            fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
             boxShadow: 'none',
             transition: 'all 0.2s',
           }}

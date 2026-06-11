@@ -45,7 +45,7 @@ export function AdminLogin({ onLogin }: Props) {
 
   return (
     <div style={{
-      maxWidth: 420, margin: '100px auto', fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+      maxWidth: 420, margin: '100px auto', fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
       padding: 20,
     }}>
       <div style={{ textAlign: 'center', marginBottom: 32 }}>
@@ -108,7 +108,7 @@ export function AdminLogin({ onLogin }: Props) {
             width: '100%', padding: '12px', background: loading ? '#93c5fd' : '#1e40af',
             color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer',
             fontSize: 15, fontWeight: 500, marginTop: 4,
-            fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+            fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
           }}
         >
           {loading ? t('adminLogin.signingIn') : t('adminLogin.submitButton')}

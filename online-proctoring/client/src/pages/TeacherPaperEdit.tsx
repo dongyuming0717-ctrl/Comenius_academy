@@ -14,7 +14,7 @@ const TOPIC_OPTIONS = [
 const inputStyle: React.CSSProperties = {
   width: '100%', padding: '10px 14px', border: '1px solid #d1d5db',
   borderRadius: 8, fontSize: 14, outline: 'none',
-  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
   boxSizing: 'border-box',
 };
 
@@ -186,7 +186,7 @@ export function TeacherPaperEdit() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
+      <div style={{ minHeight: '100vh', fontFamily: "'Geist', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
         <TopNav currentPage="teacher" />
         <div style={{ padding: 40, textAlign: 'center', color: '#9ca3af' }}>{t('teacherPaperEdit.loading')}</div>
       </div>
@@ -200,18 +200,18 @@ export function TeacherPaperEdit() {
 
   const sectionH2: React.CSSProperties = {
     margin: '0 0 16px', fontSize: 16, fontWeight: 600, color: '#1f2937',
-    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+    fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
   };
 
   return (
-    <div style={{ minHeight: '100vh', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
+    <div style={{ minHeight: '100vh', fontFamily: "'Geist', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
       <TopNav currentPage="teacher" />
 
       <div style={{ maxWidth: 800, margin: '0 auto', padding: '24px 20px 60px' }}>
         <button onClick={() => navigate('/teacher/papers')} style={{
           background: 'none', border: 'none', color: '#1e40af', cursor: 'pointer',
           fontSize: 13, padding: 0, marginBottom: 16,
-          fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+          fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
         }}>&larr; {t('teacherPaperEdit.backToPapers')}</button>
 
         <h1 style={{ margin: '0 0 20px', fontSize: 24, fontWeight: 600, color: '#111' }}>
@@ -282,7 +282,7 @@ export function TeacherPaperEdit() {
               alignSelf: 'flex-start', padding: '10px 24px', background: savingMeta ? '#93c5fd' : '#1e40af',
               color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer',
               fontSize: 14, fontWeight: 500,
-              fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+              fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
             }}>{savingMeta ? t('teacherPaperEdit.savingMetaButton') : isEdit ? t('teacherPaperEdit.savePaperButton') : t('teacherPaperEdit.createPaperButton')}</button>
           </form>
         </div>
@@ -296,7 +296,7 @@ export function TeacherPaperEdit() {
                 padding: '8px 18px', background: savingQuestions ? '#93c5fd' : '#1e40af',
                 color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer',
                 fontSize: 13, fontWeight: 500,
-                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
               }}>{savingQuestions ? t('teacherPaperEdit.savingQuestionsButton') : t('teacherPaperEdit.saveQuestionsButton')}</button>
             </div>
 
@@ -333,7 +333,7 @@ export function TeacherPaperEdit() {
                       }} style={{
                         padding: '2px 8px', background: '#fee2e2', color: '#ef4444',
                         border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 11,
-                        fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                        fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                       }}>{t('teacherPaperEdit.deleteQuestionButton')}</button>
                     </div>
 
@@ -387,7 +387,7 @@ export function TeacherPaperEdit() {
                                   <button onClick={() => handleRemoveOption(qi, oi)} style={{
                                     padding: '4px 8px', background: '#fee2e2', color: '#ef4444',
                                     border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 11,
-                                    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                                    fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                                   }}>x</button>
                                 )}
                               </div>
@@ -396,7 +396,7 @@ export function TeacherPaperEdit() {
                           <button onClick={() => handleAddOption(qi)} style={{
                             marginTop: 8, padding: '4px 12px', background: '#f0f0f0', color: '#374151',
                             border: '1px dashed #d1d5db', borderRadius: 4, cursor: 'pointer', fontSize: 12,
-                            fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                            fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                           }}>{t('teacherPaperEdit.addOptionButton')}</button>
                         </div>
                       </div>
@@ -412,7 +412,7 @@ export function TeacherPaperEdit() {
             }} style={{
               marginTop: 12, width: '100%', padding: '10px', background: '#f0f0f0', color: '#374151',
               border: '1px dashed #d1d5db', borderRadius: 6, cursor: 'pointer', fontSize: 13,
-              fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+              fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
             }}>{t('teacherPaperEdit.addQuestionButton')}</button>
           </div>
         )}

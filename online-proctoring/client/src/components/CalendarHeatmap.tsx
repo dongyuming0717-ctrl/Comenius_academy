@@ -118,7 +118,7 @@ export function CalendarHeatmap({ checkInDates }: Props) {
   }).length;
 
   return (
-    <div style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", userSelect: 'none', width: '100%' }}>
+    <div style={{ fontFamily: "'Geist', system-ui, -apple-system, sans-serif", userSelect: 'none', width: '100%' }}>
       {/* Header: month nav */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
         <button onClick={goToPrevMonth} style={{

@@ -47,7 +47,7 @@ export function ShopItemCard({
               border: enabled ? '1px solid #bbf7d0' : '1px solid #e2e8f0',
               color: enabled ? '#16a34a' : '#94a3b8',
               fontSize: 13, fontWeight: 600,
-              fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+              fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
             }}
           >
             {enabled ? 'ON' : 'OFF'}
@@ -65,7 +65,7 @@ export function ShopItemCard({
                 ? `linear-gradient(135deg, ${gradient})`
                 : '#d1d5db',
               color: '#fff', fontSize: 14, fontWeight: 600,
-              fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+              fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
               opacity: canAfford ? 1 : 0.6,
             }}
           >

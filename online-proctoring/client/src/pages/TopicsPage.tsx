@@ -7,6 +7,8 @@ import { TAG_LIST, TAG_LABEL, TAG_COLOR, TAG_BG, type TopicTag } from '../data/t
 import type { Paper, Question } from '../sdk/types';
 import { MathText } from '../components/MathText';
 import { PracticeModal } from '../components/PracticeModal';
+import { AssignDialog } from '../components/AssignDialog';
+import { filterTMUA } from '../utils/papers';
 
 type PaperFilter = 'all' | 1 | 2;
 type StatusFilter = 'all' | 'correct' | 'incorrect' | 'not_attempted';
@@ -25,7 +27,7 @@ interface QuestionEntry {
   question: Question; // full question object
 }
 
-const PAPERS_CACHE_KEY = 'tmua_papers_cache_v3';
+const PAPERS_CACHE_KEY = 'tmua_papers_cache_v4';
 const CACHE_TTL_MS = 5 * 60 * 1000;
 const GENERATED_PAPER_KEY = 'tmua_generated_paper';
 
@@ -78,6 +80,8 @@ export function TopicsPage() {
   const [genMsg, setGenMsg] = useState('');
   const [genPaperNum, setGenPaperNum] = useState<1 | 2>(1);
   const [generatedQuestions, setGeneratedQuestions] = useState<QuestionEntry[] | null>(null);
+  const [showAssign, setShowAssign] = useState(false);
+  const [pendingGenPaper, setPendingGenPaper] = useState<{ id: string; title: string; paper?: any } | null>(null);
 
   // Fetch papers and user answers
   useEffect(() => {
@@ -85,7 +89,7 @@ export function TopicsPage() {
       setLoading(true);
       try {
         const cached = loadCachedPapers();
-        if (cached) setPapers(cached.filter(p => p.subject !== 'economics'));
+        if (cached) setPapers(filterTMUA(cached));
 
         const { data: paperData, error: paperErr } = await supabase
           .from('papers')
@@ -94,7 +98,7 @@ export function TopicsPage() {
           .order('paper_number');
 
         if (!paperErr && paperData) {
-          const tmuaOnly = (paperData as Paper[]).filter(p => p.subject !== 'economics');
+          const tmuaOnly = filterTMUA(paperData as Paper[]);
           setPapers(tmuaOnly);
           try {
             localStorage.setItem(PAPERS_CACHE_KEY, JSON.stringify({ papers: tmuaOnly, ts: Date.now() }));
@@ -255,16 +259,17 @@ export function TopicsPage() {
   const startGeneratedExam = () => {
     if (!generatedQuestions || generatedQuestions.length === 0) return;
     const genPaper = {
-      id: `generated_p${genPaperNum}`,
+      id: `generated_p${genPaperNum}_${Date.now()}`,
       title: `Random Paper ${genPaperNum}`,
       paper_number: genPaperNum,
       year: 0, sitting: 'Generated', duration_minutes: 75, total_marks: generatedQuestions.length,
       topics: [...new Set(generatedQuestions.map(q => q.topic))],
       created_at: new Date().toISOString(),
-      questions: generatedQuestions.map((q, i) => ({ ...q.question, id: `gq${i + 1}` })),
+      questions: generatedQuestions.map((q, i) => ({ ...q.question, id: q.question.id || `gq${i + 1}` })),
     };
     localStorage.setItem(GENERATED_PAPER_KEY, JSON.stringify(genPaper));
-    navigate('/');
+    setPendingGenPaper({ id: genPaper.id, title: genPaper.title, paper: genPaper });
+    setShowAssign(true);
   };
 
   const pageBg = '#f8fafc';
@@ -276,7 +281,7 @@ export function TopicsPage() {
   const accentBg = TAG_BG;
 
   return (
-    <div style={{ minHeight: '100vh', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: pageBg }}>
+    <div style={{ minHeight: '100vh', fontFamily: "'Geist', system-ui, -apple-system, sans-serif", background: pageBg }}>
       <TopNav currentPage="topics-generate" />
 
       {/* Practice Modal — overlay, no page shift */}
@@ -305,7 +310,7 @@ export function TopicsPage() {
               width: 240, padding: '10px 16px', fontSize: 13,
               border: `1px solid ${borderColor}`, borderRadius: 8,
               outline: 'none', background: cardBg,
-              fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+              fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
             }}
           />
         </div>
@@ -320,7 +325,7 @@ export function TopicsPage() {
                 background: paperFilter === v ? accent : cardBg,
                 border: `1px solid ${paperFilter === v ? accent : borderColor}`,
                 borderRadius: 20, cursor: 'pointer',
-                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
               }}>
               {v === 'all' ? `All (${allQuestions.length})` : `Paper ${v} (${v === 1 ? paperCounts.p1 : paperCounts.p2})`}
             </button>
@@ -334,7 +339,7 @@ export function TopicsPage() {
                 background: statusFilter === v ? accent : cardBg,
                 border: `1px solid ${statusFilter === v ? accent : borderColor}`,
                 borderRadius: 20, cursor: 'pointer',
-                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
               }}>
               {v === 'all' ? t('topicsPage.statusAll') : v === 'correct' ? `✓ ${statusCounts.correct}` : v === 'incorrect' ? `✗ ${statusCounts.incorrect}` : `— ${statusCounts.notAttempted}`}
             </button>
@@ -405,7 +410,7 @@ export function TopicsPage() {
                   padding: '10px 24px', fontSize: 14, fontWeight: 600,
                   color: '#fff', background: accent, border: 'none',
                   borderRadius: 8, cursor: 'pointer',
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 }}>
                 Generate
               </button>
@@ -417,7 +422,7 @@ export function TopicsPage() {
                   color: genPaperNum === 1 ? '#fff' : textMuted,
                   background: genPaperNum === 1 ? accent : '#f1f5f9',
                   border: 'none', borderRadius: 20, cursor: 'pointer',
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 }}>Paper 1</button>
               <button onClick={() => setGenPaperNum(2)}
                 style={{
@@ -425,7 +430,7 @@ export function TopicsPage() {
                   color: genPaperNum === 2 ? '#fff' : textMuted,
                   background: genPaperNum === 2 ? accent : '#f1f5f9',
                   border: 'none', borderRadius: 20, cursor: 'pointer',
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 }}>Paper 2</button>
             </div>
             <div style={{ fontSize: 11, color: textMuted, lineHeight: 1.6 }}>
@@ -456,7 +461,7 @@ export function TopicsPage() {
                       padding: '8px 20px', fontSize: 13, fontWeight: 600,
                       color: '#fff', background: '#1e40af', border: 'none',
                       borderRadius: 6, cursor: 'pointer',
-                      fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                      fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                     }}>Start Exam</button>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -488,25 +493,25 @@ export function TopicsPage() {
               <button
                 disabled={filteredQuestions.length < 5}
                 onClick={() => {
-                  const pool = filteredQuestions.length > 20 ? shuffle(filteredQuestions).slice(0, 20) : filteredQuestions;
+                  const pool = shuffle(filteredQuestions); // ALL questions, no cap
                   const genPaper = {
-                    id: `generated_${selectedTag}`,
+                    id: `generated_${selectedTag}_${Date.now()}`,
                     title: `${TAG_LABEL[selectedTag]} Practice Paper`,
                     paper_number: 1 as const, year: 0, sitting: 'Generated',
-                    duration_minutes: 75, total_marks: pool.length, topics: [selectedTag],
+                    duration_minutes: 0, total_marks: pool.length, topics: [selectedTag],
                     created_at: new Date().toISOString(),
-                    questions: pool.map((q, i) => ({ ...q.question, id: `gt${i + 1}` })),
+                    questions: pool.map((q, i) => ({ ...q.question, id: q.question.id || `gt${i + 1}` })),
                   };
                   localStorage.setItem(GENERATED_PAPER_KEY, JSON.stringify(genPaper));
-                  setGenMsg(`${TAG_LABEL[selectedTag]} paper (${pool.length} Q) generated!`);
-                  setTimeout(() => setGenMsg(''), 4000);
+                  setPendingGenPaper({ id: genPaper.id, title: genPaper.title, paper: genPaper });
+                  setShowAssign(true);
                 }}
                 style={{
                   padding: '8px 18px', fontSize: 12, fontWeight: 600,
                   color: filteredQuestions.length < 5 ? '#cbd5e1' : '#fff',
                   background: filteredQuestions.length < 5 ? '#f1f5f9' : accent,
                   border: 'none', borderRadius: 8, cursor: filteredQuestions.length < 5 ? 'default' : 'pointer',
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 }}>Generate Paper</button>
             </div>
 
@@ -562,7 +567,7 @@ export function TopicsPage() {
                           padding: '4px 14px', fontSize: 11, fontWeight: 500,
                           color: accent, background: '#fff',
                           border: `1px solid ${accent}`, borderRadius: 6, cursor: 'pointer',
-                          fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                          fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                         }}>{t('topicsPage.reviewButton')}</button>
                     </div>
                   );
@@ -572,6 +577,22 @@ export function TopicsPage() {
           </div>
         </div>
       </div>
+
+      {/* Assign Dialog */}
+      {showAssign && pendingGenPaper && user && (
+        <AssignDialog
+          paperId={pendingGenPaper.id}
+          paperTitle={pendingGenPaper.title}
+          userId={user.id}
+          paper={pendingGenPaper.paper}
+          onClose={() => { setShowAssign(false); setPendingGenPaper(null); navigate('/admission-tests/tmua'); }}
+          onAssigned={(classIds) => {
+            setShowAssign(false); setPendingGenPaper(null);
+            setGenMsg(`Assigned to ${classIds.length} class${classIds.length > 1 ? 'es' : ''}!`);
+            setTimeout(() => navigate('/admission-tests/tmua'), 1200);
+          }}
+        />
+      )}
     </div>
   );
 }

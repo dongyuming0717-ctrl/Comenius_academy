@@ -42,8 +42,8 @@ export const colors = {
 };
 
 export const typography = {
-  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
-  fontMono: "'SF Mono', 'Cascadia Code', monospace",
+  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
+  fontMono: "'Geist Mono', 'SF Mono', 'Cascadia Code', monospace",
   size: {
     xs: 12,
     sm: 13,

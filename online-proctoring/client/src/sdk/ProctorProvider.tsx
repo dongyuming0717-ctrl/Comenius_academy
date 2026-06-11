@@ -91,7 +91,7 @@ export function ProctorProvider({ children }: { children: ReactNode }) {
     };
   }, [state.status, flushViolations]);
 
-  // Start session: immediately set active, Supabase is best-effort
+  // Start session: immediately set active, insert to Supabase
   const startSession = useCallback((examId: string, userId: string, origin?: string, classId?: string) => {
     const localId = genId();
     currentSessionId.current = localId;
@@ -103,20 +103,14 @@ export function ProctorProvider({ children }: { children: ReactNode }) {
       violations: [],
     }));
 
-    // Async: try to persist to Supabase
+    // Upsert to Supabase (creates or updates, never misses)
     const row: Record<string, any> = { id: localId, user_id: userId, paper_id: examId, status: 'active', answers: {} };
     if (origin) row.origin = origin;
     if (classId) row.class_id = classId;
     supabase
       .from('exam_sessions')
-      .insert(row)
-      .select('id')
-      .single()
-      .then(({ data, error }) => {
-        if (data && !error) {
-          currentSessionId.current = data.id;
-        }
-      });
+      .upsert(row, { onConflict: 'id' })
+      .then(() => {});
   }, []);
 
   const endSession = useCallback(() => {

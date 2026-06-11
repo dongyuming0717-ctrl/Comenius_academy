@@ -26,7 +26,7 @@ function formatSize(bytes: number): string {
 const btnStyle: React.CSSProperties = {
   padding: '6px 14px', fontSize: 12, fontWeight: 500, borderRadius: 6,
   cursor: 'pointer', border: '1px solid #d1d5db', background: '#fff',
-  color: '#374151', fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+  color: '#374151', fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
 };
 
 export function ClassFiles({ classId, isTeacher }: Props) {
@@ -116,7 +116,7 @@ export function ClassFiles({ classId, isTeacher }: Props) {
               color: '#fff', background: '#1e40af', border: 'none',
               borderRadius: 8, cursor: uploading ? 'default' : 'pointer',
               opacity: uploading ? 0.5 : 1, display: 'inline-flex', alignItems: 'center', gap: 6,
-              fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+              fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
             }}>
               {uploading ? 'Uploading...' : '+ Upload'}
             </label>

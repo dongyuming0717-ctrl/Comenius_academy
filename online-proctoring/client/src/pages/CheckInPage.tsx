@@ -76,7 +76,7 @@ export function CheckInPage() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: '#fff' }}>
+      <div style={{ minHeight: '100vh', fontFamily: "'Geist', system-ui, -apple-system, sans-serif", background: '#fff' }}>
         <TopNav currentPage="checkin" />
         <div style={{ padding: 40, textAlign: 'center', color: '#9ca3af' }}>Loading...</div>
       </div>
@@ -85,7 +85,7 @@ export function CheckInPage() {
 
   if (!data) {
     return (
-      <div style={{ minHeight: '100vh', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: '#fff' }}>
+      <div style={{ minHeight: '100vh', fontFamily: "'Geist', system-ui, -apple-system, sans-serif", background: '#fff' }}>
         <TopNav currentPage="checkin" />
         <div style={{ padding: 40, textAlign: 'center', color: '#9ca3af' }}>No data available.</div>
       </div>
@@ -114,7 +114,7 @@ export function CheckInPage() {
   const pageStyle: React.CSSProperties = {
     minHeight: '100vh',
     background: '#fff',
-    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+    fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
   };
 
   const cardStyle: React.CSSProperties = {
@@ -193,7 +193,7 @@ export function CheckInPage() {
                 background: 'linear-gradient(135deg, #1e40af, #3b82f6)',
                 color: '#fff', fontSize: 18, fontWeight: 700,
                 boxShadow: '0 4px 20px rgba(30,64,175,0.3)',
-                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                 opacity: checkingIn ? 0.7 : 1,
               }}
             >

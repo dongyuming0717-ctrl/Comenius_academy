@@ -78,10 +78,10 @@ export function PastPaperLibraryPage() {
     return arr;
   }, [papers, sort]);
 
-  const s: React.CSSProperties = { padding: '10px 14px', fontSize: 14, border: '1px solid #d1d5db', borderRadius: 8, outline: 'none', background: '#fff', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", color: '#374151' };
+  const s: React.CSSProperties = { padding: '10px 14px', fontSize: 14, border: '1px solid #d1d5db', borderRadius: 8, outline: 'none', background: '#fff', fontFamily: "'Geist', system-ui, -apple-system, sans-serif", color: '#374151' };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f9fafb', fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: '#f9fafb', fontFamily: "'Geist', system-ui, -apple-system, sans-serif" }}>
       <TopNav currentPage="past-papers" />
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '40px 24px 80px' }}>
         {/* Header — original .page-header */}
@@ -116,7 +116,7 @@ export function PastPaperLibraryPage() {
               {['Spring','Summer','Winter'].map(v => <option key={v} value={v}>{v}</option>)}
             </select>
           </div>
-          <button onClick={search} style={{ padding: '10px 20px', fontSize: 14, fontWeight: 500, color: '#fff', background: '#1e40af', border: 'none', borderRadius: 8, cursor: 'pointer', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", display: 'flex', alignItems: 'center', gap: 6 }}>
+          <button onClick={search} style={{ padding: '10px 20px', fontSize: 14, fontWeight: 500, color: '#fff', background: '#1e40af', border: 'none', borderRadius: 8, cursor: 'pointer', fontFamily: "'Geist', system-ui, -apple-system, sans-serif", display: 'flex', alignItems: 'center', gap: 6 }}>
             <SearchIcon /> Search
           </button>
         </div>
@@ -163,8 +163,8 @@ export function PastPaperLibraryPage() {
                   <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
                     {(['qp','ms','er','ir','in'] as const).filter(t => g[t]).map(t => (
                       <div key={t} style={{ display: 'flex' }}>
-                        <button onClick={() => setPreview({ path: g[t]!.relative_path, title: `${code} — ${TYPE_INFO[t].full}` })} style={{ padding: '6px 10px', fontSize: 12, border: '1px solid #d1d5db', borderRadius: '6px 0 0 6px', background: '#fff', cursor: 'pointer', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", color: '#374151' }}><ViewIcon /> View {TYPE_INFO[t].label}</button>
-                        <a href={`${API}/download/${encodeURI(g[t]!.relative_path)}`} style={{ padding: '6px 10px', fontSize: 12, background: '#1e40af', color: '#fff', borderRadius: '0 6px 6px 0', textDecoration: 'none', fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}><DlIcon /></a>
+                        <button onClick={() => setPreview({ path: g[t]!.relative_path, title: `${code} — ${TYPE_INFO[t].full}` })} style={{ padding: '6px 10px', fontSize: 12, border: '1px solid #d1d5db', borderRadius: '6px 0 0 6px', background: '#fff', cursor: 'pointer', fontFamily: "'Geist', system-ui, -apple-system, sans-serif", color: '#374151' }}><ViewIcon /> View {TYPE_INFO[t].label}</button>
+                        <a href={`${API}/download/${encodeURI(g[t]!.relative_path)}`} style={{ padding: '6px 10px', fontSize: 12, background: '#1e40af', color: '#fff', borderRadius: '0 6px 6px 0', textDecoration: 'none', fontFamily: "'Geist', system-ui, -apple-system, sans-serif" }}><DlIcon /></a>
                       </div>
                     ))}
                   </div>

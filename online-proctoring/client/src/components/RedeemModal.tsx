@@ -66,7 +66,7 @@ export function RedeemModal({
               flex: 1, padding: '10px', borderRadius: 8,
               border: '1px solid #e5e7eb', background: '#fff',
               color: '#374151', fontSize: 14, fontWeight: 500, cursor: 'pointer',
-              fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+              fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
             }}
           >
             Cancel
@@ -79,7 +79,7 @@ export function RedeemModal({
               border: 'none',
               background: `linear-gradient(135deg, ${gradient})`,
               color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer',
-              fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+              fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
               opacity: redeeming ? 0.6 : 1,
             }}
           >

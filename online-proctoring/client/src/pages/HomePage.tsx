@@ -750,7 +750,7 @@ export function HomePage() {
                     display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px',
                     borderRadius: 8, background: '#eff6ff', textDecoration: 'none',
                     fontSize: 13, fontWeight: 500, color: '#1e40af',
-                    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                    fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                   }}>
                     🔥 View Your Study Streak & Earn XP →
                   </Link>

@@ -38,7 +38,7 @@ export function PracticeModal({ entry: q, allEntries, onClose, onAnswer }: {
   const isCorrect = revealed && selected === cur.correctAnswer;
 
   return (
-    <div style={{position:'fixed',inset:0,zIndex:1000,background:'#fff',display:'flex',flexDirection:'column',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>
+    <div style={{position:'fixed',inset:0,zIndex:1000,background:'#fff',display:'flex',flexDirection:'column',fontFamily:"Geist,system-ui,-apple-system,sans-serif"}}>
       <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'0 24px',height:48,flexShrink:0,background:'#1e40af'}}>
         <span style={{fontSize:14,fontWeight:500,color:'#fff'}}>Practice — Q{idx+1} of {allEntries.length}</span>
         <div style={{display:'flex',alignItems:'center',gap:12}}>
@@ -76,27 +76,27 @@ export function PracticeModal({ entry: q, allEntries, onClose, onAnswer }: {
           </div>
           {!revealed && (
             <div style={{marginTop:20,textAlign:'center'}}>
-              <button onClick={handleCheck} disabled={selected===null} style={{padding:'12px 48px',fontSize:15,fontWeight:600,color:'#fff',background:selected!==null?'#1e40af':'#cbd5e1',border:'none',borderRadius:8,cursor:selected!==null?'pointer':'default',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>Check Answer</button>
+              <button onClick={handleCheck} disabled={selected===null} style={{padding:'12px 48px',fontSize:15,fontWeight:600,color:'#fff',background:selected!==null?'#1e40af':'#cbd5e1',border:'none',borderRadius:8,cursor:selected!==null?'pointer':'default',fontFamily:"Geist,system-ui,-apple-system,sans-serif"}}>Check Answer</button>
             </div>
           )}
           {revealed && (
             <div style={{marginTop:16,display:'flex',gap:8,justifyContent:'center',alignItems:'center'}}>
-              <button onClick={() => { setSelected(null); setRevealed(false); }} style={{padding:'8px 18px',fontSize:12,fontWeight:500,color:'#d97706',background:'#fffbeb',border:'1px solid #fcd34d',borderRadius:6,cursor:'pointer',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>🔄 Retry</button>
+              <button onClick={() => { setSelected(null); setRevealed(false); }} style={{padding:'8px 18px',fontSize:12,fontWeight:500,color:'#d97706',background:'#fffbeb',border:'1px solid #fcd34d',borderRadius:6,cursor:'pointer',fontFamily:"Geist,system-ui,-apple-system,sans-serif"}}>🔄 Retry</button>
               {!isCorrect && (
                 <button onClick={() => {
                   const q = encodeURIComponent(`${cur.year} Paper ${cur.paperNumber} Q${cur.questionIndex+1}: ${cur.text.substring(0,200)}. I answered ${String.fromCharCode(65+(selected??0))}, correct is ${String.fromCharCode(65+cur.correctAnswer)}.`);
                   window.open(`https://amos.comenius.cn/api/chat?q=${q}`, '_blank');
-                }} style={{padding:'8px 18px',fontSize:12,fontWeight:500,color:'#1e40af',background:'#eff6ff',border:'1px solid #bfdbfe',borderRadius:6,cursor:'pointer',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>🤖 Ask Amos</button>
+                }} style={{padding:'8px 18px',fontSize:12,fontWeight:500,color:'#1e40af',background:'#eff6ff',border:'1px solid #bfdbfe',borderRadius:6,cursor:'pointer',fontFamily:"Geist,system-ui,-apple-system,sans-serif"}}>🤖 Ask Amos</button>
               )}
             </div>
           )}
         </div>
       </div>
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'10px 24px',flexShrink:0,background:'#fff',borderTop:'1px solid #e2e8f0'}}>
-        <button onClick={onClose} style={{padding:'8px 24px',borderRadius:6,border:'1px solid #d1d5db',background:'#fff',cursor:'pointer',fontSize:14,color:'#374151',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>Close</button>
+        <button onClick={onClose} style={{padding:'8px 24px',borderRadius:6,border:'1px solid #d1d5db',background:'#fff',cursor:'pointer',fontSize:14,color:'#374151',fontFamily:"Geist,system-ui,-apple-system,sans-serif"}}>Close</button>
         <div style={{display:'flex',gap:12}}>
-          <button disabled={!hasPrev} onClick={() => setIdx(i=>i-1)} style={{padding:'8px 24px',borderRadius:6,border:'1px solid #d1d5db',background:'#fff',cursor:hasPrev?'pointer':'default',opacity:hasPrev?1:.4,fontSize:14,color:'#374151',fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>← Previous</button>
-          <button disabled={!hasNext} onClick={() => setIdx(i=>i+1)} style={{padding:'8px 24px',borderRadius:6,background:'#1e40af',color:'#fff',border:'none',cursor:hasNext?'pointer':'default',opacity:hasNext?1:.4,fontSize:14,fontWeight:500,fontFamily:"'Inter',system-ui,-apple-system,sans-serif"}}>Next →</button>
+          <button disabled={!hasPrev} onClick={() => setIdx(i=>i-1)} style={{padding:'8px 24px',borderRadius:6,border:'1px solid #d1d5db',background:'#fff',cursor:hasPrev?'pointer':'default',opacity:hasPrev?1:.4,fontSize:14,color:'#374151',fontFamily:"Geist,system-ui,-apple-system,sans-serif"}}>← Previous</button>
+          <button disabled={!hasNext} onClick={() => setIdx(i=>i+1)} style={{padding:'8px 24px',borderRadius:6,background:'#1e40af',color:'#fff',border:'none',cursor:hasNext?'pointer':'default',opacity:hasNext?1:.4,fontSize:14,fontWeight:500,fontFamily:"Geist,system-ui,-apple-system,sans-serif"}}>Next →</button>
         </div>
       </div>
     </div>

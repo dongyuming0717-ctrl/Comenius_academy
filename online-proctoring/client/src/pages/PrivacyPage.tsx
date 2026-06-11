@@ -5,7 +5,7 @@ import { useLocale } from '../i18n/LocaleContext';
 export function PrivacyPage() {
   const { t } = useLocale();
   return (
-    <div style={{ minHeight: '100vh', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
+    <div style={{ minHeight: '100vh', fontFamily: "'Geist', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
       <TopNav minimal />
       <div style={{ maxWidth: 720, margin: '0 auto', padding: '40px 20px 60px' }}>
         <h1 style={{ fontSize: 26, fontWeight: 600, color: '#111', marginBottom: 8 }}>{t('privacyPage.title')}</h1>

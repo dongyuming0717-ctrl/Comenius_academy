@@ -34,7 +34,7 @@ export function AchievementToast({ achievement, onDismiss }: Props) {
             boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
             display: 'flex', alignItems: 'center', gap: 10,
             maxWidth: 300, cursor: 'pointer',
-            fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+            fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
           }}
           onClick={() => { setVisible(false); setTimeout(onDismiss, 300); }}
         >

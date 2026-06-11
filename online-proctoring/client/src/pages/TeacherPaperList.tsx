@@ -39,7 +39,7 @@ export function TeacherPaperList() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
+    <div style={{ minHeight: '100vh', fontFamily: "'Geist', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
       <TopNav currentPage="teacher" />
 
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '24px 20px 60px' }}>
@@ -55,7 +55,7 @@ export function TeacherPaperList() {
           <Link to="/teacher/papers/new" style={{
             padding: '10px 22px', background: '#1e40af', color: '#fff', textDecoration: 'none',
             borderRadius: 6, fontSize: 14, fontWeight: 500,
-            fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+            fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
           }}>
             {t('teacherPaperList.newPaperLink')}
           </Link>
@@ -93,12 +93,12 @@ export function TeacherPaperList() {
                   <button onClick={() => navigate(`/teacher/papers/${p.id}/edit`)} style={{
                     padding: '5px 14px', background: '#1e40af', color: '#fff', border: 'none',
                     borderRadius: 5, cursor: 'pointer', fontSize: 12, fontWeight: 500,
-                    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                    fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                   }}>{t('teacherPaperList.editButton')}</button>
                   <button onClick={() => handleDelete(p)} style={{
                     padding: '5px 14px', background: '#fff', color: '#ef4444',
                     border: '1px solid #fecaca', borderRadius: 5, cursor: 'pointer', fontSize: 12,
-                    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                    fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                   }}>{t('teacherPaperList.deleteButton')}</button>
                 </div>
               </div>

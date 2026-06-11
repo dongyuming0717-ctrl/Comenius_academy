@@ -42,7 +42,7 @@ export function UpdatePasswordPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
+    <div style={{ minHeight: '100vh', fontFamily: "'Geist', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
       <TopNav minimal />
 
       <div style={{ maxWidth: 440, margin: '60px auto', padding: '0 20px' }}>
@@ -77,7 +77,7 @@ export function UpdatePasswordPage() {
                 style={{
                   width: '100%', padding: '10px 14px', border: '1px solid #d1d5db',
                   borderRadius: 8, fontSize: 14, outline: 'none',
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                   boxSizing: 'border-box',
                 }}
               />
@@ -97,7 +97,7 @@ export function UpdatePasswordPage() {
                 style={{
                   width: '100%', padding: '10px 14px', border: '1px solid #d1d5db',
                   borderRadius: 8, fontSize: 14, outline: 'none',
-                  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                  fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                   boxSizing: 'border-box',
                 }}
               />
@@ -128,7 +128,7 @@ export function UpdatePasswordPage() {
                 width: '100%', padding: '12px', background: loading ? '#93c5fd' : '#1e40af',
                 color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer',
                 fontSize: 15, fontWeight: 500,
-                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
               }}
             >
               {loading ? t('updatePassword.updating') : t('updatePassword.submitButton')}

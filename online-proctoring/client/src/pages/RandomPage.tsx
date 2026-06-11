@@ -198,13 +198,13 @@ export function RandomPage() {
     border: 'none',
     borderRadius: 14,
     cursor: 'pointer' as const,
-    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+    fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
   });
 
   const paperLabel = (n: 1 | 2) => n === 1 ? t('randomPage.paperLabel1') : t('randomPage.paperLabel2');
 
   return (
-    <div style={{ minHeight: '100vh', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
+    <div style={{ minHeight: '100vh', fontFamily: "'Geist', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
       {/* Top Bar */}
       <TopNav currentPage="random" />
 
@@ -241,7 +241,7 @@ export function RandomPage() {
                     padding: '8px 28px', fontSize: 14, fontWeight: 600,
                     color: '#fff', background: TAG_COLOR, border: 'none',
                     borderRadius: 6, cursor: 'pointer',
-                    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                    fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                   }}
                 >
                   {t('randomPage.generateButton')}
@@ -326,7 +326,7 @@ export function RandomPage() {
                       padding: '12px 48px', fontSize: 15, fontWeight: 600,
                       color: '#fff', background: '#16a34a', border: 'none',
                       borderRadius: 6, cursor: 'pointer',
-                      fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                      fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                     }}
                   >
                     Start Exam — {paperLabel(genPaperNum)}
@@ -337,7 +337,7 @@ export function RandomPage() {
                       padding: '12px 20px', fontSize: 14, fontWeight: 500,
                       color: '#dc2626', background: '#fff',
                       border: '1px solid #fca5a5', borderRadius: 6, cursor: 'pointer',
-                      fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                      fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                     }}
                   >
                     {t('randomPage.deleteButton')}
@@ -373,7 +373,7 @@ export function RandomPage() {
                     padding: '10px 24px', fontSize: 14, fontWeight: 500,
                     color: '#374151', background: '#f3f4f6', border: 'none',
                     borderRadius: 6, cursor: 'pointer',
-                    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                    fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                   }}
                 >
                   {t('randomPage.confirmDeleteCancel')}
@@ -387,7 +387,7 @@ export function RandomPage() {
                     padding: '10px 24px', fontSize: 14, fontWeight: 600,
                     color: '#fff', background: '#dc2626', border: 'none',
                     borderRadius: 6, cursor: 'pointer',
-                    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                    fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
                   }}
                 >
                   {t('randomPage.confirmDeleteConfirm')}

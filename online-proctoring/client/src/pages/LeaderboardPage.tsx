@@ -54,7 +54,7 @@ export function LeaderboardPage() {
     fontSize: 13,
     fontWeight: active ? 600 : 400,
     cursor: 'pointer',
-    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+    fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
     transition: 'all 0.15s',
   });
 
@@ -69,7 +69,7 @@ export function LeaderboardPage() {
   const rest = entries.slice(3);
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fff', fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: '#fff', fontFamily: "'Geist', system-ui, -apple-system, sans-serif" }}>
       <TopNav currentPage="leaderboard" />
       <div style={{ maxWidth: 640, margin: '0 auto', padding: '32px 20px 60px' }}>
         <h1 style={{ fontSize: 26, fontWeight: 600, color: '#111', margin: '0 0 4px' }}>

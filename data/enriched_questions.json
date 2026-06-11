@@ -1,0 +1,401 @@
+{
+  "q0": {
+    "topics": [
+      "polynomials",
+      "algebraic_expansion",
+      "quadratics_polynomials"
+    ],
+    "primary_topic": "polynomials",
+    "reasoning_depth": 3,
+    "concept_breadth": 2,
+    "distractor_strength": 3,
+    "difficulty": "medium",
+    "reason": "expand and match coefficients"
+  },
+  "q10": {
+    "topics": [
+      "exponentials_logs",
+      "algebra",
+      "inequalities"
+    ],
+    "primary_topic": "exponentials_logs",
+    "reasoning_depth": 3,
+    "concept_breadth": 2,
+    "distractor_strength": 3,
+    "difficulty": "medium",
+    "reason": "log manipulation"
+  },
+  "q20": {
+    "topics": [
+      "integration",
+      "quadratics_polynomials"
+    ],
+    "primary_topic": "integration",
+    "reasoning_depth": 3,
+    "concept_breadth": 2,
+    "distractor_strength": 2,
+    "difficulty": "medium",
+    "reason": "integral calculation"
+  },
+  "q30": {
+    "topics": [
+      "functions",
+      "quadratics_polynomials",
+      "transformations_graphs"
+    ],
+    "primary_topic": "functions",
+    "reasoning_depth": 3,
+    "concept_breadth": 3,
+    "distractor_strength": 3,
+    "difficulty": "medium",
+    "reason": "root analysis"
+  },
+  "q40": {
+    "topics": [
+      "differentiation",
+      "algebra"
+    ],
+    "primary_topic": "differentiation",
+    "reasoning_depth": 3,
+    "concept_breadth": 2,
+    "distractor_strength": 3,
+    "difficulty": "medium",
+    "reason": "integral calculation"
+  },
+  "q50": {
+    "topics": [
+      "sequences_series",
+      "algebra"
+    ],
+    "primary_topic": "sequences_series",
+    "reasoning_depth": 2,
+    "concept_breadth": 2,
+    "distractor_strength": 3,
+    "difficulty": "medium",
+    "reason": "sequence pattern recognition"
+  },
+  "q60": {
+    "topics": [
+      "differentiation",
+      "functions"
+    ],
+    "primary_topic": "differentiation",
+    "reasoning_depth": 3,
+    "concept_breadth": 2,
+    "distractor_strength": 3,
+    "difficulty": "medium",
+    "reason": "differentiate and simplify"
+  },
+  "q70": {
+    "topics": [
+      "functions",
+      "integration",
+      "algebra"
+    ],
+    "primary_topic": "functions",
+    "reasoning_depth": 3,
+    "concept_breadth": 3,
+    "distractor_strength": 3,
+    "difficulty": "medium",
+    "reason": "area calculation"
+  },
+  "q80": {
+    "topics": [
+      "integration",
+      "functions"
+    ],
+    "primary_topic": "integration",
+    "reasoning_depth": 3,
+    "concept_breadth": 2,
+    "distractor_strength": 3,
+    "difficulty": "medium",
+    "reason": "integral calculation"
+  },
+  "q90": {
+    "topics": [
+      "calculus",
+      "coordinate_geometry",
+      "differential_calculus"
+    ],
+    "primary_topic": "differential_calculus",
+    "reasoning_depth": 3,
+    "concept_breadth": 2,
+    "distractor_strength": 3,
+    "difficulty": "medium",
+    "reason": "normal_lines_intersection"
+  },
+  "q100": {
+    "topics": [
+      "differentiation",
+      "functions"
+    ],
+    "primary_topic": "differentiation",
+    "reasoning_depth": 3,
+    "concept_breadth": 2,
+    "distractor_strength": 3,
+    "difficulty": "medium",
+    "reason": "apply differentiation rule"
+  },
+  "q110": {
+    "topics": [
+      "exponentials_logs",
+      "functions",
+      "inequalities"
+    ],
+    "primary_topic": "exponentials_logs",
+    "reasoning_depth": 3,
+    "concept_breadth": 2,
+    "distractor_strength": 3,
+    "difficulty": "medium",
+    "reason": "Logarithmic properties and inequalities"
+  },
+  "q120": {
+    "topics": [
+      "quadratics_polynomials",
+      "functions",
+      "coordinate_geometry"
+    ],
+    "primary_topic": "quadratics_polynomials",
+    "reasoning_depth": 2,
+    "concept_breadth": 2,
+    "distractor_strength": 3,
+    "difficulty": "medium",
+    "reason": "vertex form and point on graph"
+  },
+  "q130": {
+    "topics": [
+      "logarithms",
+      "algebra",
+      "functions"
+    ],
+    "primary_topic": "logarithms",
+    "reasoning_depth": 3,
+    "concept_breadth": 2,
+    "distractor_strength": 3,
+    "difficulty": "medium",
+    "reason": "Logarithmic equation solving"
+  },
+  "q140": {
+    "topics": [
+      "polynomials",
+      "binomial_theorem"
+    ],
+    "primary_topic": "polynomials",
+    "reasoning_depth": 3,
+    "concept_breadth": 2,
+    "distractor_strength": 2,
+    "difficulty": "medium",
+    "reason": "binomial expansion calculation"
+  },
+  "q150": {
+    "topics": [
+      "sequences_series",
+      "number_theory",
+      "general"
+    ],
+    "primary_topic": "sequences_series",
+    "reasoning_depth": 2,
+    "concept_breadth": 2,
+    "distractor_strength": 3,
+    "difficulty": "medium",
+    "reason": "arithmetic series properties"
+  },
+  "q160": {
+    "topics": [
+      "differentiation",
+      "functions"
+    ],
+    "primary_topic": "differentiation",
+    "reasoning_depth": 3,
+    "concept_breadth": 2,
+    "distractor_strength": 4,
+    "difficulty": "medium",
+    "reason": "Quotient rule application"
+  },
+  "q170": {
+    "topics": [
+      "quadratics_polynomials",
+      "coordinate_geometry",
+      "general"
+    ],
+    "primary_topic": "quadratics_polynomials",
+    "reasoning_depth": 3,
+    "concept_breadth": 2,
+    "distractor_strength": 3,
+    "difficulty": "medium",
+    "reason": "area comparison"
+  },
+  "q180": {
+    "topics": [
+      "quadratics_polynomials",
+      "inequalities",
+      "functions"
+    ],
+    "primary_topic": "quadratics_polynomials",
+    "reasoning_depth": 3,
+    "concept_breadth": 2,
+    "distractor_strength": 3,
+    "difficulty": "medium",
+    "reason": "solve quadratic equation"
+  },
+  "q190": {
+    "topics": [
+      "coordinate_geometry",
+      "transformations_graphs"
+    ],
+    "primary_topic": "coordinate_geometry",
+    "reasoning_depth": 2,
+    "concept_breadth": 2,
+    "distractor_strength": 3,
+    "difficulty": "medium",
+    "reason": "Identify spiral properties"
+  },
+  "q200": {
+    "topics": [
+      "coordinate_geometry",
+      "algebra"
+    ],
+    "primary_topic": "coordinate_geometry",
+    "reasoning_depth": 3,
+    "concept_breadth": 2,
+    "distractor_strength": 4,
+    "difficulty": "medium",
+    "reason": "intersection points and line equation"
+  },
+  "q210": {
+    "topics": [
+      "functions",
+      "differentiation",
+      "inequalities"
+    ],
+    "primary_topic": "functions",
+    "reasoning_depth": 3,
+    "concept_breadth": 2,
+    "distractor_strength": 3,
+    "difficulty": "medium",
+    "reason": "find decreasing interval"
+  },
+  "q220": {
+    "topics": [
+      "integration",
+      "algebra"
+    ],
+    "primary_topic": "integration",
+    "reasoning_depth": 3,
+    "concept_breadth": 2,
+    "distractor_strength": 2,
+    "difficulty": "medium",
+    "reason": "integral calculation"
+  },
+  "q230": {
+    "topics": [
+      "algebra",
+      "inequalities",
+      "functions",
+      "logic_proof"
+    ],
+    "primary_topic": "algebra",
+    "reasoning_depth": 3,
+    "concept_breadth": 3,
+    "distractor_strength": 3,
+    "difficulty": "medium",
+    "reason": "algebraic manipulation"
+  },
+  "q240": {
+    "topics": [
+      "general"
+    ],
+    "primary_topic": "general",
+    "reasoning_depth": 1,
+    "concept_breadth": 1,
+    "distractor_strength": 1,
+    "difficulty": "easy",
+    "reason": "counting solutions"
+  },
+  "q250": {
+    "topics": [
+      "logarithms",
+      "sequences_series"
+    ],
+    "primary_topic": "logarithms",
+    "reasoning_depth": 3,
+    "concept_breadth": 2,
+    "distractor_strength": 3,
+    "difficulty": "medium",
+    "reason": "Logarithmic series evaluation"
+  },
+  "q260": {
+    "topics": [
+      "calculus",
+      "differentiation"
+    ],
+    "primary_topic": "differentiation",
+    "reasoning_depth": 3,
+    "concept_breadth": 2,
+    "distractor_strength": 3,
+    "difficulty": "medium",
+    "reason": "find stationary points"
+  },
+  "q270": {
+    "topics": [
+      "logic_proof",
+      "general"
+    ],
+    "primary_topic": "logic_proof",
+    "reasoning_depth": 3,
+    "concept_breadth": 2,
+    "distractor_strength": 3,
+    "difficulty": "medium",
+    "reason": "Logical reasoning required."
+  },
+  "q280": {
+    "topics": [
+      "integration",
+      "algebra"
+    ],
+    "primary_topic": "integration",
+    "reasoning_depth": 3,
+    "concept_breadth": 2,
+    "distractor_strength": 3,
+    "difficulty": "medium",
+    "reason": "integral calculation"
+  },
+  "q290": {
+    "topics": [
+      "functions",
+      "transformations_graphs",
+      "quadratics_polynomials"
+    ],
+    "primary_topic": "functions",
+    "reasoning_depth": 3,
+    "concept_breadth": 3,
+    "distractor_strength": 3,
+    "difficulty": "medium",
+    "reason": "transformations of functions"
+  },
+  "q300": {
+    "topics": [
+      "algebra",
+      "quadratics_polynomials",
+      "inequalities"
+    ],
+    "primary_topic": "algebra",
+    "reasoning_depth": 3,
+    "concept_breadth": 2,
+    "distractor_strength": 3,
+    "difficulty": "medium",
+    "reason": "simplifying and solving equation"
+  },
+  "q310": {
+    "topics": [
+      "number_theory",
+      "logic_proof"
+    ],
+    "primary_topic": "number_theory",
+    "reasoning_depth": 3,
+    "concept_breadth": 2,
+    "distractor_strength": 3,
+    "difficulty": "medium",
+    "reason": "equivalence of statements"
+  }
+}

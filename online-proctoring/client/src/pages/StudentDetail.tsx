@@ -110,7 +110,7 @@ export function StudentDetail() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
+      <div style={{ minHeight: '100vh', fontFamily: "'Geist', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
         <TopNav currentPage="teacher" />
         <div style={{ padding: 40, textAlign: 'center', color: '#9ca3af' }}>
           {t('studentDetail.loading')}
@@ -121,7 +121,7 @@ export function StudentDetail() {
 
   if (error || !session) {
     return (
-      <div style={{ minHeight: '100vh', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
+      <div style={{ minHeight: '100vh', fontFamily: "'Geist', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
         <TopNav currentPage="teacher" />
         <div style={{ maxWidth: 500, margin: '60px auto', textAlign: 'center' }}>
           <p style={{ color: '#dc2626' }}>{error || t('studentDetail.sessionNotFound')}</p>
@@ -130,7 +130,7 @@ export function StudentDetail() {
             style={{
               padding: '6px 20px', background: '#1e40af', color: '#fff',
               border: 'none', borderRadius: 6, cursor: 'pointer', marginTop: 8,
-              fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+              fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
             }}
           >
             {t('studentDetail.backToDashboard')}
@@ -156,27 +156,27 @@ export function StudentDetail() {
   const scorePercent = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
 
   return (
-    <div style={{ minHeight: '100vh', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
+    <div style={{ minHeight: '100vh', fontFamily: "'Geist', system-ui, -apple-system, sans-serif", background: '#ffffff' }}>
       <TopNav currentPage="teacher" />
 
       {/* Student Info Header */}
       <div style={{
         background: '#fff', borderBottom: '1px solid #e5e7eb',
         padding: '16px 24px', display: 'flex', alignItems: 'center', gap: 16,
-        fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+        fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
       }}>
         <button
           onClick={() => navigate(-1)}
           style={{
             padding: '6px 14px', border: '1px solid #d1d5db', borderRadius: 6,
             background: '#fff', cursor: 'pointer', fontSize: 13,
-            fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+            fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
           }}
         >
           {t('studentDetail.back')}
         </button>
         <div style={{ flex: 1 }}>
-          <h1 style={{ margin: 0, fontSize: 18, fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
+          <h1 style={{ margin: 0, fontSize: 18, fontFamily: "'Geist', system-ui, -apple-system, sans-serif" }}>
             {session.users?.full_name || 'Unknown'}
           </h1>
           <p style={{ margin: '2px 0 0', color: '#6b7280', fontSize: 12 }}>
@@ -221,7 +221,7 @@ export function StudentDetail() {
           style={{
             padding: '8px 16px', background: '#1e40af', color: '#fff',
             border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 13,
-            fontWeight: 600, fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+            fontWeight: 600, fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
           }}
         >
           Download Report (PDF)
@@ -233,7 +233,7 @@ export function StudentDetail() {
             style={{
               padding: '8px 16px', background: '#ef4444', color: '#fff',
               border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 13,
-              fontWeight: 600, fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+              fontWeight: 600, fontFamily: "'Geist', system-ui, -apple-system, sans-serif",
             }}
           >
             {terminating ? t('studentDetail.terminating') : t('studentDetail.terminateSession')}
@@ -243,7 +243,7 @@ export function StudentDetail() {
 
       <div style={{ maxWidth: 960, margin: '0 auto', padding: 20 }}>
         {/* Answers Breakdown */}
-        <h2 style={{ fontSize: 16, margin: '0 0 12px 0', fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>{t('studentDetail.answersBreakdown')}</h2>
+        <h2 style={{ fontSize: 16, margin: '0 0 12px 0', fontFamily: "'Geist', system-ui, -apple-system, sans-serif" }}>{t('studentDetail.answersBreakdown')}</h2>
         {details.map((d) => {
           const isExpanded = expandedQs.has(d.index);
           return (
